@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="spring" />
+        <module name="oracle" />
+        <module name="elasticsearch" />
+        <module name="javacode" />
+        <module name="vue" />
+        <module name="java_base" />
+        <module name="mysql" />
+        <module name="jdbc" />
+        <module name="java_code" />
+        <module name="tool" />
+        <module name="java_web" />
+      </profile>
+    </annotationProcessing>
+  </component>
+</project>

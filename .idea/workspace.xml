@@ -1,0 +1,742 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="ad105765-8c24-4f15-978c-43930f54c0e0" name="Changes" comment="添加mysql性能分析工具" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitSEFilterConfiguration">
+    <file-type-list>
+      <filtered-out-file-type name="LOCAL_BRANCH" />
+      <filtered-out-file-type name="REMOTE_BRANCH" />
+      <filtered-out-file-type name="TAG" />
+      <filtered-out-file-type name="COMMIT_BY_MESSAGE" />
+    </file-type-list>
+  </component>
+  <component name="MavenImportPreferences">
+    <option name="generalSettings">
+      <MavenGeneralSettings>
+        <option name="localRepository" value="E:\maven" />
+        <option name="mavenHome" value="$PROJECT_DIR$/../../apache-maven-3.6.3" />
+        <option name="userSettingsFile" value="E:\apache-maven-3.6.3\conf\settings.xml" />
+      </MavenGeneralSettings>
+    </option>
+  </component>
+  <component name="ProjectId" id="1yaIk9NekrWhbRA9S2YLZqXaUjG" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
+    <property name="DatabaseDriversLRU" value="mysql" />
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="jdk.selected.JAVA_MODULE" value="1.8" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="node.js.detected.package.eslint" value="true" />
+    <property name="node.js.detected.package.tslint" value="true" />
+    <property name="node.js.selected.package.eslint" value="(autodetect)" />
+    <property name="node.js.selected.package.tslint" value="(autodetect)" />
+    <property name="nodejs_package_manager_path" value="npm" />
+    <property name="project.structure.last.edited" value="Modules" />
+    <property name="project.structure.proportion" value="0.15" />
+    <property name="project.structure.side.proportion" value="0.2" />
+    <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="E:\ideaprojects\learn_local\vue\image" />
+      <recent name="E:\ideaprojects\learn_local\vue\note" />
+      <recent name="E:\ideaprojects\learn_local\tool\note" />
+      <recent name="E:\ideaprojects\learn_local\spring\note" />
+      <recent name="E:\ideaprojects\learn_local\oracle\note" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="E:\ideaprojects\learn_local\java_base\note" />
+      <recent name="E:\ideaprojects\learn\javacode\src\main\java\com\chanpller\learn\javacode\note\part1" />
+    </key>
+    <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
+      <recent name="com.chanpller.www" />
+    </key>
+  </component>
+  <component name="RunAnythingCache">
+    <option name="myCommands">
+      <command value="mvn clean" />
+      <command value="mvn install" />
+    </option>
+  </component>
+  <component name="RunManager" selected="Tomcat Server.Tomcat 8.0.26">
+    <configuration name="BubbleSort" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="source.part3.sort.BubbleSort" />
+      <module name="java_base" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="source.part3.sort.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="HeapSort (1)" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="source.part3.array.sort.stabilization.HeapSort" />
+      <module name="java_base" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="source.part3.array.sort.stabilization.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="HeapSort" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="source.part3.sort.HeapSort" />
+      <module name="java_base" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="source.part3.sort.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Test" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="source.part3.sort.Test" />
+      <module name="java_base" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="source.part3.sort.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Unnamed" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <module name="java_base" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="JetRunConfigurationType">
+      <module name="vue" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType">
+      <module name="vue" />
+      <option name="filePath" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Tomcat 8.0.26" type="#com.intellij.j2ee.web.tomcat.TomcatRunConfigurationFactory" factoryName="Local" APPLICATION_SERVER_NAME="Tomcat 8.0.26" ALTERNATIVE_JRE_ENABLED="false">
+      <deployment>
+        <artifact name="java_web:war exploded">
+          <settings>
+            <option name="CONTEXT_PATH" value="/java_web_war_exploded" />
+          </settings>
+        </artifact>
+      </deployment>
+      <server-settings />
+      <predefined_log_file enabled="true" id="Tomcat" />
+      <predefined_log_file enabled="true" id="Tomcat Catalina" />
+      <predefined_log_file id="Tomcat Manager" />
+      <predefined_log_file id="Tomcat Host Manager" />
+      <predefined_log_file id="Tomcat Localhost Access" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+        <option name="BuildArtifacts" enabled="true">
+          <artifact name="java_web:war exploded" />
+        </option>
+      </method>
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Application.Unnamed" />
+        <item itemvalue="Application.Test" />
+        <item itemvalue="Application.HeapSort" />
+        <item itemvalue="Application.HeapSort (1)" />
+        <item itemvalue="Application.BubbleSort" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="ad105765-8c24-4f15-978c-43930f54c0e0" name="Changes" comment="" />
+      <created>1632483414492</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1632483414492</updated>
+      <workItem from="1632483416456" duration="1814000" />
+      <workItem from="1632668520378" duration="606000" />
+      <workItem from="1632695213209" duration="2926000" />
+      <workItem from="1633542386542" duration="803000" />
+      <workItem from="1633786166086" duration="1567000" />
+      <workItem from="1633881546615" duration="75000" />
+      <workItem from="1633964887667" duration="1624000" />
+      <workItem from="1635090835378" duration="250000" />
+      <workItem from="1635121962604" duration="105000" />
+      <workItem from="1635148442451" duration="85000" />
+      <workItem from="1635519147168" duration="756000" />
+      <workItem from="1636505321297" duration="192000" />
+      <workItem from="1636506883879" duration="1044000" />
+      <workItem from="1636526500671" duration="66000" />
+      <workItem from="1636526587553" duration="361000" />
+      <workItem from="1636527303833" duration="509000" />
+      <workItem from="1636980151590" duration="257000" />
+      <workItem from="1641648102025" duration="3311000" />
+      <workItem from="1641721013980" duration="311000" />
+      <workItem from="1641824524180" duration="517000" />
+      <workItem from="1641825374557" duration="2759000" />
+      <workItem from="1641910130379" duration="52000" />
+      <workItem from="1643290004286" duration="3238000" />
+      <workItem from="1643293356403" duration="774000" />
+      <workItem from="1644065268603" duration="368000" />
+      <workItem from="1644324988801" duration="625000" />
+      <workItem from="1644325674939" duration="80000" />
+      <workItem from="1652166605703" duration="5977000" />
+      <workItem from="1652854289813" duration="1325000" />
+      <workItem from="1653266256335" duration="338000" />
+      <workItem from="1653401447900" duration="646000" />
+      <workItem from="1653439338700" duration="268000" />
+      <workItem from="1653653108469" duration="620000" />
+      <workItem from="1655939603991" duration="2080000" />
+      <workItem from="1656758927549" duration="662000" />
+      <workItem from="1656946686715" duration="7369000" />
+      <workItem from="1658104420898" duration="1710000" />
+      <workItem from="1658326278222" duration="610000" />
+      <workItem from="1659327850994" duration="506000" />
+      <workItem from="1660092886894" duration="291000" />
+      <workItem from="1660093302728" duration="277000" />
+      <workItem from="1660302986935" duration="600000" />
+      <workItem from="1660374482840" duration="33000" />
+      <workItem from="1662280366087" duration="6769000" />
+      <workItem from="1662883696228" duration="1910000" />
+      <workItem from="1663158478142" duration="7274000" />
+      <workItem from="1663334618817" duration="2054000" />
+      <workItem from="1664004903306" duration="15000" />
+      <workItem from="1665314502745" duration="1410000" />
+      <workItem from="1665502537040" duration="1720000" />
+      <workItem from="1665623555375" duration="1663000" />
+      <workItem from="1666279004757" duration="1130000" />
+      <workItem from="1667477757736" duration="767000" />
+      <workItem from="1668439081486" duration="630000" />
+      <workItem from="1668699202365" duration="214000" />
+      <workItem from="1669000822714" duration="280000" />
+      <workItem from="1669892096621" duration="1815000" />
+      <workItem from="1669944853622" duration="2295000" />
+      <workItem from="1670420216154" duration="1259000" />
+      <workItem from="1670461109754" duration="629000" />
+      <workItem from="1670945063895" duration="65000" />
+      <workItem from="1670945155064" duration="36000" />
+      <workItem from="1671025588771" duration="677000" />
+      <workItem from="1671108193877" duration="551000" />
+      <workItem from="1671108801299" duration="2539000" />
+      <workItem from="1671111392110" duration="4394000" />
+      <workItem from="1672749305693" duration="1315000" />
+      <workItem from="1672834400513" duration="504000" />
+      <workItem from="1673008421563" duration="2431000" />
+      <workItem from="1674009275024" duration="1283000" />
+      <workItem from="1674049619019" duration="125000" />
+      <workItem from="1675046757104" duration="763000" />
+      <workItem from="1675168565636" duration="39000" />
+      <workItem from="1675907694886" duration="885000" />
+      <workItem from="1676032073012" duration="98000" />
+      <workItem from="1677029348423" duration="51000" />
+      <workItem from="1677031567851" duration="1189000" />
+      <workItem from="1677199032289" duration="1863000" />
+      <workItem from="1677460792694" duration="1250000" />
+      <workItem from="1677546204096" duration="724000" />
+      <workItem from="1677597177056" duration="1262000" />
+      <workItem from="1677671987992" duration="2397000" />
+      <workItem from="1677760596663" duration="966000" />
+      <workItem from="1677974394872" duration="2462000" />
+      <workItem from="1678140988590" duration="1933000" />
+      <workItem from="1678280958240" duration="3944000" />
+      <workItem from="1678324707621" duration="20410000" />
+      <workItem from="1678359193701" duration="13000" />
+      <workItem from="1678449600627" duration="1269000" />
+      <workItem from="1678469785496" duration="28000" />
+      <workItem from="1678535764473" duration="5307000" />
+      <workItem from="1678715197558" duration="2955000" />
+      <workItem from="1678764154887" duration="2374000" />
+      <workItem from="1678786873602" duration="742000" />
+      <workItem from="1678803473042" duration="1942000" />
+      <workItem from="1678806205795" duration="979000" />
+      <workItem from="1678834393976" duration="144000" />
+      <workItem from="1678887085026" duration="23000" />
+      <workItem from="1678965981969" duration="817000" />
+      <workItem from="1679056357182" duration="31000" />
+      <workItem from="1679188305081" duration="28000" />
+      <workItem from="1679368999180" duration="664000" />
+      <workItem from="1679371062271" duration="2917000" />
+      <workItem from="1679380169110" duration="1501000" />
+      <workItem from="1679456847138" duration="2073000" />
+      <workItem from="1679459130578" duration="92000" />
+      <workItem from="1679459248397" duration="249000" />
+      <workItem from="1679459792660" duration="224000" />
+      <workItem from="1679494963713" duration="682000" />
+      <workItem from="1679534144471" duration="134000" />
+      <workItem from="1680064798091" duration="111000" />
+      <workItem from="1680066244909" duration="681000" />
+      <workItem from="1680307651221" duration="680000" />
+      <workItem from="1681215311327" duration="1382000" />
+      <workItem from="1681305005776" duration="831000" />
+      <workItem from="1681396396039" duration="690000" />
+      <workItem from="1681479794307" duration="1372000" />
+      <workItem from="1681738399551" duration="772000" />
+      <workItem from="1682259575773" duration="1103000" />
+      <workItem from="1682421745540" duration="3869000" />
+      <workItem from="1682649341066" duration="120000" />
+      <workItem from="1683248016229" duration="516000" />
+      <workItem from="1683248569057" duration="3375000" />
+      <workItem from="1683337676867" duration="14000" />
+      <workItem from="1686674988239" duration="747000" />
+      <workItem from="1686676131477" duration="28000" />
+      <workItem from="1686744048343" duration="3311000" />
+      <workItem from="1686835494448" duration="1985000" />
+      <workItem from="1686889679784" duration="943000" />
+      <workItem from="1686952338670" duration="614000" />
+      <workItem from="1686976243215" duration="25000" />
+      <workItem from="1687967221561" duration="2224000" />
+      <workItem from="1688118154745" duration="35000" />
+      <workItem from="1688183406117" duration="176000" />
+      <workItem from="1688689127188" duration="13000" />
+      <workItem from="1688990302779" duration="6000" />
+      <workItem from="1689132726441" duration="1531000" />
+      <workItem from="1690931338255" duration="79000" />
+      <workItem from="1691080086229" duration="77000" />
+      <workItem from="1691394317623" duration="650000" />
+      <workItem from="1693238167611" duration="85000" />
+      <workItem from="1693238331477" duration="940000" />
+      <workItem from="1694010683201" duration="595000" />
+      <workItem from="1695395404159" duration="1506000" />
+      <workItem from="1695396953909" duration="987000" />
+      <workItem from="1695398219442" duration="162000" />
+      <workItem from="1695398917617" duration="301000" />
+    </task>
+    <task id="LOCAL-00036" summary="增加集合、数据结构">
+      <created>1673150303638</created>
+      <option name="number" value="00036" />
+      <option name="presentableId" value="LOCAL-00036" />
+      <option name="project" value="LOCAL" />
+      <updated>1673150303638</updated>
+    </task>
+    <task id="LOCAL-00037" summary="修改集合代码，增加泛型文档">
+      <created>1674010265968</created>
+      <option name="number" value="00037" />
+      <option name="presentableId" value="LOCAL-00037" />
+      <option name="project" value="LOCAL" />
+      <updated>1674010265968</updated>
+    </task>
+    <task id="LOCAL-00038" summary="修改集合代码">
+      <created>1674010427737</created>
+      <option name="number" value="00038" />
+      <option name="presentableId" value="LOCAL-00038" />
+      <option name="project" value="LOCAL" />
+      <updated>1674010427737</updated>
+    </task>
+    <task id="LOCAL-00039" summary="泛型">
+      <created>1674049651289</created>
+      <option name="number" value="00039" />
+      <option name="presentableId" value="LOCAL-00039" />
+      <option name="project" value="LOCAL" />
+      <updated>1674049651289</updated>
+    </task>
+    <task id="LOCAL-00040" summary="IO流概述、分类，节点流、缓冲流、转换流、标准输入输出流、数据流、对象流。">
+      <created>1675907880720</created>
+      <option name="number" value="00040" />
+      <option name="presentableId" value="LOCAL-00040" />
+      <option name="project" value="LOCAL" />
+      <updated>1675907880720</updated>
+    </task>
+    <task id="LOCAL-00041" summary="NIO，ES相关">
+      <created>1677597287766</created>
+      <option name="number" value="00041" />
+      <option name="presentableId" value="LOCAL-00041" />
+      <option name="project" value="LOCAL" />
+      <updated>1677597287766</updated>
+    </task>
+    <task id="LOCAL-00042" summary="NIO，网络编程">
+      <created>1677672073327</created>
+      <option name="number" value="00042" />
+      <option name="presentableId" value="LOCAL-00042" />
+      <option name="project" value="LOCAL" />
+      <updated>1677672073327</updated>
+    </task>
+    <task id="LOCAL-00043" summary="网络编程">
+      <created>1677761321387</created>
+      <option name="number" value="00043" />
+      <option name="presentableId" value="LOCAL-00043" />
+      <option name="project" value="LOCAL" />
+      <updated>1677761321387</updated>
+    </task>
+    <task id="LOCAL-00044" summary="反射，动态代理，lambda表达式">
+      <created>1678205161825</created>
+      <option name="number" value="00044" />
+      <option name="presentableId" value="LOCAL-00044" />
+      <option name="project" value="LOCAL" />
+      <updated>1678205161825</updated>
+    </task>
+    <task id="LOCAL-00045" summary="数组增加选择、堆、冒泡排序的内容。java8新特性增加 方法引用、构造器、数组引用">
+      <created>1678355119173</created>
+      <option name="number" value="00045" />
+      <option name="presentableId" value="LOCAL-00045" />
+      <option name="project" value="LOCAL" />
+      <updated>1678355119173</updated>
+    </task>
+    <task id="LOCAL-00046" summary="数组增加选择、堆、冒泡排序的内容。java8新特性增加 方法引用、构造器、数组引用">
+      <created>1678355154687</created>
+      <option name="number" value="00046" />
+      <option name="presentableId" value="LOCAL-00046" />
+      <option name="project" value="LOCAL" />
+      <updated>1678355154687</updated>
+    </task>
+    <task id="LOCAL-00047" summary="JAVA9-11新特性">
+      <created>1678623016354</created>
+      <option name="number" value="00047" />
+      <option name="presentableId" value="LOCAL-00047" />
+      <option name="project" value="LOCAL" />
+      <updated>1678623016354</updated>
+    </task>
+    <task id="LOCAL-00048" summary="IEAD设置和快捷键">
+      <created>1678803544849</created>
+      <option name="number" value="00048" />
+      <option name="presentableId" value="LOCAL-00048" />
+      <option name="project" value="LOCAL" />
+      <updated>1678803544849</updated>
+    </task>
+    <task id="LOCAL-00049" summary="增加IDEA插件离线和在线安装，以及插件下载后的目录。">
+      <created>1678804412629</created>
+      <option name="number" value="00049" />
+      <option name="presentableId" value="LOCAL-00049" />
+      <option name="project" value="LOCAL" />
+      <updated>1678804412629</updated>
+    </task>
+    <task id="LOCAL-00050" summary="增加git的使用，github、gitee、gitlab操作。">
+      <created>1679459846269</created>
+      <option name="number" value="00050" />
+      <option name="presentableId" value="LOCAL-00050" />
+      <option name="project" value="LOCAL" />
+      <updated>1679459846269</updated>
+    </task>
+    <task id="LOCAL-00051" summary="maven使用笔记">
+      <created>1680064852039</created>
+      <option name="number" value="00051" />
+      <option name="presentableId" value="LOCAL-00051" />
+      <option name="project" value="LOCAL" />
+      <updated>1680064852039</updated>
+    </task>
+    <task id="LOCAL-00052" summary="mysql单行函数代码，聚合函数提交">
+      <created>1681311057452</created>
+      <option name="number" value="00052" />
+      <option name="presentableId" value="LOCAL-00052" />
+      <option name="project" value="LOCAL" />
+      <updated>1681311057452</updated>
+    </task>
+    <task id="LOCAL-00053" summary="mysql子查询">
+      <created>1681396519105</created>
+      <option name="number" value="00053" />
+      <option name="presentableId" value="LOCAL-00053" />
+      <option name="project" value="LOCAL" />
+      <updated>1681396519106</updated>
+    </task>
+    <task id="LOCAL-00054" summary="mysql子查询">
+      <created>1681397066753</created>
+      <option name="number" value="00054" />
+      <option name="presentableId" value="LOCAL-00054" />
+      <option name="project" value="LOCAL" />
+      <updated>1681397066753</updated>
+    </task>
+    <task id="LOCAL-00055" summary="mysql创建数据库、表、插入更新表数据">
+      <created>1681484171701</created>
+      <option name="number" value="00055" />
+      <option name="presentableId" value="LOCAL-00055" />
+      <option name="project" value="LOCAL" />
+      <updated>1681484171703</updated>
+    </task>
+    <task id="LOCAL-00056" summary="mysql创建数据库、表、插入更新表数据">
+      <created>1681485100611</created>
+      <option name="number" value="00056" />
+      <option name="presentableId" value="LOCAL-00056" />
+      <option name="project" value="LOCAL" />
+      <updated>1681485100611</updated>
+    </task>
+    <task id="LOCAL-00057" summary="mysql约束、视图、存储过程、存储函数">
+      <created>1681830697520</created>
+      <option name="number" value="00057" />
+      <option name="presentableId" value="LOCAL-00057" />
+      <option name="project" value="LOCAL" />
+      <updated>1681830697520</updated>
+    </task>
+    <task id="LOCAL-00058" summary="mysql变量、流程控制与游标">
+      <created>1682261256422</created>
+      <option name="number" value="00058" />
+      <option name="presentableId" value="LOCAL-00058" />
+      <option name="project" value="LOCAL" />
+      <updated>1682261256422</updated>
+    </task>
+    <task id="LOCAL-00059" summary="mysql约束、触发器">
+      <created>1682423280683</created>
+      <option name="number" value="00059" />
+      <option name="presentableId" value="LOCAL-00059" />
+      <option name="project" value="LOCAL" />
+      <updated>1682423280683</updated>
+    </task>
+    <task id="LOCAL-00060" summary="mysql公用表表达式">
+      <created>1682431442697</created>
+      <option name="number" value="00060" />
+      <option name="presentableId" value="LOCAL-00060" />
+      <option name="project" value="LOCAL" />
+      <updated>1682431442697</updated>
+    </task>
+    <task id="LOCAL-00061" summary="mysql公用表表达式">
+      <created>1682432068965</created>
+      <option name="number" value="00061" />
+      <option name="presentableId" value="LOCAL-00061" />
+      <option name="project" value="LOCAL" />
+      <updated>1682432068965</updated>
+    </task>
+    <task id="LOCAL-00062" summary="修改目录结构">
+      <created>1683249501550</created>
+      <option name="number" value="00062" />
+      <option name="presentableId" value="LOCAL-00062" />
+      <option name="project" value="LOCAL" />
+      <updated>1683249501550</updated>
+    </task>
+    <task id="LOCAL-00063" summary="修改目录结构">
+      <created>1683249525401</created>
+      <option name="number" value="00063" />
+      <option name="presentableId" value="LOCAL-00063" />
+      <option name="project" value="LOCAL" />
+      <updated>1683249525401</updated>
+    </task>
+    <task id="LOCAL-00064" summary="修改目录结构">
+      <created>1683249543140</created>
+      <option name="number" value="00064" />
+      <option name="presentableId" value="LOCAL-00064" />
+      <option name="project" value="LOCAL" />
+      <updated>1683249543140</updated>
+    </task>
+    <task id="LOCAL-00065" summary="修改目录结构">
+      <created>1683249561362</created>
+      <option name="number" value="00065" />
+      <option name="presentableId" value="LOCAL-00065" />
+      <option name="project" value="LOCAL" />
+      <updated>1683249561362</updated>
+    </task>
+    <task id="LOCAL-00066" summary="修改目录结构">
+      <created>1683249604340</created>
+      <option name="number" value="00066" />
+      <option name="presentableId" value="LOCAL-00066" />
+      <option name="project" value="LOCAL" />
+      <updated>1683249604340</updated>
+    </task>
+    <task id="LOCAL-00067" summary="修改目录结构">
+      <created>1683249632622</created>
+      <option name="number" value="00067" />
+      <option name="presentableId" value="LOCAL-00067" />
+      <option name="project" value="LOCAL" />
+      <updated>1683249632622</updated>
+    </task>
+    <task id="LOCAL-00068" summary="修改目录结构">
+      <created>1683249658956</created>
+      <option name="number" value="00068" />
+      <option name="presentableId" value="LOCAL-00068" />
+      <option name="project" value="LOCAL" />
+      <updated>1683249658956</updated>
+    </task>
+    <task id="LOCAL-00069" summary="修改目录结构">
+      <created>1683249675725</created>
+      <option name="number" value="00069" />
+      <option name="presentableId" value="LOCAL-00069" />
+      <option name="project" value="LOCAL" />
+      <updated>1683249675725</updated>
+    </task>
+    <task id="LOCAL-00070" summary="修改目录结构">
+      <created>1683249697108</created>
+      <option name="number" value="00070" />
+      <option name="presentableId" value="LOCAL-00070" />
+      <option name="project" value="LOCAL" />
+      <updated>1683249697108</updated>
+    </task>
+    <task id="LOCAL-00071" summary="修改目录结构">
+      <created>1683249728536</created>
+      <option name="number" value="00071" />
+      <option name="presentableId" value="LOCAL-00071" />
+      <option name="project" value="LOCAL" />
+      <updated>1683249728536</updated>
+    </task>
+    <task id="LOCAL-00072" summary="修改目录结构">
+      <created>1683249733332</created>
+      <option name="number" value="00072" />
+      <option name="presentableId" value="LOCAL-00072" />
+      <option name="project" value="LOCAL" />
+      <updated>1683249733332</updated>
+    </task>
+    <task id="LOCAL-00073" summary="修改目录结构">
+      <created>1683249770799</created>
+      <option name="number" value="00073" />
+      <option name="presentableId" value="LOCAL-00073" />
+      <option name="project" value="LOCAL" />
+      <updated>1683249770799</updated>
+    </task>
+    <task id="LOCAL-00074" summary="修改目录结构">
+      <created>1683250083297</created>
+      <option name="number" value="00074" />
+      <option name="presentableId" value="LOCAL-00074" />
+      <option name="project" value="LOCAL" />
+      <updated>1683250083297</updated>
+    </task>
+    <task id="LOCAL-00075" summary="修改目录结构">
+      <created>1683251322886</created>
+      <option name="number" value="00075" />
+      <option name="presentableId" value="LOCAL-00075" />
+      <option name="project" value="LOCAL" />
+      <updated>1683251322886</updated>
+    </task>
+    <task id="LOCAL-00076" summary="mysql高级篇第一章安装与使用">
+      <created>1686675555371</created>
+      <option name="number" value="00076" />
+      <option name="presentableId" value="LOCAL-00076" />
+      <option name="project" value="LOCAL" />
+      <updated>1686675555371</updated>
+    </task>
+    <task id="LOCAL-00077" summary="mysql用户权限管理，索引数据结构">
+      <created>1686675710668</created>
+      <option name="number" value="00077" />
+      <option name="presentableId" value="LOCAL-00077" />
+      <option name="project" value="LOCAL" />
+      <updated>1686675710668</updated>
+    </task>
+    <task id="LOCAL-00078" summary="修改图片链接">
+      <created>1686782571317</created>
+      <option name="number" value="00078" />
+      <option name="presentableId" value="LOCAL-00078" />
+      <option name="project" value="LOCAL" />
+      <updated>1686782571317</updated>
+    </task>
+    <task id="LOCAL-00079" summary="更新图片地址">
+      <created>1686837319752</created>
+      <option name="number" value="00079" />
+      <option name="presentableId" value="LOCAL-00079" />
+      <option name="project" value="LOCAL" />
+      <updated>1686837319752</updated>
+    </task>
+    <task id="LOCAL-00080" summary="索引结构更新">
+      <created>1686909292776</created>
+      <option name="number" value="00080" />
+      <option name="presentableId" value="LOCAL-00080" />
+      <option name="project" value="LOCAL" />
+      <updated>1686909292776</updated>
+    </task>
+    <task id="LOCAL-00081" summary="数据存储结构">
+      <created>1687967369034</created>
+      <option name="number" value="00081" />
+      <option name="presentableId" value="LOCAL-00081" />
+      <option name="project" value="LOCAL" />
+      <updated>1687967369034</updated>
+    </task>
+    <task id="LOCAL-00082" summary="添加mysql索引的创建">
+      <created>1688183468159</created>
+      <option name="number" value="00082" />
+      <option name="presentableId" value="LOCAL-00082" />
+      <option name="project" value="LOCAL" />
+      <updated>1688183468159</updated>
+    </task>
+    <task id="LOCAL-00083" summary="添加mysql索引的创建，性能分析工具">
+      <created>1690931394580</created>
+      <option name="number" value="00083" />
+      <option name="presentableId" value="LOCAL-00083" />
+      <option name="project" value="LOCAL" />
+      <updated>1690931394581</updated>
+    </task>
+    <task id="LOCAL-00084" summary="添加mysql性能分析工具">
+      <created>1691080149011</created>
+      <option name="number" value="00084" />
+      <option name="presentableId" value="LOCAL-00084" />
+      <option name="project" value="LOCAL" />
+      <updated>1691080149011</updated>
+    </task>
+    <option name="localTasksCounter" value="85" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="oldMeFiltersMigrated" value="true" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
+    <MESSAGE value="网络编程" />
+    <MESSAGE value="反射，动态代理，lambda表达式" />
+    <MESSAGE value="数组增加选择、堆、冒泡排序的内容。java8新特性增加 方法引用、构造器、数组引用" />
+    <MESSAGE value="JAVA9-11新特性" />
+    <MESSAGE value="IEAD设置和快捷键" />
+    <MESSAGE value="增加IDEA插件离线和在线安装，以及插件下载后的目录。" />
+    <MESSAGE value="增加git的使用，github、gitee、gitlab操作。" />
+    <MESSAGE value="maven使用笔记" />
+    <MESSAGE value="mysql单行函数代码，聚合函数提交" />
+    <MESSAGE value="mysql子查询" />
+    <MESSAGE value="mysql创建数据库、表、插入更新表数据" />
+    <MESSAGE value="mysql约束、视图、存储过程、存储函数" />
+    <MESSAGE value="mysql变量、流程控制与游标" />
+    <MESSAGE value="mysql约束、触发器" />
+    <MESSAGE value="mysql公用表表达式" />
+    <MESSAGE value="修改目录结构" />
+    <MESSAGE value="mysql高级篇第一章安装与使用" />
+    <MESSAGE value="mysql用户权限管理，索引数据结构" />
+    <MESSAGE value="修改图片链接" />
+    <MESSAGE value="更新图片地址" />
+    <MESSAGE value="索引结构更新" />
+    <MESSAGE value="数据存储结构" />
+    <MESSAGE value="添加mysql索引的创建" />
+    <MESSAGE value="添加mysql索引的创建，性能分析工具" />
+    <MESSAGE value="添加mysql性能分析工具" />
+    <option name="LAST_COMMIT_MESSAGE" value="添加mysql性能分析工具" />
+  </component>
+  <component name="XSLT-Support.FileAssociations.UIState">
+    <expand />
+    <select />
+  </component>
+</project>
