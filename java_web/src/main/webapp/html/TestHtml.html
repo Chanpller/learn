@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>标签演示</title>
+</head>
+<body>
+<!-- 字体标签
+需求1：在网页上显示我是字体标签，并修改字体为宋体，颜色为红色。
+font 标签是字体标签,它可以用来修改文本的字体,颜色,大小(尺寸)
+color 属性修改颜色
+face 属性修改字体
+size 属性修改文本大小
+-->
+<font color="red" face="宋体" size="7">我是字体标签</font>
+
+<!-- 特殊字符
+需求1：把<br> 换行标签变成文本转换成字符显示在页面上
+常用的特殊字符:
+< ===>>>> &lt;
+> ===>>>> &gt;
+空格===>>>> &nbsp;
+-->
+我是&lt;br&gt;标签<br/>
+国哥好
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;帅啊!
+
+<!-- 标题标签
+需求1：演示标题1 到标题6 的
+h1 - h6 都是标题标签
+h1 最大
+h6 最小
+align 属性是对齐属性
+left 左对齐(默认)
+center 剧中
+right 右对齐
+-->
+<h1 align="left">标题1</h1>
+<h2 align="center">标题2</h2>
+<h3 align="right">标题3</h3>
+<h4>标题4</h4>
+<h5>标题5</h5>
+<h6>标题6</h6>
+<h7>标题7</h7><!--不是标题标签-->
+
+<!-- a 标签是超链接
+href 属性设置连接的地址
+target 属性设置哪个目标进行跳转
+_self 表示当前页面(默认值)
+_blank 表示打开新页面来进行跳转
+-->
+<a href="http://localhost:8080">百度</a><br/>
+<a href="http://localhost:8080" target="_self">百度_self</a><br/>
+<a href="http://localhost:8080" target="_blank">百度_blank</a><br/>
+
+<!--需求1：使用无序，列表方式，把东北F4，赵四，刘能，小沈阳，宋小宝，展示出来
+ul 是无序列表
+type 属性可以修改列表项前面的符号
+li 是列表项
+-->
+<ul type="none" >
+    <li>赵四</li>
+    <li>刘能</li>
+    <li>小沈阳</li>
+    <li>宋小宝</li>
+</ul>
+
+<!--
+需求1：做一个带表头的，三行，三列的表格，并显示边框
+需求2：修改表格的宽度，高度，表格的对齐方式，单元格间距。
+table 标签是表格标签
+border 设置表格标签
+width 设置表格宽度
+height 设置表格高度
+align 设置表格相对于页面的对齐方式
+cellspacing 设置单元格间距
+tr 是行标签
+th 是表头标签
+td 是单元格标签
+align 设置单元格文本对齐方式
+b 是加粗标签
+-->
+<table align="center" border="1" width="300" height="300" cellspacing="0">
+    <tr>
+        <th>1.1</th>
+        <th>1.2</th>
+        <th>1.3</th>
+    </tr>
+    <tr>
+        <td>2.1</td>
+        <td>2.2</td>
+        <td>2.3</td>
+    </tr>
+    <tr>
+        <td>3.1</td>
+        <td>3.2</td>
+        <td>3.3</td>
+    </tr>
+</table>
+
+<!-- 需求1：
+新建一个五行，五列的表格，
+第一行，第一列的单元格要跨两列，
+第二行第一列的单元格跨两行，
+第四行第四列的单元格跨两行两列。
+colspan 属性设置跨列
+rowspan 属性设置跨行
+-->
+<table width="500" height="500" cellspacing="0" border="1">
+    <tr>
+        <td colspan="2">1.1</td>
+        <td>1.3</td>
+        <td>1.4</td>
+        <td>1.5</td>
+    </tr>
+    <tr>
+        <td rowspan="2">2.1</td>
+        <td>2.2</td>
+        <td>2.3</td>
+        <td>2.4</td>
+        <td>2.5</td>
+    </tr>
+    <tr>
+        <td>3.2</td>
+        <td>3.3</td>
+        <td>3.4</td>
+        <td>3.5</td>
+    </tr>
+    <tr>
+        <td>4.1</td>
+        <td>4.2</td>
+        <td>4.3</td>
+        <td colspan="2" rowspan="2">4.4</td>
+    </tr>
+    <tr>
+        <td>5.1</td>
+        <td>5.2</td>
+        <td>5.3</td>
+    </tr>
+</table>
+
+我是一个单独的完整的页面<br/><br/>
+<!--ifarme 标签可以在页面上开辟一个小区域显示一个单独的页面
+ifarme 和a 标签组合使用的步骤:
+1 在iframe 标签中使用name 属性定义一个名称
+2 在a 标签的target 属性上设置iframe 的name 的属性值
+-->
+<iframe src="3.标题标签.html" width="500" height="400" name="abc"></iframe>
+<br/>
+<ul>
+    <li><a href="0-标签语法.html" target="abc">0-标签语法.html</a></li>
+    <li><a href="1.font 标签.html" target="abc">1.font 标签.html</a></li>
+    <li><a href="2.特殊字符.html" target="abc">2.特殊字符.html</a></li>
+</ul>
+
+<!--需求1:创建一个个人信息注册的表单界面。包含用户名，密码，确认密码。性别（单选），兴趣爱好（多选），国籍（下拉列表）。
+隐藏域，自我评价（多行文本域）。重置，提交。-->
+<!--
+form 标签就是表单
+input type=text 是文件输入框value 设置默认显示内容
+input type=password 是密码输入框value 设置默认显示内容
+input type=radio 是单选框name 属性可以对其进行分组checked="checked"表示默认选中
+input type=checkbox 是复选框checked="checked"表示默认选中
+input type=reset 是重置按钮value 属性修改按钮上的文本
+input type=submit 是提交按钮value 属性修改按钮上的文本
+input type=button 是按钮value 属性修改按钮上的文本
+input type=file 是文件上传域
+input type=hidden 是隐藏域当我们要发送某些信息，而这些信息，不需要用户参与，就可以使用隐藏域（提交的时候同时发送给服务器）
+select 标签是下拉列表框
+option 标签是下拉列表框中的选项selected="selected"设置默认选中
+textarea 表示多行文本输入框（起始标签和结束标签中的内容是默认值）
+	rows 属性设置可以显示几行的高度
+	cols 属性设置每行可以显示几个字符宽度
+-->
+<form>
+    用户名称：<input type="text" value="默认值"/><br/>
+    用户密码：<input type="password" value="abc"/><br/>
+    确认密码：<input type="password" value="abc"/><br/>
+    性别：<input type="radio" name="sex"/>男<input type="radio" name="sex" checked="checked" />女<br/>
+    兴趣爱好：<input type="checkbox" checked="checked" />Java<input type="checkbox" />JavaScript<input
+        type="checkbox" />C++<br/>
+    国籍：<select>
+    <option>--请选择国籍--</option>
+    <option selected="selected">中国</option>
+    <option>美国</option>
+    <option>小日本</option>
+</select><br/>
+    自我评价：<textarea rows="10" cols="20">我才是默认值</textarea><br/>
+    <input type="reset" value="abc" />
+    <input type="submit"/>
+</form>
+
+<form>
+    <h1 align="center">用户注册</h1>
+    <table align="center">
+        <tr>
+            <td> 用户名称：</td>
+            <td>
+                <input type="text" value="默认值"/>
+            </td>
+        </tr>
+        <tr>
+            <td> 用户密码：</td>
+            <td><input type="password" value="abc"/></td>
+        </tr>
+        <tr>
+            <td>确认密码：</td>
+            <td><input type="password" value="abc"/></td>
+        </tr>
+        <tr>
+            <td>性别：</td>
+            <td>
+                <input type="radio" name="sex"/>男
+                <input type="radio" name="sex" checked="checked" />女
+            </td>
+        </tr>
+        <tr>
+            <td> 兴趣爱好：</td>
+            <td>
+                <input type="checkbox" checked="checked" />Java
+                <input type="checkbox" />JavaScript
+                <input type="checkbox" />C++
+            </td>
+        </tr>
+        <tr>
+            <td>国籍：</td>
+            <td>
+                <select>
+                    <option>--请选择国籍--</option>
+                    <option selected="selected">中国</option>
+                    <option>美国</option>
+                    <option>小日本</option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td>自我评价：</td>
+            <td><textarea rows="10" cols="20">我才是默认值</textarea></td>
+        </tr>
+        <tr>
+            <td><input type="reset" /></td>
+            <td align="center"><input type="submit"/></td>
+        </tr>
+    </table>
+</form>
+</body>
+</body>
+</html>

@@ -3,4 +3,121 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd"
          version="4.0">
+    <context-param>
+        <param-name>contextUserName</param-name>
+        <param-value>contextUserNameValue</param-value>
+    </context-param>
+    <context-param>
+        <param-name>contextUrl</param-name>
+        <param-value>contextUrlValue</param-value>
+    </context-param>
+
+    <!-- servlet 标签给 Tomcat 配置 Servlet 程序 -->
+    <servlet>
+        <!--servlet-name 标签 Servlet 程序起一个别名（一般是类名） -->
+        <servlet-name>HelloServlet2</servlet-name>
+        <!--servlet-class 是 Servlet 程序的全类名-->
+        <servlet-class>com.example.java_web.HelloServlet2</servlet-class>
+        <!--init-param 是初始化参数-->
+        <init-param>
+            <!--是参数名-->
+            <param-name>username</param-name>
+            <!--是参数值-->
+            <param-value>root</param-value>
+        </init-param>
+        <!--init-param 是初始化参数-->
+        <init-param>
+            <!--是参数名-->
+            <param-name>url</param-name>
+            <!--是参数值-->
+            <param-value>jdbc:mysql://localhost:3306/test</param-value>
+        </init-param>
+    </servlet>
+    <!--servlet-mapping 标签给 servlet 程序配置访问地址-->
+    <servlet-mapping>
+        <!--servlet-name 标签的作用是告诉服务器，我当前配置的地址给哪个 Servlet 程序使用-->
+        <servlet-name>HelloServlet2</servlet-name>
+        <!--url-pattern 标签配置访问地址 <br/>
+        / 斜杠在服务器解析的时候，表示地址为：http://ip:port/工程路径 <br/>
+        /hello 表示地址为：http://ip:port/工程路径/hello <br/>
+        -->
+        <url-pattern>/hello2</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>HelloServlet3</servlet-name>
+        <servlet-class>com.example.java_web.HelloServlet3</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>HelloServlet3</servlet-name>
+        <url-pattern>/hello3</url-pattern>
+    </servlet-mapping>
+
+
+    <servlet>
+        <servlet-name>ServletContextServlet</servlet-name>
+        <servlet-class>com.example.java_web.ServletContextServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ServletContextServlet</servlet-name>
+        <url-pattern>/servletContextServlet</url-pattern>
+    </servlet-mapping>
+
+    <!--context-param 是上下文参数(它属于整个 web 工程)-->
+    <context-param>
+        <param-name>username</param-name>
+        <param-value>context</param-value>
+    </context-param>
+    <!--context-param 是上下文参数(它属于整个 web 工程)-->
+    <context-param>
+        <param-name>password</param-name>
+        <param-value>root</param-value>
+    </context-param>
+
+
+    <servlet>
+        <servlet-name>HttpServletRequestServlet</servlet-name>
+        <servlet-class>com.example.java_web.HttpServletRequestServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>HttpServletRequestServlet</servlet-name>
+        <url-pattern>/httpServletRequestServlet</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>HttpServletResponseServlet</servlet-name>
+        <servlet-class>com.example.java_web.HttpServletResponseServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>HttpServletResponseServlet</servlet-name>
+        <url-pattern>/httpServletResponseServlet</url-pattern>
+    </servlet-mapping>
+
+
+    <servlet>
+        <servlet-name>UploadServletTest</servlet-name>
+        <servlet-class>com.example.java_web.UploadServletTest</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>UploadServletTest</servlet-name>
+        <url-pattern>/uploadServlet</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>DownloadServlet</servlet-name>
+        <servlet-class>com.example.java_web.DownloadServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>DownloadServlet</servlet-name>
+        <url-pattern>/downloadServlet</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>CookieServlet</servlet-name>
+        <servlet-class>com.example.java_web.CookieServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>CookieServlet</servlet-name>
+        <url-pattern>/cookieServlet</url-pattern>
+    </servlet-mapping>
 </web-app>

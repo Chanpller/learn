@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script type="text/javascript" src="../js/jquery-1.7.2.js"></script>
+    <script type="text/javascript">
+        $(function (){
+            //id选择器
+            alert($("#notMe").text())
+            //组合选择器
+            alert($("#notMe,#myDiv").text())
+        });
+    </script>
+</head>
+<body>
+<div id="notMe"><p>id="notMe"</p></div>
+<div id="myDiv">id="myDiv"</div>
+
+</body>
+</html>
