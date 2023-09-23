@@ -1,10 +1,62 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="ArtifactsWorkspaceSettings">
+    <artifacts-to-build>
+      <artifact name="java_web:war exploded" />
+    </artifacts-to-build>
+  </component>
   <component name="AutoImportSettings">
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ad105765-8c24-4f15-978c-43930f54c0e0" name="Changes" comment="添加mysql性能分析工具" />
+    <list default="true" id="ad105765-8c24-4f15-978c-43930f54c0e0" name="Changes" comment="添加mysql性能分析工具">
+      <change afterPath="$PROJECT_DIR$/java_web/1.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/note/第13章-Cookie.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/note/第14章-Session.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/src/books.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/src/main/java/com/example/java_web/BaseServlet.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/src/main/java/com/example/java_web/CookieServlet.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/src/main/java/com/example/java_web/DownloadServlet.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/src/main/java/com/example/java_web/HelloServlet2.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/src/main/java/com/example/java_web/HelloServlet3.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/src/main/java/com/example/java_web/HttpServletRequestServlet.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/src/main/java/com/example/java_web/HttpServletResponseServlet.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/src/main/java/com/example/java_web/ServletContextServlet.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/src/main/java/com/example/java_web/SessionServlet.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/src/main/java/com/example/java_web/TestBeanUtils.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/src/main/java/com/example/java_web/TestDom4j.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/src/main/java/com/example/java_web/UploadServletTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/src/main/java/com/example/java_web/model/Person.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/src/main/java/com/example/java_web/model/Student.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/src/main/webapp/ExpressionLanguageTest.jsp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/src/main/webapp/JstlTest.jsp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/src/main/webapp/OutAndResponseWriter.jsp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/src/main/webapp/TestJsp.jsp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/src/main/webapp/TestJspScript.jsp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/src/main/webapp/TestPageJsp.jsp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/src/main/webapp/UploadJsp.jsp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/src/main/webapp/error500.jsp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/src/main/webapp/html/AttrScreenr.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/src/main/webapp/html/BaseSelector.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/src/main/webapp/html/LevelSelector.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/src/main/webapp/html/TestHtml.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/src/main/webapp/include/footer.jsp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/src/main/webapp/include/main.jsp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/src/main/webapp/js/jquery-1.7.2.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/src/main/webapp/scope.jsp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/src/main/webapp/scope2.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/jarRepositories.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/jarRepositories.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/java_web/note/第0章-代码使用技巧.md" beforeDir="false" afterPath="$PROJECT_DIR$/java_web/note/第0章-代码使用技巧.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/java_web/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/java_web/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/java_web/src/main/java/com/example/java_web/HelloApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/java_web/src/main/java/com/example/java_web/HelloApplication.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/java_web/src/main/java/com/example/java_web/HelloResource.java" beforeDir="false" afterPath="$PROJECT_DIR$/java_web/src/main/java/com/example/java_web/HelloResource.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/java_web/src/main/java/com/example/java_web/HelloServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/java_web/src/main/java/com/example/java_web/HelloServlet.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/java_web/src/main/resources/META-INF/beans.xml" beforeDir="false" afterPath="$PROJECT_DIR$/java_web/src/main/resources/META-INF/beans.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/java_web/src/main/resources/META-INF/persistence.xml" beforeDir="false" afterPath="$PROJECT_DIR$/java_web/src/main/resources/META-INF/persistence.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/java_web/src/main/webapp/WEB-INF/web.xml" beforeDir="false" afterPath="$PROJECT_DIR$/java_web/src/main/webapp/WEB-INF/web.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/java_web/src/main/webapp/index.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/java_web/src/main/webapp/index.jsp" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -28,12 +80,19 @@
       <filtered-out-file-type name="COMMIT_BY_MESSAGE" />
     </file-type-list>
   </component>
+  <component name="LogFilters">
+    <option name="FILTER_ERRORS" value="false" />
+    <option name="FILTER_WARNINGS" value="false" />
+    <option name="FILTER_INFO" value="true" />
+    <option name="FILTER_DEBUG" value="true" />
+    <option name="CUSTOM_FILTER" />
+  </component>
   <component name="MavenImportPreferences">
     <option name="generalSettings">
       <MavenGeneralSettings>
-        <option name="localRepository" value="E:\maven" />
-        <option name="mavenHome" value="$PROJECT_DIR$/../../apache-maven-3.6.3" />
-        <option name="userSettingsFile" value="E:\apache-maven-3.6.3\conf\settings.xml" />
+        <option name="localRepository" value="D:\maven" />
+        <option name="mavenHome" value="$PROJECT_DIR$/../../soft/apache-maven-3.6.3" />
+        <option name="userSettingsFile" value="D:\soft\apache-maven-3.6.3\conf\settings.xml" />
       </MavenGeneralSettings>
     </option>
   </component>
@@ -62,7 +121,7 @@
     <property name="project.structure.last.edited" value="Modules" />
     <property name="project.structure.proportion" value="0.15" />
     <property name="project.structure.side.proportion" value="0.2" />
-    <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
+    <property name="settings.editor.selected.configurable" value="preferences.applicationServers" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -159,19 +218,85 @@
       </method>
     </configuration>
     <configuration name="Tomcat 8.0.26" type="#com.intellij.j2ee.web.tomcat.TomcatRunConfigurationFactory" factoryName="Local" APPLICATION_SERVER_NAME="Tomcat 8.0.26" ALTERNATIVE_JRE_ENABLED="false">
+      <option name="OPEN_IN_BROWSER_URL" value="http://localhost:8080/java_web/" />
       <deployment>
         <artifact name="java_web:war exploded">
           <settings>
-            <option name="CONTEXT_PATH" value="/java_web_war_exploded" />
+            <option name="CONTEXT_PATH" value="/java_web" />
           </settings>
         </artifact>
       </deployment>
-      <server-settings />
+      <server-settings>
+        <option name="BASE_DIRECTORY_NAME" value="217d1ab0-a4e2-43c0-b500-99c535e43efb" />
+      </server-settings>
       <predefined_log_file enabled="true" id="Tomcat" />
       <predefined_log_file enabled="true" id="Tomcat Catalina" />
       <predefined_log_file id="Tomcat Manager" />
       <predefined_log_file id="Tomcat Host Manager" />
       <predefined_log_file id="Tomcat Localhost Access" />
+      <RunnerSettings RunnerId="Debug">
+        <option name="DEBUG_PORT" value="3241" />
+      </RunnerSettings>
+      <ConfigurationWrapper VM_VAR="JAVA_OPTS" RunnerId="Cover">
+        <option name="USE_ENV_VARIABLES" value="true" />
+        <STARTUP>
+          <option name="USE_DEFAULT" value="true" />
+          <option name="SCRIPT" value="" />
+          <option name="VM_PARAMETERS" value="" />
+          <option name="PROGRAM_PARAMETERS" value="" />
+        </STARTUP>
+        <SHUTDOWN>
+          <option name="USE_DEFAULT" value="true" />
+          <option name="SCRIPT" value="" />
+          <option name="VM_PARAMETERS" value="" />
+          <option name="PROGRAM_PARAMETERS" value="" />
+        </SHUTDOWN>
+      </ConfigurationWrapper>
+      <ConfigurationWrapper VM_VAR="JAVA_OPTS" RunnerId="Debug">
+        <option name="USE_ENV_VARIABLES" value="true" />
+        <STARTUP>
+          <option name="USE_DEFAULT" value="true" />
+          <option name="SCRIPT" value="" />
+          <option name="VM_PARAMETERS" value="" />
+          <option name="PROGRAM_PARAMETERS" value="" />
+        </STARTUP>
+        <SHUTDOWN>
+          <option name="USE_DEFAULT" value="true" />
+          <option name="SCRIPT" value="" />
+          <option name="VM_PARAMETERS" value="" />
+          <option name="PROGRAM_PARAMETERS" value="" />
+        </SHUTDOWN>
+      </ConfigurationWrapper>
+      <ConfigurationWrapper VM_VAR="JAVA_OPTS" RunnerId="Profile">
+        <option name="USE_ENV_VARIABLES" value="true" />
+        <STARTUP>
+          <option name="USE_DEFAULT" value="true" />
+          <option name="SCRIPT" value="" />
+          <option name="VM_PARAMETERS" value="" />
+          <option name="PROGRAM_PARAMETERS" value="" />
+        </STARTUP>
+        <SHUTDOWN>
+          <option name="USE_DEFAULT" value="true" />
+          <option name="SCRIPT" value="" />
+          <option name="VM_PARAMETERS" value="" />
+          <option name="PROGRAM_PARAMETERS" value="" />
+        </SHUTDOWN>
+      </ConfigurationWrapper>
+      <ConfigurationWrapper VM_VAR="JAVA_OPTS" RunnerId="Run">
+        <option name="USE_ENV_VARIABLES" value="true" />
+        <STARTUP>
+          <option name="USE_DEFAULT" value="true" />
+          <option name="SCRIPT" value="" />
+          <option name="VM_PARAMETERS" value="" />
+          <option name="PROGRAM_PARAMETERS" value="" />
+        </STARTUP>
+        <SHUTDOWN>
+          <option name="USE_DEFAULT" value="true" />
+          <option name="SCRIPT" value="" />
+          <option name="VM_PARAMETERS" value="" />
+          <option name="PROGRAM_PARAMETERS" value="" />
+        </SHUTDOWN>
+      </ConfigurationWrapper>
       <method v="2">
         <option name="Make" enabled="true" />
         <option name="BuildArtifacts" enabled="true">
@@ -179,6 +304,14 @@
         </option>
       </method>
     </configuration>
+    <list>
+      <item itemvalue="Application.BubbleSort" />
+      <item itemvalue="Application.HeapSort" />
+      <item itemvalue="Application.HeapSort (1)" />
+      <item itemvalue="Application.Test" />
+      <item itemvalue="Application.Unnamed" />
+      <item itemvalue="Tomcat Server.Tomcat 8.0.26" />
+    </list>
     <recent_temporary>
       <list>
         <item itemvalue="Application.Unnamed" />
@@ -344,6 +477,8 @@
       <workItem from="1695396953909" duration="987000" />
       <workItem from="1695398219442" duration="162000" />
       <workItem from="1695398917617" duration="301000" />
+      <workItem from="1695478932566" duration="37000" />
+      <workItem from="1695479024874" duration="3772000" />
     </task>
     <task id="LOCAL-00036" summary="增加集合、数据结构">
       <created>1673150303638</created>
@@ -734,6 +869,17 @@
     <MESSAGE value="添加mysql索引的创建，性能分析工具" />
     <MESSAGE value="添加mysql性能分析工具" />
     <option name="LAST_COMMIT_MESSAGE" value="添加mysql性能分析工具" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/java_web/src/main/java/com/example/java_web/CookieServlet.java</url>
+          <line>23</line>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />
