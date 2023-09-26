@@ -120,4 +120,21 @@
         <servlet-name>CookieServlet</servlet-name>
         <url-pattern>/cookieServlet</url-pattern>
     </servlet-mapping>
+
+    <filter>
+        <filter-name>TestFilter</filter-name>
+        <filter-class>com.example.java_web.FilterTest</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>TestFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+    <filter>
+        <filter-name>Test2Filter</filter-name>
+        <filter-class>com.example.java_web.Filter2Test</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>Test2Filter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
 </web-app>

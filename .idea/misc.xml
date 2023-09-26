@@ -13,13 +13,13 @@
         <option value="$PROJECT_DIR$/pom.xml" />
         <option value="$PROJECT_DIR$/elasticsearch/pom.xml" />
         <option value="$PROJECT_DIR$/java_base/pom.xml" />
-        <option value="$PROJECT_DIR$/java_web/pom.xml" />
         <option value="$PROJECT_DIR$/java_code/pom.xml" />
         <option value="$PROJECT_DIR$/jdbc/pom.xml" />
         <option value="$PROJECT_DIR$/mysql/pom.xml" />
         <option value="$PROJECT_DIR$/oracle/pom.xml" />
         <option value="$PROJECT_DIR$/spring/pom.xml" />
         <option value="$PROJECT_DIR$/tool/pom.xml" />
+        <option value="$PROJECT_DIR$/java_web/pom.xml" />
       </list>
     </option>
   </component>
