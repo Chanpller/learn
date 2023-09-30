@@ -116,11 +116,19 @@
         <servlet-name>CookieServlet</servlet-name>
         <servlet-class>com.example.java_web.CookieServlet</servlet-class>
     </servlet>
+
     <servlet-mapping>
         <servlet-name>CookieServlet</servlet-name>
         <url-pattern>/cookieServlet</url-pattern>
     </servlet-mapping>
-
+    <servlet>
+        <servlet-name>AjaxServlet</servlet-name>
+        <servlet-class>com.example.java_web.ajax.AjaxServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>AjaxServlet</servlet-name>
+        <url-pattern>/ajaxServlet</url-pattern>
+    </servlet-mapping>
     <filter>
         <filter-name>TestFilter</filter-name>
         <filter-class>com.example.java_web.FilterTest</filter-class>
