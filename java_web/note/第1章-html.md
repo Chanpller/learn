@@ -177,7 +177,10 @@ _blank 表示打开新页面来进行跳转
 ```html
 <body>
 <!--需求1：使用无序，列表方式，把东北F4，赵四，刘能，小沈阳，宋小宝，展示出来
+ol 有序列表
+	ol标签属性有：start 表示从*开始，type 显示的类型：A a I i 1(deafult)
 ul 是无序列表
+	ul标签属性有：type，值有：disc(default)<圆点> , circle<圆圈>, square<正方块>
 type 属性可以修改列表项前面的符号
 li 是列表项
 -->
