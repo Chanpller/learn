@@ -1,14 +1,42 @@
 window.onload=function (){
     var rows = $("tbl_fruit").rows;
     for (let i = 1; i < rows.length-1; i++) {
-        rows[i].onmouseover =showBGColor;
-        rows[i].onmouseout =clearBGColor;
 
-        var cells = rows[i].cells;
-        cells[1].onmouseover =showHand;
-        cells[1].onclick = editPrice;
+        bingEvent( rows[i]);
     }
+    var addBtn = $("addBtn");
+    addBtn.onclick = addBtnOnclick;
+    var retsetBtn = $("retsetBtn");
 
+}
+function addBtnOnclick(id){
+    var fname = $("fname");
+    var price = $("price");
+    var fcount = $("fcount");
+    var rows = $("tbl_fruit").rows;
+    var myNewRow  = $("tbl_fruit").insertRow(rows.length-1);
+    var myNewCell1 = myNewRow.insertCell(0);
+    myNewCell1.innerText = fname.value;
+    var myNewCell2 = myNewRow.insertCell(1);
+    myNewCell2.innerText = price.value;
+    var myNewCell3 = myNewRow.insertCell(2);
+    myNewCell3.innerText = fcount.value;
+
+    var myNewCell4 = myNewRow.insertCell(3);
+    myNewCell4.innerText = parseInt(price.value)* parseInt(fcount.value);
+
+    var myNewCell5 = myNewRow.insertCell(4);
+    myNewCell5.innerHTML = '<img src="del.jpg" class="delImg"/>';
+    bingEvent( myNewRow);
+    updateZJ();
+}
+
+function bingEvent(row){
+    row.onmouseover =showBGColor;
+    row.onmouseout =clearBGColor;
+    var cells = row.cells;
+    cells[1].onmouseover =showHand;
+    cells[1].onclick = editPrice;
 }
 function $(id){
     return document.getElementById(id);

@@ -9,7 +9,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ad105765-8c24-4f15-978c-43930f54c0e0" name="Changes" comment="增加项目结构" />
+    <list default="true" id="ad105765-8c24-4f15-978c-43930f54c0e0" name="Changes" comment="增加项目结构">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/java_web/java_web.iml" beforeDir="false" afterPath="$PROJECT_DIR$/java_web/java_web.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/java_web/src/main/webapp/java_web_2022/testjs/TestJs.html" beforeDir="false" afterPath="$PROJECT_DIR$/java_web/src/main/webapp/java_web_2022/testjs/TestJs.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/java_web/src/main/webapp/java_web_2022/testjs/testjs.js" beforeDir="false" afterPath="$PROJECT_DIR$/java_web/src/main/webapp/java_web_2022/testjs/testjs.js" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -74,7 +79,7 @@
     <property name="project.structure.last.edited" value="Modules" />
     <property name="project.structure.proportion" value="0.15" />
     <property name="project.structure.side.proportion" value="0.44344905" />
-    <property name="settings.editor.selected.configurable" value="preferences.applicationServers" />
+    <property name="settings.editor.selected.configurable" value="org.jetbrains.plugins.github.ui.GithubSettingsConfigurable" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -428,6 +433,8 @@
       <workItem from="1695737913723" duration="1592000" />
       <workItem from="1695740178312" duration="1633000" />
       <workItem from="1696853543252" duration="2108000" />
+      <workItem from="1696863796823" duration="1155000" />
+      <workItem from="1696865503379" duration="1641000" />
     </task>
     <task id="LOCAL-00038" summary="修改集合代码">
       <created>1674010427737</created>
