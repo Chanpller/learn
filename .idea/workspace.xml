@@ -11,7 +11,6 @@
   <component name="ChangeListManager">
     <list default="true" id="ad105765-8c24-4f15-978c-43930f54c0e0" name="Changes" comment="增加项目结构">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/java_web/java_web.iml" beforeDir="false" afterPath="$PROJECT_DIR$/java_web/java_web.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/java_web/src/main/webapp/java_web_2022/testjs/TestJs.html" beforeDir="false" afterPath="$PROJECT_DIR$/java_web/src/main/webapp/java_web_2022/testjs/TestJs.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/java_web/src/main/webapp/java_web_2022/testjs/testjs.js" beforeDir="false" afterPath="$PROJECT_DIR$/java_web/src/main/webapp/java_web_2022/testjs/testjs.js" afterDir="false" />
     </list>
