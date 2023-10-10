@@ -1,0 +1,38 @@
+<html lang="en" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <base href="http://localhost:8080/java_web/java_web_2022/thymeleaf/">
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="testCss.css">
+    <script type="text/javascript" src="testjs.js"></script>
+</head>
+<body>
+<div id="div_container">
+    <div id="div_fruit_list">
+        <table id="tbl_fruit">
+            <tr>
+                <th class="w20">名称</th>
+                <th class="w20">单价</th>
+                <th class="w20">数量</th>
+                <th class="w20">小计</th>
+                <th>操作</th>
+            </tr>
+            <tr th:if="${#lists.isEmpty(session.fruitList)}">
+                <td colspan="5">对不起，库存为空！</td>
+            </tr>
+            <tr th:unless="${#lists.isEmpty(session.fruitList)}" th:each="fruit : ${session.fruitList}">
+                <td th:text="${fruit.fname}"></td>
+                <td th:text="${fruit.price}"></td>
+                <td th:text="${fruit.fcount}"></td>
+                <td th:text="${fruit.fcount*fruit.price}"></td>
+                <td><img src="del.jpg" class="delImg"/></td>
+            </tr>
+            <tr>
+                <td>总计</td>
+                <td colspan="4">999</td>
+            </tr>
+        </table>
+        <hr/>
+    </div>
+</div>
+</body>
+</html>
