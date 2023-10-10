@@ -99,6 +99,11 @@ web.xml配置
 - 4、执行 destroy 销毁方法
   * 第四步，在 web 工程停止的时候调用。
 
+每个Servlet在Tomcat容器中只有一个实例，它是线程不安全的
+
+* Servlet的启动时机：web.xml中配置<load-on-startup>，值越小表示启动时越快创建servlet（不用等待请求时才创建）。
+* Servlet3.0开始支持注解: @WebServlet
+
 ### 7.7.4 GET 和 POST 请求的分发处理
 
 * 将ServletRequest转化为HttpServletRequest
