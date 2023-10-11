@@ -9,10 +9,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ad105765-8c24-4f15-978c-43930f54c0e0" name="Changes" comment="增加项目结构">
+    <list default="true" id="ad105765-8c24-4f15-978c-43930f54c0e0" name="Changes" comment="增加thymeleaf，更新代码">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/java_web/src/main/webapp/java_web_2022/testjs/TestJs.html" beforeDir="false" afterPath="$PROJECT_DIR$/java_web/src/main/webapp/java_web_2022/testjs/TestJs.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/java_web/src/main/webapp/java_web_2022/testjs/testjs.js" beforeDir="false" afterPath="$PROJECT_DIR$/java_web/src/main/webapp/java_web_2022/testjs/testjs.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/java_web/src/main/java/chapter19/thymeleaf/fruit/sql/db.sql" beforeDir="false" afterPath="$PROJECT_DIR$/java_web/src/main/java/chapter19/thymeleaf/fruit/sql/db.sql" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -66,7 +65,6 @@
     <property name="DatabaseDriversLRU" value="mysql" />
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
-    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="jdk.selected.JAVA_MODULE" value="1.8" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/vue" />
@@ -434,27 +432,8 @@
       <workItem from="1696853543252" duration="2108000" />
       <workItem from="1696863796823" duration="1155000" />
       <workItem from="1696865503379" duration="1641000" />
-    </task>
-    <task id="LOCAL-00038" summary="修改集合代码">
-      <created>1674010427737</created>
-      <option name="number" value="00038" />
-      <option name="presentableId" value="LOCAL-00038" />
-      <option name="project" value="LOCAL" />
-      <updated>1674010427737</updated>
-    </task>
-    <task id="LOCAL-00039" summary="泛型">
-      <created>1674049651289</created>
-      <option name="number" value="00039" />
-      <option name="presentableId" value="LOCAL-00039" />
-      <option name="project" value="LOCAL" />
-      <updated>1674049651289</updated>
-    </task>
-    <task id="LOCAL-00040" summary="IO流概述、分类，节点流、缓冲流、转换流、标准输入输出流、数据流、对象流。">
-      <created>1675907880720</created>
-      <option name="number" value="00040" />
-      <option name="presentableId" value="LOCAL-00040" />
-      <option name="project" value="LOCAL" />
-      <updated>1675907880720</updated>
+      <workItem from="1696947046808" duration="1215000" />
+      <workItem from="1696953438319" duration="440000" />
     </task>
     <task id="LOCAL-00041" summary="NIO，ES相关">
       <created>1677597287766</created>
@@ -778,7 +757,28 @@
       <option name="project" value="LOCAL" />
       <updated>1696861027526</updated>
     </task>
-    <option name="localTasksCounter" value="87" />
+    <task id="LOCAL-00087" summary="增加thymeleaf，更新代码">
+      <created>1696939342217</created>
+      <option name="number" value="00087" />
+      <option name="presentableId" value="LOCAL-00087" />
+      <option name="project" value="LOCAL" />
+      <updated>1696939342217</updated>
+    </task>
+    <task id="LOCAL-00088" summary="增加thymeleaf，更新代码">
+      <created>1696939365660</created>
+      <option name="number" value="00088" />
+      <option name="presentableId" value="LOCAL-00088" />
+      <option name="project" value="LOCAL" />
+      <updated>1696939365660</updated>
+    </task>
+    <task id="LOCAL-00089" summary="增加thymeleaf，更新代码">
+      <created>1696939377813</created>
+      <option name="number" value="00089" />
+      <option name="presentableId" value="LOCAL-00089" />
+      <option name="project" value="LOCAL" />
+      <updated>1696939377814</updated>
+    </task>
+    <option name="localTasksCounter" value="90" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -798,7 +798,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
-    <MESSAGE value="反射，动态代理，lambda表达式" />
     <MESSAGE value="数组增加选择、堆、冒泡排序的内容。java8新特性增加 方法引用、构造器、数组引用" />
     <MESSAGE value="JAVA9-11新特性" />
     <MESSAGE value="IEAD设置和快捷键" />
@@ -823,7 +822,8 @@
     <MESSAGE value="添加mysql索引的创建，性能分析工具" />
     <MESSAGE value="添加mysql性能分析工具" />
     <MESSAGE value="增加项目结构" />
-    <option name="LAST_COMMIT_MESSAGE" value="增加项目结构" />
+    <MESSAGE value="增加thymeleaf，更新代码" />
+    <option name="LAST_COMMIT_MESSAGE" value="增加thymeleaf，更新代码" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
