@@ -285,28 +285,30 @@ index.html页面
 
 * 表达式的类型
   - @{}：给传入的字符串前面附加**『上下文路径』**
+    - 通过（key=value）给请求uri传参
   
 ```html
    <a th:href="@{/java_web_2022/thymeleaf/add.html}" >添加水果</a>
   在请求路径上添加项目的请求路径，比如上面结果：会加上http://localhost:8080/java_web，a标签的href属性值为http://localhost:8080/java_web/java_web_2022/thymeleaf/add.html
-  ```
-  
+
+<a th:href="@{/fruit.do(fid=${fruit.fid},action='edit')}" th:text="${fruit.fname}" >
+    页面传参结使用(key1=value1,key2=value2）形式传参。上面结果href=http://localhost:8080/java_web/fruit.do?fid=1&action=edit
+```
+
   - ${}：解析OGNL表达式
-  
+
   ```html
   <input type="button" value="上一页" th:disabled="${page==1}" th:onclick="|loadPage(${page-1})|" >
   ${}可以做计算，得出正确的书，th:disabled="${page==1}得出的结果为disabled="true"或false
   ```
-  
+
   - 加上||可以使用表达式
-  
+
   ```html
   <img th:src="@{/java_web_2022/thymeleaf/del.jpg}" class="delImg" th:onclick="|deleteFruit(${fruit.fid})|" 
   onclick中使用双竖线可以解析thymeleaf内容，解析后结果为 onclick="deleteFruit(1)" 这种效果
   ```
-  
-  
-  
+
 * OGNL表达式
 
 OGNL：Objects-Graph Navigation Language对象图导航语言
