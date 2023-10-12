@@ -164,5 +164,68 @@
         <servlet-name>QueryFruitServlet</servlet-name>
         <url-pattern>/queryFruitServlet</url-pattern>
     </servlet-mapping>
+
+    <servlet>
+        <servlet-name>QueryPageFruitServlet</servlet-name>
+        <servlet-class>chapter19.thymeleaf.fruit.servlets.QueryPageFruitServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>QueryPageFruitServlet</servlet-name>
+        <url-pattern>/queryPageFruitServlet</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>AddFruitServlet</servlet-name>
+        <servlet-class>chapter19.thymeleaf.fruit.servlets.AddFruitServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>AddFruitServlet</servlet-name>
+        <url-pattern>/addFruitServlet</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>DeleteFruitServlet</servlet-name>
+        <servlet-class>chapter19.thymeleaf.fruit.servlets.DeleteFruitServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>DeleteFruitServlet</servlet-name>
+        <url-pattern>/deleteFruitServlet</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>EditFruitServlet</servlet-name>
+        <servlet-class>chapter19.thymeleaf.fruit.servlets.EditFruitServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>EditFruitServlet</servlet-name>
+        <url-pattern>/editFruitServlet</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>UpdateFruitServlet</servlet-name>
+        <servlet-class>chapter19.thymeleaf.fruit.servlets.UpdateFruitServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>UpdateFruitServlet</servlet-name>
+        <url-pattern>/updateFruitServlet</url-pattern>
+    </servlet-mapping>
     <!-- thymeleaf end-->
+    <!-- dispatch start-->
+    <context-param>
+        <param-name>disaptch-view-prefix</param-name>
+        <param-value>/java_web_2022/dispatch/</param-value>
+    </context-param>
+    <context-param>
+        <param-name>disaptch-view-suffix</param-name>
+        <param-value>.html</param-value>
+    </context-param>
+    <servlet>
+        <servlet-name>DispatchServlet</servlet-name>
+        <servlet-class>chapter19.thymeleaf.fruit.controller.DispatchServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>DispatchServlet</servlet-name>
+        <url-pattern>*.do</url-pattern>
+    </servlet-mapping>
+    <!-- dispatch end-->
 </web-app>

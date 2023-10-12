@@ -9,9 +9,78 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ad105765-8c24-4f15-978c-43930f54c0e0" name="Changes" comment="增加thymeleaf，更新代码">
+    <list default="true" id="ad105765-8c24-4f15-978c-43930f54c0e0" name="Changes" comment="java_web2022页面操作测试代码">
+      <change afterPath="$PROJECT_DIR$/.idea/uiDesigner.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/src/main/java/chapter19/thymeleaf/fruit/controller/DispatchServlet.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/src/main/java/chapter19/thymeleaf/fruit/controller/FruitController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/src/main/java/chapter19/thymeleaf/fruit/servlets/AddFruitServlet.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/src/main/java/chapter19/thymeleaf/fruit/servlets/DeleteFruitServlet.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/src/main/java/chapter19/thymeleaf/fruit/servlets/EditFruitServlet.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/src/main/java/chapter19/thymeleaf/fruit/servlets/QueryPageFruitServlet.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/src/main/java/chapter19/thymeleaf/fruit/servlets/UpdateFruitServlet.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/src/main/java/common/myssm/myspringmvc/DispatchViewBaseServlet.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/src/main/resources/application.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/src/main/webapp/java_web_2022/dispatch/add.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/src/main/webapp/java_web_2022/dispatch/del.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/src/main/webapp/java_web_2022/dispatch/edit.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/src/main/webapp/java_web_2022/dispatch/index.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/src/main/webapp/java_web_2022/dispatch/testCss.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/src/main/webapp/java_web_2022/dispatch/testjs.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/src/main/webapp/java_web_2022/thymeleaf/add.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/src/main/webapp/java_web_2022/thymeleaf/edit.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/src/main/webapp/java_web_2022/thymeleaf/indexPage.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__apache_log4j_log4j_1_2_15.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__apache_log4j_log4j_1_2_15.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__com_google_code_gson_gson_2_8_9.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_google_code_gson_gson_2_8_9.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__com_google_protobuf_protobuf_java_3_19_4.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_google_protobuf_protobuf_java_3_19_4.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__com_sun_mail_javax_mail_1_6_2.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_sun_mail_javax_mail_1_6_2.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__commons_beanutils_commons_beanutils_1_8_0.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__commons_beanutils_commons_beanutils_1_8_0.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__commons_fileupload_commons_fileupload_1_2_1.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__commons_fileupload_commons_fileupload_1_2_1.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__commons_io_commons_io_1_4.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__commons_io_commons_io_1_4.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__commons_logging_commons_logging_1_1_1.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__commons_logging_commons_logging_1_1_1.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__dom4j_dom4j_1_6_1.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__dom4j_dom4j_1_6_1.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__jakarta_el_jakarta_el_api_4_0_0.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__jakarta_el_jakarta_el_api_4_0_0.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__javax_activation_activation_1_1.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__javax_activation_activation_1_1.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__javax_javaee_api_8_0_1.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__javax_javaee_api_8_0_1.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__junit_junit_4_13_2.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__junit_junit_4_13_2.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__log4j_log4j_1_2_17.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__log4j_log4j_1_2_17.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__mysql_mysql_connector_java_8_0_29.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__mysql_mysql_connector_java_8_0_29.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__ognl_ognl_3_1_26.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__ognl_ognl_3_1_26.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_taglibs_taglibs_standard_impl_1_2_1.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_taglibs_taglibs_standard_impl_1_2_1.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_taglibs_taglibs_standard_spec_1_2_1.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_taglibs_taglibs_standard_spec_1_2_1.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_tomcat_tomcat_api_8_0_26.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_tomcat_tomcat_api_8_0_26.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_tomcat_tomcat_el_api_8_0_26.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_tomcat_tomcat_el_api_8_0_26.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_tomcat_tomcat_jasper_8_0_26.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_tomcat_tomcat_jasper_8_0_26.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_tomcat_tomcat_jasper_el_8_0_26.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_tomcat_tomcat_jasper_el_8_0_26.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_tomcat_tomcat_jsp_api_8_0_26.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_tomcat_tomcat_jsp_api_8_0_26.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_tomcat_tomcat_juli_8_0_26.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_tomcat_tomcat_juli_8_0_26.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_tomcat_tomcat_servlet_api_8_0_26.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_tomcat_tomcat_servlet_api_8_0_26.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_tomcat_tomcat_util_8_0_26.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_tomcat_tomcat_util_8_0_26.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_tomcat_tomcat_util_scan_8_0_26.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_apache_tomcat_tomcat_util_scan_8_0_26.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_apiguardian_apiguardian_api_1_1_0.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_apiguardian_apiguardian_api_1_1_0.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_attoparser_attoparser_2_0_5_RELEASE.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_attoparser_attoparser_2_0_5_RELEASE.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_eclipse_jdt_core_compiler_ecj_4_4_2.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_eclipse_jdt_core_compiler_ecj_4_4_2.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_glassfish_jakarta_el_4_0_2.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_glassfish_jakarta_el_4_0_2.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_hamcrest_hamcrest_core_1_3.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_hamcrest_hamcrest_core_1_3.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_javassist_javassist_3_20_0_GA.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_javassist_javassist_3_20_0_GA.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_junit_jupiter_junit_jupiter_api_5_7_1.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_junit_jupiter_junit_jupiter_api_5_7_1.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_junit_jupiter_junit_jupiter_engine_5_7_1.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_junit_jupiter_junit_jupiter_engine_5_7_1.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_junit_platform_junit_platform_commons_1_7_1.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_junit_platform_junit_platform_commons_1_7_1.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_junit_platform_junit_platform_engine_1_7_1.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_junit_platform_junit_platform_engine_1_7_1.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_opentest4j_opentest4j_1_2_0.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_opentest4j_opentest4j_1_2_0.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_slf4j_slf4j_api_1_7_25.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_slf4j_slf4j_api_1_7_25.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_slf4j_slf4j_log4j12_1_7_25.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_slf4j_slf4j_log4j12_1_7_25.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_thymeleaf_thymeleaf_3_0_12_RELEASE.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_thymeleaf_thymeleaf_3_0_12_RELEASE.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_unbescape_unbescape_1_1_6_RELEASE.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_unbescape_unbescape_1_1_6_RELEASE.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__xml_apis_xml_apis_1_0_b2.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__xml_apis_xml_apis_1_0_b2.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/java_web/src/main/java/chapter19/thymeleaf/fruit/sql/db.sql" beforeDir="false" afterPath="$PROJECT_DIR$/java_web/src/main/java/chapter19/thymeleaf/fruit/sql/db.sql" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/java_web/note/第19章-thymeleaf.md" beforeDir="false" afterPath="$PROJECT_DIR$/java_web/note/第19章-thymeleaf.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/java_web/src/main/java/chapter19/thymeleaf/fruit/dao/FruitDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/java_web/src/main/java/chapter19/thymeleaf/fruit/dao/FruitDAO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/java_web/src/main/java/chapter19/thymeleaf/fruit/dao/impl/FruitDAOImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/java_web/src/main/java/chapter19/thymeleaf/fruit/dao/impl/FruitDAOImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/java_web/src/main/java/chapter19/thymeleaf/fruit/servlets/QueryFruitServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/java_web/src/main/java/chapter19/thymeleaf/fruit/servlets/QueryFruitServlet.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/java_web/src/main/webapp/WEB-INF/web.xml" beforeDir="false" afterPath="$PROJECT_DIR$/java_web/src/main/webapp/WEB-INF/web.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/java_web/src/main/webapp/java_web_2022/thymeleaf/testCss.css" beforeDir="false" afterPath="$PROJECT_DIR$/java_web/src/main/webapp/java_web_2022/thymeleaf/testCss.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/java_web/src/main/webapp/java_web_2022/thymeleaf/testjs.js" beforeDir="false" afterPath="$PROJECT_DIR$/java_web/src/main/webapp/java_web_2022/thymeleaf/testjs.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -65,9 +134,10 @@
     <property name="DatabaseDriversLRU" value="mysql" />
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="jdk.selected.JAVA_MODULE" value="1.8" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/vue" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/java_web/src/main/resources" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.tslint" value="true" />
     <property name="node.js.selected.package.eslint" value="(autodetect)" />
@@ -76,15 +146,15 @@
     <property name="project.structure.last.edited" value="Modules" />
     <property name="project.structure.proportion" value="0.15" />
     <property name="project.structure.side.proportion" value="0.44344905" />
-    <property name="settings.editor.selected.configurable" value="org.jetbrains.plugins.github.ui.GithubSettingsConfigurable" />
+    <property name="settings.editor.selected.configurable" value="reference.projectsettings.compiler.javacompiler" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\IdeaProjects\learn\java_web\src\main\resources" />
+      <recent name="D:\IdeaProjects\learn\java_web\src\main\webapp\java_web_2022\dispatch" />
+      <recent name="D:\IdeaProjects\learn\java_web\src\main\webapp\java_web_2022\thymeleaf" />
       <recent name="E:\ideaprojects\learn_local\vue\image" />
       <recent name="E:\ideaprojects\learn_local\vue\note" />
-      <recent name="E:\ideaprojects\learn_local\tool\note" />
-      <recent name="E:\ideaprojects\learn_local\spring\note" />
-      <recent name="E:\ideaprojects\learn_local\oracle\note" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="E:\ideaprojects\learn_local\java_base\note" />
@@ -94,6 +164,8 @@
       <recent name="com.chanpller.www" />
     </key>
     <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="common.myssm.myspringmvc" />
+      <recent name="chapter19.thymeleaf.fruit.servlets" />
       <recent name="com.example.java_web" />
     </key>
   </component>
@@ -434,6 +506,9 @@
       <workItem from="1696865503379" duration="1641000" />
       <workItem from="1696947046808" duration="1215000" />
       <workItem from="1696953438319" duration="440000" />
+      <workItem from="1697031546945" duration="4284000" />
+      <workItem from="1697040064002" duration="4184000" />
+      <workItem from="1697117514772" duration="8899000" />
     </task>
     <task id="LOCAL-00041" summary="NIO，ES相关">
       <created>1677597287766</created>
@@ -832,6 +907,11 @@
           <url>file://$PROJECT_DIR$/java_web/src/main/java/com/example/java_web/CookieServlet.java</url>
           <line>23</line>
           <option name="timeStamp" value="1" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/java_web/src/main/java/chapter19/thymeleaf/fruit/servlets/DeleteFruitServlet.java</url>
+          <line>15</line>
+          <option name="timeStamp" value="3" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

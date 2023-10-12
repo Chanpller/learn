@@ -1,0 +1,53 @@
+<html  xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" th:href="@{/java_web_2022/dispatch/testCss.css}">
+    <script type="text/javascript" th:src="@{/java_web_2022/dispatch/testjs.js}"></script>
+</head>
+<body>
+<div id="div_container">
+
+    <div id="div_fruit_list">
+        <p  style="text-align: center;font-size: 30px;">欢迎使用水果库存后台管理系统</p>
+        <div style="border:0px solid red;width:60%;margin-left:20%;text-align:right; " >
+            <a th:href="@{/java_web_2022/dispatch/add.html}"  style="float: right" >添加水果</a>
+            <form action="fruit.do?action=index&type=search" method="post" style="float: right">
+                <input type="text" name="keyword" >
+                <input type="submit" value="搜索">
+            </form>
+
+        </div>
+        <table id="tbl_fruit">
+            <tr>
+                <th class="w20">名称</th>
+                <th class="w20">单价</th>
+                <th class="w20">数量</th>
+                <th class="w20">小计</th>
+                <th>操作</th>
+            </tr>
+            <tr th:if="${#lists.isEmpty(session.fruitList)}">
+                <td colspan="5">对不起，库存为空！</td>
+            </tr>
+            <tr th:unless="${#lists.isEmpty(session.fruitList)}" th:each="fruit : ${session.fruitList}">
+                <td ><a th:href="@{/fruit.do(fid=${fruit.fid},action='edit')}" th:text="${fruit.fname}" ></a></td>
+                <td th:text="${fruit.price}"></td>
+                <td th:text="${fruit.fcount}"></td>
+                <td th:text="${fruit.fcount*fruit.price}"></td>
+                <td><img th:src="@{/java_web_2022/dispatch/del.jpg}" class="delImg" th:onclick="|deleteFruit(${fruit.fid})|" /></td>
+            </tr>
+            <tr>
+                <td>总计</td>
+                <td colspan="4">999</td>
+            </tr>
+        </table>
+        <hr/>
+    </div>
+    <div style="width: 100%;text-align: center;float: left;">
+        <input type="button" value="首页" th:disabled="${page==1}" onclick="loadPage(1)" >
+        <input type="button" value="上一页" th:disabled="${page==1}" th:onclick="|loadPage(${page-1})|" >
+        <input type="button" value="下一页" th:disabled="${page==(fruitListCount+4)/5}" th:onclick="|loadPage(${page+1})|" >
+        <input type="button" value="尾页" th:disabled="${page==(fruitListCount+4)/5}" th:onclick="|loadPage(${(fruitListCount+4)/5})|" >
+    </div>
+</div>
+</body>
+</html>

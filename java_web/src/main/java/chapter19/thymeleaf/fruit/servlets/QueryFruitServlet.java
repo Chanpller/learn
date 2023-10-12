@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.util.List;
 
 public class QueryFruitServlet extends ViewBaseServlet {
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         FruitDAO fruitDAO = new FruitDAOImpl();
