@@ -118,9 +118,15 @@ web.xml 配置：
 - Filter 过滤器
 - Chain 链，链条 
 - FilterChain 就是过滤器链（多个过滤器如何一起工作)
--  filterChain.doFilter(servletRequest,servletResponse);往下一个filter执行，如果没有filter就找对于的资源进行请求，
+- filterChain.doFilter(servletRequest,servletResponse);往下一个filter执行，如果没有filter就找对于的资源进行请求，
 - filter顺序按照web.xml的filter顺序进行匹配执行。
+- 如果是注解配置，按照Filter的类目进行排序匹配。
+```java
+//Filter注解方式配置，直接在类上添加WebFilter注解，WebFilter注解还可以添加初始化参数（WebInitParam类型的注解）
+@WebFilter(value = {"*.do"},initParams = {@WebInitParam(name="key",value = "value"),@WebInitParam(name="key2",value = "value2")})
+public class Filter01 implements Filter {
 
+```
 ![image-20230926225237487](./../image/image-20230926225237487.png)
 
 FilterTest.java
