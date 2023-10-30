@@ -10,6 +10,7 @@
         <module name="oracle" />
         <module name="elasticsearch" />
         <module name="java_base" />
+        <module name="qqzone" />
         <module name="jdbc" />
         <module name="mysql" />
         <module name="java_code" />
@@ -25,11 +26,24 @@
       <module name="jdbc" target="8" />
       <module name="mysql" target="8" />
       <module name="oracle" target="8" />
+      <module name="qqzone" target="1.8" />
       <module name="spring" target="8" />
       <module name="tool" target="8" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_STRING" value="-parameters" />
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="elasticsearch" options="" />
+      <module name="java_base" options="" />
+      <module name="java_code" options="" />
+      <module name="java_web" options="" />
+      <module name="jdbc" options="" />
+      <module name="mysql" options="" />
+      <module name="oracle" options="" />
+      <module name="qqzone" options="" />
+      <module name="spring" options="" />
+      <module name="tool" options="" />
+    </option>
   </component>
 </project>
