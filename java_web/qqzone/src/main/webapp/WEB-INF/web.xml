@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd"
+         version="4.0">
+    <context-param>
+        <param-name>contextConfigLocatio</param-name>
+        <param-value>applicationContext.xml</param-value>
+    </context-param>
+    <listener>
+        <listener-class>com.example.qqzone.myssm.Listeners.ContentListener</listener-class>
+    </listener>
+    <filter>
+        <filter-name>transactionFilter</filter-name>
+        <filter-class>com.example.qqzone.myssm.filter.TransactionFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>transactionFilter</filter-name>
+        <url-pattern>*.do</url-pattern>
+    </filter-mapping>
+    <servlet>
+        <servlet-name>dispatch</servlet-name>
+        <servlet-class>com.example.qqzone.myssm.myspringmvc.DispatchServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>dispatch</servlet-name>
+        <url-pattern>*.do</url-pattern>
+    </servlet-mapping>
+
+</web-app>
