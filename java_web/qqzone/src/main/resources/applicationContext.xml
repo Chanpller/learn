@@ -1,0 +1,41 @@
+<beans>
+    <bean id="page" class="com.example.qqzone.myssm.myspringmvc.PageContoller">
+    </bean>
+    <bean id="userDao" class="com.example.qqzone.dao.impl.UserDaoImpl">
+    </bean>
+    <bean id="replyDao" class="com.example.qqzone.dao.impl.ReplyDaoImpl">
+    </bean>
+    <bean id="hostReplyDao" class="com.example.qqzone.dao.impl.HostReplyDaoImpl">
+    </bean>
+    <bean id="topicDao" class="com.example.qqzone.dao.impl.TopicDaoImpl">
+    </bean>
+
+
+    <bean id="topicService" class="com.example.qqzone.service.impl.TopicServiceImpl">
+        <property name="topicDao" ref="topicDao"></property>
+        <property name="replyService" ref="replyService"></property>
+        <property name="userDao" ref="userDao"></property>
+    </bean>
+    <bean id="userService" class="com.example.qqzone.service.impl.UserServiceImpl">
+        <property name="userDao" ref="userDao"></property>
+    </bean>
+    <bean id="replyService" class="com.example.qqzone.service.impl.ReplyServiceImpl">
+        <property name="replyDao" ref="replyDao"></property>
+        <property name="userDao" ref="userDao"></property>
+        <property name="topicDao" ref="topicDao"></property>
+        <property name="hostReplyDao" ref="hostReplyDao"></property>
+    </bean>
+
+
+
+    <bean id="user" class="com.example.qqzone.controller.UserController">
+        <property name="userService" ref="userService"></property>
+        <property name="topicService" ref="topicService"></property>
+    </bean>
+    <bean id="topic" class="com.example.qqzone.controller.TopicController">
+        <property name="topicService" ref="topicService"></property>
+    </bean>
+    <bean id="reply" class="com.example.qqzone.controller.ReplyController">
+        <property name="replyService" ref="replyService"></property>
+    </bean>
+</beans>

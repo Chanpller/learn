@@ -1,5 +1,6 @@
 package com.example.qqzone.model;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 public class UserDetail {
@@ -7,7 +8,7 @@ public class UserDetail {
     private String realName ;
     private String tel ;
     private String email ;
-    private Date birth ;
+    private LocalDateTime birth ;
     private String star ;
     public UserDetail() {
     }
@@ -47,11 +48,11 @@ public class UserDetail {
         this.email = email;
     }
 
-    public Date getBirth() {
+    public LocalDateTime getBirth() {
         return birth;
     }
 
-    public void setBirth(Date birth) {
+    public void setBirth(LocalDateTime birth) {
         this.birth = birth;
     }
 

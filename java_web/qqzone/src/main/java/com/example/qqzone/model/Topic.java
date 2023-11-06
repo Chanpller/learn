@@ -1,5 +1,6 @@
 package com.example.qqzone.model;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -7,7 +8,7 @@ public class Topic {
     private Integer id;
     private String title;
     private String content;
-    private Date topicDate;
+    private LocalDateTime topicDate;
     private UserBasic author ;          //M:1
     private List<Reply> replyList ;     //1:N
 
@@ -54,11 +55,15 @@ public class Topic {
         this.content = content;
     }
 
-    public Date getTopicDate() {
+    public LocalDateTime getTopicDate() {
         return topicDate;
     }
 
-    public void setTopicDate(Date topicDate) {
+    public void setTopicDate(LocalDateTime topicDate) {
         this.topicDate = topicDate;
+    }
+
+    public UserBasic getAuthor() {
+        return author;
     }
 }

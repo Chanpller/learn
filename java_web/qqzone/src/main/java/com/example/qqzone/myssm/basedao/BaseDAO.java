@@ -1,20 +1,18 @@
 package com.example.qqzone.myssm.basedao;
 
-import com.example.qqzone.myssm.transcation.TranscationManager;
 import com.example.qqzone.myssm.util.ConnectionUtl;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public abstract class BaseDAO<T> {
-    public final String DRIVER = "com.mysql.jdbc.Driver" ;
-    public final String URL = "jdbc:mysql://localhost:3306/fruitdb?useUnicode=true&characterEncoding=utf-8&useSSL=false";
-    public final String USER = "root";
-    public final String PWD = "HHXXttxs19" ;
 
     protected Connection conn ;
     protected PreparedStatement psmt ;
@@ -87,10 +85,30 @@ public abstract class BaseDAO<T> {
         try {
             //获取property这个字符串对应的属性名 ， 比如 "fid"  去找 obj对象中的 fid 属性
             Field field = clazz.getDeclaredField(property);
-            if(field!=null){
-                field.setAccessible(true);
-                field.set(obj,propertyValue);
+            Class type = field.getType();
+            if(type !=Integer.class && type !=Long.class  && type !=String.class
+                    && type != Date.class
+                    && type != java.sql.Date.class
+                    && type != BigDecimal.class
+                    && type != BigInteger.class
+                    && type != java.time.LocalDateTime.class
+            ){
+                if(field!=null){
+                    field.setAccessible(true);
+                    Object o = type.newInstance();
+                    Field id = type.getDeclaredField("id");
+                    id.setAccessible(true);
+                    id.set(o,propertyValue);
+                    field.set(obj,o);
+                }
+            }else{
+                if(field!=null){
+                    field.setAccessible(true);
+                    field.set(obj,propertyValue);
+                }
             }
+
+
         } catch (Exception e) {
             throw  new Exception(e);
         }
@@ -177,7 +195,7 @@ public abstract class BaseDAO<T> {
                 T entity = (T)entityClass.newInstance();
 
                 for(int i = 0 ; i<columnCount;i++){
-                    String columnName = rsmd.getColumnName(i+1);            //fid   fname   price
+                    String columnName = rsmd.getColumnLabel(i+1);            //fid   fname   price
                     Object columnValue = rs.getObject(i+1);     //33    苹果      5
                     setValue(entity,columnName,columnValue);
                 }

@@ -17,66 +17,57 @@ public class ClassPathXmlContext implements BeanFactory{
         this(null);
     }
     public ClassPathXmlContext(String path){
-        SAXReader reader = new SAXReader();
-        Document document = null;
-        try {
-            if(path!=null){
-                this.path = path;
-            }
-            document = reader.read(this.getClass().getClassLoader().getResourceAsStream(path));
-        } catch (DocumentException e) {
-            e.printStackTrace();
-        }
-        Element root = document.getRootElement();
+       try {
+           SAXReader reader = new SAXReader();
+           Document document = null;
+           try {
+               if(path!=null){
+                   this.path = path;
+               }
+               document = reader.read(this.getClass().getClassLoader().getResourceAsStream(path));
+           } catch (DocumentException e) {
+               e.printStackTrace();
+           }
+           Element root = document.getRootElement();
 
-        List<Element> beans = root.elements("bean");
-        for (Element bean : beans) {
-            String id = bean.attributeValue("id");
-            String className = bean.attributeValue("class");
+           List<Element> beans = root.elements("bean");
+           for (Element bean : beans) {
+               String id = bean.attributeValue("id");
+               String className = bean.attributeValue("class");
 
-            Object controller = null;
-            try {
-                controller = Class.forName(className).newInstance();
-                beanMap.put(id,controller);
-            } catch (Exception e) {
-                throw  new RuntimeException(e);
-            }
-        }
-        for (Element bean : beans) {
-            String id = bean.attributeValue("id");
-            String className = bean.attributeValue("class");
+               Object controller = null;
+               controller = Class.forName(className).newInstance();
+               beanMap.put(id,controller);
+           }
+           for (Element bean : beans) {
+               String id = bean.attributeValue("id");
+               String className = bean.attributeValue("class");
 
-            Object controller = null;
-            try {
-                controller = Class.forName(className).newInstance();
-                beanMap.put(id,controller);
-            } catch (Exception e) {
-                throw  new RuntimeException(e);
-            }
-        }
+               Object controller = Class.forName(className).newInstance();
+               beanMap.put(id,controller);
+           }
 
-        for (Element bean : beans) {
-            String id = bean.attributeValue("id");
-            List<Element> propertys = root.elements("property");
-            if(propertys!=null && propertys.size()>0){
-                for (Element property : propertys) {
-                    String name = property.attributeValue("name");
-                    String ref = property.attributeValue("ref");
+           for (Element bean : beans) {
+               String id = bean.attributeValue("id");
+               List<Element> propertys = bean.elements("property");
+               if(propertys!=null && propertys.size()>0){
+                   for (Element property : propertys) {
+                       String name = property.attributeValue("name");
+                       String ref = property.attributeValue("ref");
 
-                    Object refBean = beanMap.get(ref);
+                       Object refBean = beanMap.get(ref);
 
-                    Object beanObject = beanMap.get(id);
+                       Object beanObject = beanMap.get(id);
 
-                    try {
-                        Field declaredField = beanObject.getClass().getDeclaredField(name);
-                        declaredField.setAccessible(true);
-                        declaredField.set(beanObject,refBean);
-                    } catch (Exception e) {
-                        throw  new RuntimeException(e);
-                    }
-                }
-            }
-        }
+                       Field declaredField = beanObject.getClass().getDeclaredField(name);
+                       declaredField.setAccessible(true);
+                       declaredField.set(beanObject,refBean);
+                   }
+               }
+           }
+       }catch (Exception e){
+           e.printStackTrace();
+       }
     }
     @Override
     public Object get(String key) {

@@ -11,8 +11,8 @@ public class ContentListener implements ServletContextListener {
     @Override
     public void contextInitialized(ServletContextEvent sce) {
         ServletContext servletContext = sce.getServletContext();
-        String contextConfigLocatio = servletContext.getInitParameter("contextConfigLocatio");
-        BeanFactory beanFactory = new ClassPathXmlContext(contextConfigLocatio);
+        String contextConfigLocation = servletContext.getInitParameter("contextConfigLocation");
+        BeanFactory beanFactory = new ClassPathXmlContext(contextConfigLocation);
         servletContext.setAttribute("beanFactory",beanFactory);
     }
 }

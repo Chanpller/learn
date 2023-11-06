@@ -874,3 +874,274 @@ var patt=/pattern/modifiers;
 </html>
 ```
 
+
+
+### 3.11.1 正则表达式入门案例
+
+#### 3.11.1.1 模式验证: 校验字符串中是否包含'o'字母
+
+**注意**：这里是使用**正则表达式对象**来**调用**方法。
+
+```javascript
+// 创建一个最简单的正则表达式对象
+var reg = /o/;
+
+// 创建一个字符串对象作为目标字符串
+var str = 'Hello World!';
+
+// 调用正则表达式对象的test()方法验证目标字符串是否满足我们指定的这个模式，返回结果true
+console.log("字符串中是否包含'o'="+reg.test(str));
+```
+
+#### 3.11.1.2 匹配读取: 读取字符串中的所有'o'
+
+```javascript
+//匹配读取: 读取一个字符串中的所有'l'字母
+// g表示全文查找,如果不使用g那么就只能查找到第一个匹配的内容
+//1. 编写一个正则表达式
+var reg2 = /l/g
+//2. 使用正则表达式去读取字符串
+var arr = str.match(reg2);
+console.log(arr)
+```
+
+#### 3.11.1.3 匹配替换: 将字符串中的第一个'o'替换成'@'
+
+```javascript
+var newStr = str.replace(reg,'@');
+// 只有第一个o被替换了，说明我们这个正则表达式只能匹配第一个满足的字符串
+console.log("str.replace(reg)="+newStr);//Hell@ World!
+// 原字符串并没有变化，只是返回了一个新字符串
+console.log("str="+str);//str=Hello World!
+```
+
+### 3.11.1.2 正则表达式的匹配模式
+
+#### 3.11.1.2.1 全文查找
+
+如果不使用g对正则表达式对象进行修饰，则使用正则表达式进行查找时，仅返回第一个匹配；使用g后，返回所有匹配。
+
+```javascript
+// 目标字符串
+var targetStr = 'Hello World!';
+
+// 没有使用全局匹配的正则表达式
+var reg = /[A-Z]/;
+// 获取全部匹配
+var resultArr = targetStr.match(reg);
+// 数组长度为1
+console.log("resultArr.length="+resultArr.length);
+
+// 遍历数组，发现只能得到'H'
+for(var i = 0; i < resultArr.length; i++){
+    console.log("resultArr["+i+"]="+resultArr[i]);
+}
+```
+
+对比代码：
+
+```javascript
+// 目标字符串
+var targetStr = 'Hello World!';
+
+// 使用了全局匹配的正则表达式
+var reg = /[A-Z]/g;
+// 获取全部匹配
+var resultArr = targetStr.match(reg);
+// 数组长度为2
+console.log("resultArr.length="+resultArr.length);
+
+// 遍历数组，发现可以获取到“H”和“W”
+for(var i = 0; i < resultArr.length; i++){
+    console.log("resultArr["+i+"]="+resultArr[i]);
+}
+```
+
+#### 3.11.1.2.2 忽略大W小写
+
+```javascript
+//目标字符串
+var targetStr = 'Hello WORLD!';
+
+//没有使用忽略大小写的正则表达式
+var reg = /o/g;
+//获取全部匹配
+var resultArr = targetStr.match(reg);
+//数组长度为1
+console.log("resultArr.length="+resultArr.length);
+//遍历数组，仅得到'o'
+for(var i = 0; i < resultArr.length; i++){
+    console.log("resultArr["+i+"]="+resultArr[i]);
+}
+```
+
+对比代码：
+
+```javascript
+//目标字符串
+var targetStr = 'Hello WORLD!';
+
+//使用了忽略大小写的正则表达式
+var reg = /o/gi;
+//获取全部匹配
+var resultArr = targetStr.match(reg);
+//数组长度为2
+console.log("resultArr.length="+resultArr.length);
+//遍历数组，得到'o'和'O'
+for(var i = 0; i < resultArr.length; i++){
+    console.log("resultArr["+i+"]="+resultArr[i]);
+}
+```
+
+#### 3.11.1.2.3 多行查找
+
+不使用多行查找模式，目标字符串中不管有没有换行符都会被当作一行。
+
+```javascript
+//目标字符串1
+var targetStr01 = 'Hello\nWorld!';
+//目标字符串2
+var targetStr02 = 'Hello';
+
+//匹配以'Hello'结尾的正则表达式，没有使用多行匹配
+var reg = /Hello$/;
+console.log(reg.test(targetStr01));//false
+
+console.log(reg.test(targetStr02));//true
+```
+
+对比代码：
+
+```javascript
+//目标字符串1
+var targetStr01 = 'Hello\nWorld!';
+//目标字符串2
+var targetStr02 = 'Hello';
+
+//匹配以'Hello'结尾的正则表达式，使用了多行匹配
+var reg = /Hello$/m;
+console.log(reg.test(targetStr01));//true
+
+console.log(reg.test(targetStr02));//true
+```
+
+### 3.11.1.3 元字符
+
+ 在正则表达式中被赋予特殊含义的字符，不能被直接当做普通字符使用。如果要匹配元字符本身，需要对元字符进行转义，转义的方式是在元字符前面加上“\”，例如：\^ 
+
+#### 3.11.1.3.1 常用的元字符
+
+| 代码 | 说明                                                         |
+| ---- | ------------------------------------------------------------ |
+| .    | 匹配除换行字符以外的任意字符。                               |
+| \w   | 匹配字母或数字或下划线等价于[a-zA-Z0-9_]                     |
+| \W   | 匹配任何非单词字符。等价于[^A-Za-z0-9_]                      |
+| \s   | 匹配任意的空白符，包括空格、制表符、换页符等等。等价于[\f\n\r\t\v]。 |
+| \S   | 匹配任何非空白字符。等价于[^\f\n\r\t\v]。                    |
+| \d   | 匹配数字。等价于[0-9]。                                      |
+| \D   | 匹配一个非数字字符。等价于[^0-9]                             |
+| \b   | 匹配单词的开始或结束                                         |
+| ^    | 匹配字符串的开始，但在[]中使用表示取反                       |
+| $    | 匹配字符串的结束                                             |
+
+#### 3.11.1.3.2 例子一
+
+```javascript
+var str = 'one two three four';
+// 匹配全部空格
+var reg = /\s/g;
+// 将空格替换为@
+var newStr = str.replace(reg,'@'); // one@two@three@four
+console.log("newStr="+newStr);
+```
+
+#### 3.11.1.3.3 例子二
+
+```javascript
+var str = '今年是2014年';
+// 匹配至少一个数字
+var reg = /\d+/g;
+str = str.replace(reg,'abcd');
+console.log('str='+str); // 今年是abcd年
+```
+
+#### 3.11.1.3.4 例子三
+
+```javascript
+var str01 = 'I love Java';
+var str02 = 'Java love me';
+// 匹配以Java开头
+var reg = /^Java/g;
+console.log('reg.test(str01)='+reg.test(str01)); // flase
+console.log("<br />");
+console.log('reg.test(str02)='+reg.test(str02)); // true
+```
+
+#### 3.11.1.3.5 例子四
+
+```javascript
+var str01 = 'I love Java';
+var str02 = 'Java love me';
+// 匹配以Java结尾
+var reg = /Java$/g;
+console.log('reg.test(str01)='+reg.test(str01)); // true
+console.log("<br />");
+console.log('reg.test(str02)='+reg.test(str02)); // flase
+```
+
+### 3.11.1.4 字符集合
+
+| 语法格式    | 示例                                                         | 说明                                               |
+| ----------- | ------------------------------------------------------------ | -------------------------------------------------- |
+| [字符列表]  | 正则表达式：[abc] 含义：目标字符串包含abc中的任何一个字符 目标字符串：plain 是否匹配：是 原因：plain中的“a”在列表“abc”中 | 目标字符串中任何一个字符出现在字符列表中就算匹配。 |
+| [^字符列表] | [^abc] 含义：目标字符串包含abc以外的任何一个字符 目标字符串：plain 是否匹配：是 原因：plain中包含“p”、“l”、“i”、“n” | 匹配字符列表中未包含的任意字符。                   |
+| [字符范围]  | 正则表达式：[a-z] 含义：所有小写英文字符组成的字符列表 正则表达式：[A-Z] 含义：所有大写英文字符组成的字符列表 | 匹配指定范围内的任意字符。                         |
+
+```javascript
+var str01 = 'Hello World';
+var str02 = 'I am Tom';
+//匹配abc中的任何一个
+var reg = /[abc]/g;
+console.log('reg.test(str01)='+reg.test(str01));//flase
+console.log('reg.test(str02)='+reg.test(str02));//true
+```
+
+### 3.11.1.5 出现次数
+
+| 代码  | 说明           |
+| ----- | -------------- |
+| *     | 出现零次或多次 |
+| +     | 出现一次或多次 |
+| ?     | 出现零次或一次 |
+| {n}   | 出现n次        |
+| {n,}  | 出现n次或多次  |
+| {n,m} | 出现n到m次     |
+
+```javascript
+console.log("/[a]{3}/.test('aa')="+/[a]{3}/g.test('aa')); // flase
+console.log("/[a]{3}/.test('aaa')="+/[a]{3}/g.test('aaa')); // true
+console.log("/[a]{3}/.test('aaaa')="+/[a]{3}/g.test('aaaa')); // true
+```
+
+### 3.11.1.6 在正则表达式中表达『或者』
+
+使用符号：|
+
+```javascript
+// 目标字符串
+var str01 = 'Hello World!';
+var str02 = 'I love Java';
+// 匹配'World'或'Java'
+var reg = /World|Java/g;
+console.log("str01.match(reg)[0]="+str01.match(reg)[0]);//World
+console.log("str02.match(reg)[0]="+str02.match(reg)[0]);//Java
+```
+
+### 3.11.1.7 常用正则表达式
+
+| 需求     | 正则表达式                                            |
+| -------- | ----------------------------------------------------- |
+| 用户名   | /^\[a-zA-Z\_][a-zA-Z_\-0-9]{5,9}$/                    |
+| 密码     | /^[a-zA-Z0-9_\-\@\#\&\*]{6,12}$/                      |
+| 前后空格 | /^\s+\|\s+$/g                                         |
+| 电子邮箱 | /^[a-zA-Z0-9_\.-]+@([a-zA-Z0-9-]+[\.]{1})+[a-zA-Z]+$/ |

@@ -4,9 +4,18 @@
          xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd"
          version="4.0">
     <context-param>
-        <param-name>contextConfigLocatio</param-name>
+        <param-name>contextConfigLocation</param-name>
         <param-value>applicationContext.xml</param-value>
     </context-param>
+    <context-param>
+        <param-name>view-prefix</param-name>
+        <param-value>/</param-value>
+    </context-param>
+    <context-param>
+        <param-name>view-suffix</param-name>
+        <param-value>.html</param-value>
+    </context-param>
+
     <listener>
         <listener-class>com.example.qqzone.myssm.Listeners.ContentListener</listener-class>
     </listener>

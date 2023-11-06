@@ -9,7 +9,6 @@ import java.sql.SQLException;
 public class TransactionFilter implements Filter {
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
-        Filter.super.init(filterConfig);
     }
 
     @Override

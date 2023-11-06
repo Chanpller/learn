@@ -41,7 +41,7 @@ public class DispatchServlet extends ViewBaseServlet {
         servletPath = servletPath.substring(0,lastDotIndex);
         Object controllerBeanObj = beanFactory.get(servletPath);
 
-        String action = req.getParameter("action");
+        String action = req.getParameter("operate");
         if(StringUtil.isEmpty(action)){
             action = "index" ;
         }

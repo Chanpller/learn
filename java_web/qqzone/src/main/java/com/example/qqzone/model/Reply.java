@@ -1,11 +1,11 @@
 package com.example.qqzone.model;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 public class Reply {
     private Integer id;
     private String content;
-    private Date replyDate;
+    private LocalDateTime replyDate;
     private UserBasic author;
     private Topic topic;
     private HostReply hostReply;
@@ -33,11 +33,11 @@ public class Reply {
         this.content = content;
     }
 
-    public Date getReplyDate() {
+    public LocalDateTime getReplyDate() {
         return replyDate;
     }
 
-    public void setReplyDate(Date replyDate) {
+    public void setReplyDate(LocalDateTime replyDate) {
         this.replyDate = replyDate;
     }
 

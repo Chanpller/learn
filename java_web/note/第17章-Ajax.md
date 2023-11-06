@@ -10,6 +10,23 @@
 
 * 通过var xmlhttprequest = new XMLHttpRequest();创建一个XMLHttpRequest对象
 
+```javascript
+function createXMLHttpRequest(){
+    if(window.XMLHttpRequest){
+        //符合DOM2标准的浏览器 ，xmlHttpRequest的创建方式
+        xmlHttpRequest = new XMLHttpRequest() ;
+    }else if(window.ActiveXObject){//IE浏览器
+        try{
+            xmlHttpRequest = new ActiveXObject("Microsoft.XMLHTTP");
+        }catch (e) {
+            xmlHttpRequest = new ActiveXObject("Msxml2.XMLHTTP")
+        }
+    }
+}
+```
+
+
+
 * xmlhttprequest.open("GET","http://localhost:8080/java_web/ajaxServlet",true);调用 open 方法设置请求参数。
 
   * *async*：true（异步）或 false（同步） 同步表示请求需要一个一个排队发送，页面也不会发生跳转。
