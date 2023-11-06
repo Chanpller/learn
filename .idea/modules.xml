@@ -8,6 +8,7 @@
       <module fileurl="file://$PROJECT_DIR$/java_code/java_code.iml" filepath="$PROJECT_DIR$/java_code/java_code.iml" />
       <module fileurl="file://$PROJECT_DIR$/java_web/java_web.iml" filepath="$PROJECT_DIR$/java_web/java_web.iml" />
       <module fileurl="file://$PROJECT_DIR$/jdbc/jdbc.iml" filepath="$PROJECT_DIR$/jdbc/jdbc.iml" />
+      <module fileurl="file://$PROJECT_DIR$/jvm/jvm.iml" filepath="$PROJECT_DIR$/jvm/jvm.iml" />
       <module fileurl="file://$PROJECT_DIR$/mysql/mysql.iml" filepath="$PROJECT_DIR$/mysql/mysql.iml" />
       <module fileurl="file://$PROJECT_DIR$/oracle/oracle.iml" filepath="$PROJECT_DIR$/oracle/oracle.iml" />
       <module fileurl="file://$PROJECT_DIR$/java_web/qqzone/qqzone.iml" filepath="$PROJECT_DIR$/java_web/qqzone/qqzone.iml" />
