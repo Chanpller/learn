@@ -9,37 +9,209 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ad105765-8c24-4f15-978c-43930f54c0e0" name="Changes" comment="增加监听器、ThreadLocal源码分析">
-      <change afterPath="$PROJECT_DIR$/.idea/artifacts/qqzone_war.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/artifacts/qqzone_war_exploded.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__javax_javaee_web_api_8_0_1.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/java_web/qqzone/pom.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/java_web/qqzone/qqzone.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/java_web/qqzone/src/main/java/com/example/qqzone/controller/UserController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/java_web/qqzone/src/main/java/com/example/qqzone/model/HostReply.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/java_web/qqzone/src/main/java/com/example/qqzone/model/Reply.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/java_web/qqzone/src/main/java/com/example/qqzone/model/Topic.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/java_web/qqzone/src/main/java/com/example/qqzone/model/UserBasic.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/java_web/qqzone/src/main/java/com/example/qqzone/model/UserDetail.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/java_web/qqzone/src/main/java/com/example/qqzone/myssm/Listeners/ContentListener.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/java_web/qqzone/src/main/java/com/example/qqzone/myssm/basedao/BaseDAO.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/java_web/qqzone/src/main/java/com/example/qqzone/myssm/filter/TransactionFilter.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/java_web/qqzone/src/main/java/com/example/qqzone/myssm/ioc/BeanFactory.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/java_web/qqzone/src/main/java/com/example/qqzone/myssm/ioc/ClassPathXmlContext.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/java_web/qqzone/src/main/java/com/example/qqzone/myssm/myspringmvc/DispatchServlet.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/java_web/qqzone/src/main/java/com/example/qqzone/myssm/myspringmvc/ViewBaseServlet.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/java_web/qqzone/src/main/java/com/example/qqzone/myssm/transcation/TranscationManager.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/java_web/qqzone/src/main/java/com/example/qqzone/myssm/util/ConnectionUtl.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/java_web/qqzone/src/main/java/com/example/qqzone/myssm/util/StringUtil.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/java_web/qqzone/src/main/java/com/example/qqzone/service/UserService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/java_web/qqzone/src/main/resources/META-INF/beans.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/java_web/qqzone/src/main/resources/META-INF/persistence.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/java_web/qqzone/src/main/webapp/WEB-INF/web.xml" afterDir="false" />
+    <list default="true" id="ad105765-8c24-4f15-978c-43930f54c0e0" name="Changes" comment="增加模拟空间项目">
+      <change afterPath="$PROJECT_DIR$/.idea/artifacts/book_war.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/artifacts/book_war_exploded.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_alibaba_druid_1_2_12.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/book.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/pom.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/readme.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/sql/bookdb.sql" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/src/main/java/com/example/book/controller/BookController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/src/main/java/com/example/book/controller/CartController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/src/main/java/com/example/book/controller/UserController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/src/main/java/com/example/book/dao/BookDao.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/src/main/java/com/example/book/dao/CartDao.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/src/main/java/com/example/book/dao/UserDao.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/src/main/java/com/example/book/dao/impl/BookDaoImpl.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/src/main/java/com/example/book/dao/impl/CartDaoImpl.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/src/main/java/com/example/book/dao/impl/UserDaoImpl.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/src/main/java/com/example/book/model/Book.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/src/main/java/com/example/book/model/Cart.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/src/main/java/com/example/book/model/CartItem.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/src/main/java/com/example/book/model/User.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/src/main/java/com/example/book/service/BookService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/src/main/java/com/example/book/service/CartService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/src/main/java/com/example/book/service/UserService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/src/main/java/com/example/book/service/impl/BookServiceImpl.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/src/main/java/com/example/book/service/impl/CartServiceImpl.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/src/main/java/com/example/book/service/impl/UserServiceImpl.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/src/main/java/myssm/Listeners/ContentListener.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/src/main/java/myssm/basedao/BaseDAO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/src/main/java/myssm/filter/CharSetFilter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/src/main/java/myssm/filter/TransactionFilter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/src/main/java/myssm/ioc/BeanFactory.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/src/main/java/myssm/ioc/ClassPathXmlContext.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/src/main/java/myssm/myspringmvc/DispatchServlet.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/src/main/java/myssm/myspringmvc/PageContoller.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/src/main/java/myssm/myspringmvc/ViewBaseServlet.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/src/main/java/myssm/transcation/TranscationManager.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/src/main/java/myssm/util/ConnectionUtl.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/src/main/java/myssm/util/StringUtil.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/src/main/resources/META-INF/beans.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/src/main/resources/META-INF/persistence.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/src/main/resources/applicationContext.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/src/main/resources/jdbc.properties" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/src/main/webapp/WEB-INF/pages/cart/cart.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/src/main/webapp/WEB-INF/pages/cart/checkout.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/src/main/webapp/WEB-INF/pages/index.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/src/main/webapp/WEB-INF/pages/manager/book_edit.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/src/main/webapp/WEB-INF/pages/manager/book_manager.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/src/main/webapp/WEB-INF/pages/manager/manager.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/src/main/webapp/WEB-INF/pages/manager/order_manager.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/src/main/webapp/WEB-INF/pages/order/order.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/src/main/webapp/WEB-INF/pages/user/login.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/src/main/webapp/WEB-INF/pages/user/login_success.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/src/main/webapp/WEB-INF/pages/user/regist.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/src/main/webapp/WEB-INF/pages/user/regist_success.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/src/main/webapp/WEB-INF/web.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/src/main/webapp/static/css/bookManger.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/src/main/webapp/static/css/book_edit.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/src/main/webapp/static/css/cart.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/src/main/webapp/static/css/common.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/src/main/webapp/static/css/iconfont.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/src/main/webapp/static/css/index.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/src/main/webapp/static/css/minireset.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/src/main/webapp/static/css/orderManger.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/src/main/webapp/static/css/register.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/src/main/webapp/static/css/style.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/src/main/webapp/static/css/swiper.min.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/src/main/webapp/static/img/QR.gif" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/src/main/webapp/static/img/bottom.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/src/main/webapp/static/img/bottom1.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/src/main/webapp/static/img/bottom2.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/src/main/webapp/static/img/code.bmp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/src/main/webapp/static/img/default.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/src/main/webapp/static/img/logo.gif" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/src/main/webapp/static/img/pwd-icons-new.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/src/main/webapp/static/script/axios.min.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/src/main/webapp/static/script/cart.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/src/main/webapp/static/script/index.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/src/main/webapp/static/script/jquery-1.7.2.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/src/main/webapp/static/script/regist.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/src/main/webapp/static/script/swiper.min.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/src/main/webapp/static/script/vue.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/src/main/webapp/static/uploads/Javabianchengsixiang.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/src/main/webapp/static/uploads/ailuntulingzhuan.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/src/main/webapp/static/uploads/bainiangudu.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/src/main/webapp/static/uploads/banner4.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/src/main/webapp/static/uploads/banner5.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/src/main/webapp/static/uploads/banner6.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/src/main/webapp/static/uploads/biancheng.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/src/main/webapp/static/uploads/books.sql" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/src/main/webapp/static/uploads/cate4.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/src/main/webapp/static/uploads/cate5.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/src/main/webapp/static/uploads/cate6.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/src/main/webapp/static/uploads/congwanqingdaominguo.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/src/main/webapp/static/uploads/cyuyanrumenjingdian.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/src/main/webapp/static/uploads/dashujuyuce.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/src/main/webapp/static/uploads/fusang.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/src/main/webapp/static/uploads/geihaizideshi.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/src/main/webapp/static/uploads/huozhe.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/src/main/webapp/static/uploads/huranqiri.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/src/main/webapp/static/uploads/jiaofu.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/src/main/webapp/static/uploads/jieyouzahuodian.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/src/main/webapp/static/uploads/kanjian.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/src/main/webapp/static/uploads/pinang.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/src/main/webapp/static/uploads/pingfandeshijie.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/src/main/webapp/static/uploads/qiadaohaochudexingfu.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/src/main/webapp/static/uploads/renyueshenhua.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/src/main/webapp/static/uploads/santi.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/src/main/webapp/static/uploads/shejimoshizhichan.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/src/main/webapp/static/uploads/shengmingbuxi.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/src/main/webapp/static/uploads/shuxuezhimei.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/src/main/webapp/static/uploads/sudongpozhuan.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/src/main/webapp/static/uploads/tujiejiqixuexi.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/src/main/webapp/static/uploads/weinushiernian.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/src/main/webapp/static/uploads/womensa.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/src/main/webapp/static/uploads/wukongzhuan.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/src/main/webapp/static/uploads/xiaowangzi.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/src/main/webapp/static/uploads/yingpaijianshen.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/src/main/webapp/static/uploads/zhongguozhexueshi.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/book/src/main/webapp/web/WEB-INF/web.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/qqzone/readme.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/qqzone/sql/qqzone.sql" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/qqzone/src/main/java/com/example/qqzone/controller/ReplyController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/qqzone/src/main/java/com/example/qqzone/controller/TopicController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/qqzone/src/main/java/com/example/qqzone/dao/HostReplyDao.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/qqzone/src/main/java/com/example/qqzone/dao/ReplyDao.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/qqzone/src/main/java/com/example/qqzone/dao/TopicDao.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/qqzone/src/main/java/com/example/qqzone/dao/UserDao.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/qqzone/src/main/java/com/example/qqzone/dao/impl/HostReplyDaoImpl.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/qqzone/src/main/java/com/example/qqzone/dao/impl/ReplyDaoImpl.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/qqzone/src/main/java/com/example/qqzone/dao/impl/TopicDaoImpl.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/qqzone/src/main/java/com/example/qqzone/dao/impl/UserDaoImpl.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/qqzone/src/main/java/com/example/qqzone/myssm/myspringmvc/PageContoller.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/qqzone/src/main/java/com/example/qqzone/service/ReplyService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/qqzone/src/main/java/com/example/qqzone/service/TopicService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/qqzone/src/main/java/com/example/qqzone/service/impl/ReplyServiceImpl.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/qqzone/src/main/java/com/example/qqzone/service/impl/TopicServiceImpl.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/qqzone/src/main/java/com/example/qqzone/service/impl/UserServiceImpl.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/qqzone/src/main/resources/applicationContext.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/qqzone/src/main/webapp/css/bottom.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/qqzone/src/main/webapp/css/common.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/qqzone/src/main/webapp/css/detail.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/qqzone/src/main/webapp/css/index.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/qqzone/src/main/webapp/css/left.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/qqzone/src/main/webapp/css/login.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/qqzone/src/main/webapp/css/main.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/qqzone/src/main/webapp/css/top.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/qqzone/src/main/webapp/frames/bottom.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/qqzone/src/main/webapp/frames/detail.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/qqzone/src/main/webapp/frames/left.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/qqzone/src/main/webapp/frames/main.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/qqzone/src/main/webapp/frames/top.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/qqzone/src/main/webapp/imgs/del.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/qqzone/src/main/webapp/imgs/dy.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/qqzone/src/main/webapp/imgs/mrf.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/qqzone/src/main/webapp/imgs/qf.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/qqzone/src/main/webapp/imgs/wyy.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/qqzone/src/main/webapp/imgs/zl.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/qqzone/src/main/webapp/index.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/qqzone/src/main/webapp/js/index.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/java_web/qqzone/src/main/webapp/login.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/encodings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/jarRepositories.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/jarRepositories.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__apache_log4j_log4j_1_2_15.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__apache_log4j_log4j_1_2_15.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__com_google_protobuf_protobuf_java_3_19_4.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__com_google_protobuf_protobuf_java_3_19_4.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__dom4j_dom4j_1_6_1.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__dom4j_dom4j_1_6_1.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__junit_junit_4_13_2.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__junit_junit_4_13_2.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__log4j_log4j_1_2_17.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__log4j_log4j_1_2_17.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__mysql_mysql_connector_java_8_0_29.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__mysql_mysql_connector_java_8_0_29.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__ognl_ognl_3_1_26.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__ognl_ognl_3_1_26.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_apiguardian_apiguardian_api_1_1_0.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_apiguardian_apiguardian_api_1_1_0.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_attoparser_attoparser_2_0_5_RELEASE.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_attoparser_attoparser_2_0_5_RELEASE.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_javassist_javassist_3_20_0_GA.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_javassist_javassist_3_20_0_GA.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_junit_jupiter_junit_jupiter_api_5_7_1.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_junit_jupiter_junit_jupiter_api_5_7_1.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_junit_jupiter_junit_jupiter_engine_5_7_1.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_junit_jupiter_junit_jupiter_engine_5_7_1.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_junit_platform_junit_platform_commons_1_7_1.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_junit_platform_junit_platform_commons_1_7_1.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_junit_platform_junit_platform_engine_1_7_1.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_junit_platform_junit_platform_engine_1_7_1.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_opentest4j_opentest4j_1_2_0.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_opentest4j_opentest4j_1_2_0.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_slf4j_slf4j_api_1_7_25.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_slf4j_slf4j_api_1_7_25.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_slf4j_slf4j_log4j12_1_7_25.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_slf4j_slf4j_log4j12_1_7_25.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_thymeleaf_thymeleaf_3_0_12_RELEASE.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_thymeleaf_thymeleaf_3_0_12_RELEASE.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__org_unbescape_unbescape_1_1_6_RELEASE.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__org_unbescape_unbescape_1_1_6_RELEASE.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Maven__xml_apis_xml_apis_1_0_b2.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Maven__xml_apis_xml_apis_1_0_b2.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/java_web/note/第17章-Ajax.md" beforeDir="false" afterPath="$PROJECT_DIR$/java_web/note/第17章-Ajax.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/java_web/note/第3章-JavaScript.md" beforeDir="false" afterPath="$PROJECT_DIR$/java_web/note/第3章-JavaScript.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/java_web/qqzone/qqzone.iml" beforeDir="false" afterPath="$PROJECT_DIR$/java_web/qqzone/qqzone.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/java_web/qqzone/src/main/java/com/example/qqzone/controller/UserController.java" beforeDir="false" afterPath="$PROJECT_DIR$/java_web/qqzone/src/main/java/com/example/qqzone/controller/UserController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/java_web/qqzone/src/main/java/com/example/qqzone/model/HostReply.java" beforeDir="false" afterPath="$PROJECT_DIR$/java_web/qqzone/src/main/java/com/example/qqzone/model/HostReply.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/java_web/qqzone/src/main/java/com/example/qqzone/model/Reply.java" beforeDir="false" afterPath="$PROJECT_DIR$/java_web/qqzone/src/main/java/com/example/qqzone/model/Reply.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/java_web/qqzone/src/main/java/com/example/qqzone/model/Topic.java" beforeDir="false" afterPath="$PROJECT_DIR$/java_web/qqzone/src/main/java/com/example/qqzone/model/Topic.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/java_web/qqzone/src/main/java/com/example/qqzone/model/UserDetail.java" beforeDir="false" afterPath="$PROJECT_DIR$/java_web/qqzone/src/main/java/com/example/qqzone/model/UserDetail.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/java_web/qqzone/src/main/java/com/example/qqzone/myssm/Listeners/ContentListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/java_web/qqzone/src/main/java/com/example/qqzone/myssm/Listeners/ContentListener.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/java_web/qqzone/src/main/java/com/example/qqzone/myssm/basedao/BaseDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/java_web/qqzone/src/main/java/com/example/qqzone/myssm/basedao/BaseDAO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/java_web/qqzone/src/main/java/com/example/qqzone/myssm/filter/TransactionFilter.java" beforeDir="false" afterPath="$PROJECT_DIR$/java_web/qqzone/src/main/java/com/example/qqzone/myssm/filter/TransactionFilter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/java_web/qqzone/src/main/java/com/example/qqzone/myssm/ioc/ClassPathXmlContext.java" beforeDir="false" afterPath="$PROJECT_DIR$/java_web/qqzone/src/main/java/com/example/qqzone/myssm/ioc/ClassPathXmlContext.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/java_web/qqzone/src/main/java/com/example/qqzone/myssm/myspringmvc/DispatchServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/java_web/qqzone/src/main/java/com/example/qqzone/myssm/myspringmvc/DispatchServlet.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/java_web/qqzone/src/main/java/com/example/qqzone/myssm/util/ConnectionUtl.java" beforeDir="false" afterPath="$PROJECT_DIR$/java_web/qqzone/src/main/java/com/example/qqzone/myssm/util/ConnectionUtl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/java_web/qqzone/src/main/java/com/example/qqzone/service/UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/java_web/qqzone/src/main/java/com/example/qqzone/service/UserService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/java_web/qqzone/src/main/webapp/WEB-INF/web.xml" beforeDir="false" afterPath="$PROJECT_DIR$/java_web/qqzone/src/main/webapp/WEB-INF/web.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -77,7 +249,7 @@
       <MavenGeneralSettings>
         <option name="localRepository" value="D:\maven" />
         <option name="mavenHome" value="$PROJECT_DIR$/../../soft/apache-maven-3.6.3" />
-        <option name="userSettingsFile" value="D:\soft\apache-maven-3.6.3\conf\settings.xml" />
+        <option name="userSettingsFile" value="D:\soft\apache-maven-3.6.3\conf\settings-maven.xml" />
       </MavenGeneralSettings>
     </option>
   </component>
@@ -97,16 +269,16 @@
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="jdk.selected.JAVA_MODULE" value="1.8" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/java_web/qqzone/src/main/java/com/example/qqzone" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/java_web/book" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.tslint" value="true" />
     <property name="node.js.selected.package.eslint" value="(autodetect)" />
     <property name="node.js.selected.package.tslint" value="(autodetect)" />
     <property name="nodejs_package_manager_path" value="npm" />
-    <property name="project.structure.last.edited" value="Modules" />
+    <property name="project.structure.last.edited" value="Project" />
     <property name="project.structure.proportion" value="0.15" />
     <property name="project.structure.side.proportion" value="0.44344905" />
-    <property name="settings.editor.selected.configurable" value="reference.projectsettings.compiler.javacompiler" />
+    <property name="settings.editor.selected.configurable" value="MavenSettings" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -473,20 +645,9 @@
       <workItem from="1697380186395" duration="744000" />
       <workItem from="1697716444913" duration="7239000" />
       <workItem from="1697822535917" duration="110000" />
-    </task>
-    <task id="LOCAL-00044" summary="反射，动态代理，lambda表达式">
-      <created>1678205161825</created>
-      <option name="number" value="00044" />
-      <option name="presentableId" value="LOCAL-00044" />
-      <option name="project" value="LOCAL" />
-      <updated>1678205161825</updated>
-    </task>
-    <task id="LOCAL-00045" summary="数组增加选择、堆、冒泡排序的内容。java8新特性增加 方法引用、构造器、数组引用">
-      <created>1678355119173</created>
-      <option name="number" value="00045" />
-      <option name="presentableId" value="LOCAL-00045" />
-      <option name="project" value="LOCAL" />
-      <updated>1678355119173</updated>
+      <workItem from="1698678142277" duration="544000" />
+      <workItem from="1699278420199" duration="1594000" />
+      <workItem from="1699280043261" duration="207000" />
     </task>
     <task id="LOCAL-00046" summary="数组增加选择、堆、冒泡排序的内容。java8新特性增加 方法引用、构造器、数组引用">
       <created>1678355154687</created>
@@ -817,7 +978,21 @@
       <option name="project" value="LOCAL" />
       <updated>1697243572120</updated>
     </task>
-    <option name="localTasksCounter" value="93" />
+    <task id="LOCAL-00093" summary="增加模拟空间项目">
+      <created>1698678229623</created>
+      <option name="number" value="00093" />
+      <option name="presentableId" value="LOCAL-00093" />
+      <option name="project" value="LOCAL" />
+      <updated>1698678229623</updated>
+    </task>
+    <task id="LOCAL-00094" summary="增加模拟空间项目">
+      <created>1698678260244</created>
+      <option name="number" value="00094" />
+      <option name="presentableId" value="LOCAL-00094" />
+      <option name="project" value="LOCAL" />
+      <updated>1698678260244</updated>
+    </task>
+    <option name="localTasksCounter" value="95" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -837,7 +1012,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
-    <MESSAGE value="增加IDEA插件离线和在线安装，以及插件下载后的目录。" />
     <MESSAGE value="增加git的使用，github、gitee、gitlab操作。" />
     <MESSAGE value="maven使用笔记" />
     <MESSAGE value="mysql单行函数代码，聚合函数提交" />
@@ -862,7 +1036,8 @@
     <MESSAGE value="java_web2022使用反射技术实现单个servlet操作，实现类似springmvc操作原来" />
     <MESSAGE value="Filter注解方式的使用笔记" />
     <MESSAGE value="增加监听器、ThreadLocal源码分析" />
-    <option name="LAST_COMMIT_MESSAGE" value="增加监听器、ThreadLocal源码分析" />
+    <MESSAGE value="增加模拟空间项目" />
+    <option name="LAST_COMMIT_MESSAGE" value="增加模拟空间项目" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/java_web/book/book.iml" filepath="$PROJECT_DIR$/java_web/book/book.iml" />
       <module fileurl="file://$PROJECT_DIR$/elasticsearch/elasticsearch.iml" filepath="$PROJECT_DIR$/elasticsearch/elasticsearch.iml" />
       <module fileurl="file://$PROJECT_DIR$/java_base/java_base.iml" filepath="$PROJECT_DIR$/java_base/java_base.iml" />
       <module fileurl="file://$PROJECT_DIR$/java_code/java_code.iml" filepath="$PROJECT_DIR$/java_code/java_code.iml" />
