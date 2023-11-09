@@ -1,4 +1,4 @@
-package chapter1;
+package chapter01;
 
 public class TestInstruct {
     //找到class输出目录，执行javap -v TestInstruct.class，可以查看到对于的字节码内容。
