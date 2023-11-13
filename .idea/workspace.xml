@@ -9,13 +9,37 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ad105765-8c24-4f15-978c-43930f54c0e0" name="Changes" comment="增加学习java_web项目">
-      <change afterPath="$PROJECT_DIR$/jvm/pom.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/vue/pom.xml" afterDir="false" />
+    <list default="true" id="ad105765-8c24-4f15-978c-43930f54c0e0" name="Changes" comment="jvm修改第一章加载第二章内容">
+      <change afterPath="$PROJECT_DIR$/jvm/image/image-20231112220825864.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/jvm/image/image-20231112221050472.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/jvm/image/image-20231112221240869.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/jvm/image/image-20231112221448856.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/jvm/image/image-20231112223931104.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/jvm/image/image-20231112224146260.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/jvm/image/image-20231112225057985.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/jvm/image/image-20231112225124100.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/jvm/image/image-20231112225307973.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/jvm/image/image-20231112225358834.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/jvm/image/image-20231112225453432.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/jvm/image/image-20231112230421081.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/jvm/image/image-20231112230825560.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/jvm/image/image-20231112230907487.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/jvm/image/image-20231112231034346.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/jvm/image/image-20231112231115171.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/jvm/image/image-20231113200343070.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/jvm/image/image-20231113201317084.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/jvm/project/src/main/java/chapter05/DynamicLinkingTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/jvm/project/src/main/java/chapter05/Lambda.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/jvm/project/src/main/java/chapter05/OperandStackTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/jvm/project/src/main/java/chapter05/Son.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/jvm/jvm.iml" beforeDir="false" afterPath="$PROJECT_DIR$/jvm/jvm.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/jvm/note/第5章-运行时数据区-虚拟机栈.md" beforeDir="false" afterPath="$PROJECT_DIR$/jvm/note/第5章-运行时数据区-虚拟机栈.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/jvm/project/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/jvm/project/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/jvm/project/project.iml" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -25,8 +49,8 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="Class" />
         <option value="Interface" />
+        <option value="Class" />
       </list>
     </option>
   </component>
@@ -72,24 +96,24 @@
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="jdk.selected.JAVA_MODULE" value="1.8" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/vue" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/jvm/project/src/main/java/chapter05" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.tslint" value="true" />
     <property name="node.js.selected.package.eslint" value="(autodetect)" />
     <property name="node.js.selected.package.tslint" value="(autodetect)" />
     <property name="nodejs_package_manager_path" value="npm" />
-    <property name="project.structure.last.edited" value="Project" />
+    <property name="project.structure.last.edited" value="Modules" />
     <property name="project.structure.proportion" value="0.15" />
     <property name="project.structure.side.proportion" value="0.44344905" />
     <property name="settings.editor.selected.configurable" value="MavenSettings" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\IdeaProjects\learn\jvm\project\src\main\java\chapter05" />
       <recent name="D:\ideaprojects\learn\vue" />
       <recent name="D:\ideaprojects\learn\java_web\qqzone\src\main\java\com\example\qqzone" />
       <recent name="D:\ideaprojects\learn\java_web\qqzone\src\main\webapp\WEB-INF" />
       <recent name="D:\IdeaProjects\learn\java_web\src\main\resources" />
-      <recent name="D:\IdeaProjects\learn\java_web\src\main\webapp\java_web_2022\dispatch" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="E:\ideaprojects\learn_local\java_base\note" />
@@ -451,6 +475,7 @@
       <workItem from="1698678142277" duration="544000" />
       <workItem from="1699278420199" duration="1594000" />
       <workItem from="1699280043261" duration="1497000" />
+      <workItem from="1699876185750" duration="1806000" />
     </task>
     <task id="LOCAL-00048" summary="IEAD设置和快捷键">
       <created>1678803544849</created>
