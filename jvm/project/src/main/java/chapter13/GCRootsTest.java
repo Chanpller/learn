@@ -5,7 +5,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
 
-public class GCRootsTest {
+public class
+GCRootsTest {
     public static void main(String[] args) {
         List<Object> numList = new ArrayList<>();
         Date birth = new Date();
