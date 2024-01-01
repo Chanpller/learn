@@ -289,59 +289,7 @@ Class文件的总体结构如下：
 | 无符号数 | 无符号数可以用来描述数字、索引引用、数量值或按照utf-8编码构成的字符串值。 | 其中无符号数属于基本的数据类型。 以u1、u2、u4、u8来分别代表1个字节、2个字节、4个字节和8个字节 |
 | 表    | 表是由多个无符号数或其他表构成的复合数据结构。                 | 所有的表都以“_info”结尾。 由于表没有固定长度，所以通常会在其前面加上个数说明。           |
 
-#### 16.3.1.6 类型描述符
 
-| 标志符 | 含义                                    |
-| --- | ------------------------------------- |
-| B   | 基本数据类型byte                            |
-| C   | 基本数据类型char                            |
-| D   | 基本数据类型double                          |
-| F   | 基本数据类型float                           |
-| I   | 基本数据类型int                             |
-| J   | 基本数据类型long                            |
-| S   | 基本数据类型short                           |
-| Z   | 基本数据类型boolean                         |
-| V   | 代表void类型                              |
-| L   | 对象类型，比如：`Ljava/lang/Object;`          |
-| [   | 数组类型，代表一维数组。比如：`double[][][] is [[[D` |
-
-#### 16.3.1.7 常量类型和结构
-
-| 类型                               | 标志(或标识) | 描述          |
-| -------------------------------- | ------- | ----------- |
-| CONSTANT_utf8_info               | 1       | UTF-8编码的字符串 |
-| CONSTANT_Integer_info            | 3       | 整型字面量       |
-| CONSTANT_Float_info              | 4       | 浮点型字面量      |
-| CONSTANT_Long_info               | 5       | 长整型字面量      |
-| CONSTANT_Double_info             | 6       | 双精度浮点型字面量   |
-| CONSTANT_Class_info              | 7       | 类或接口的符号引用   |
-| CONSTANT_String_info             | 8       | 字符串类型字面量    |
-| CONSTANT_Fieldref_info           | 9       | 字段的符号引用     |
-| CONSTANT_Methodref_info          | 10      | 类中方法的符号引用   |
-| CONSTANT_InterfaceMethodref_info | 11      | 接口中方法的符号引用  |
-| CONSTANT_NameAndType_info        | 12      | 字段或方法的符号引用  |
-| CONSTANT_MethodHandle_info       | 15      | 表示方法句柄      |
-| CONSTANT_MethodType_info         | 16      | 标志方法类型      |
-| CONSTANT_InvokeDynamic_info      | 18      | 表示一个动态方法调用点 |
-
-#### 16.3.5.1 常量类型和结构细节
-
-![1598773300484](../image/chapter16/1598773300484.png)
-
-![1598773308492](../image/chapter16/1598773308492.png)
-
-#### 16.3.1.8 访问标志
-
-| 标志名称           | 标志值    | 含义                                                                     |
-| -------------- | ------ | ---------------------------------------------------------------------- |
-| ACC_PUBLIC     | 0x0001 | 标志为public类型                                                            |
-| ACC_FINAL      | 0x0010 | 标志被声明为final，只有类可以设置                                                    |
-| ACC_SUPER      | 0x0020 | 标志允许使用invokespecial字节码指令的新语义，JDK1.0.2之后编译出来的类的这个标志默认为真。（使用增强的方法调用父类方法） |
-| ACC_INTERFACE  | 0x0200 | 标志这是一个接口                                                               |
-| ACC_ABSTRACT   | 0x0400 | 是否为abstract类型，对于接口或者抽象类来说，次标志值为真，其他类型为假                                |
-| ACC_SYNTHETIC  | 0x1000 | 标志此类并非由用户代码产生（即：由编译器产生的类，没有源码对应）                                       |
-| ACC_ANNOTATION | 0x2000 | 标志这是一个注解                                                               |
-| ACC_ENUM       | 0x4000 | 标志这是一个枚举                                                               |
 
 #### 16.3.1.9 字段表访问标志
 
@@ -357,14 +305,7 @@ Class文件的总体结构如下：
 | ACC_SYNCHETIC | 0x1000 | 字段是否为由编译器自动产生  |
 | ACC_ENUM      | 0x4000 | 字段是否为enum      |
 
-#### 16.3.1.10 类索引、父类索引、接口索引
 
-| 长度  | 含义                           |
-| --- | ---------------------------- |
-| u2  | this_class                   |
-| u2  | super_class                  |
-| u2  | interfaces_count             |
-| u2  | interfaces[interfaces_count] |
 
 #### 16.3.1.11 属性的通用格式
 
@@ -514,8 +455,10 @@ Process finished with exit code 1
 ![1605581415866](../image/chapter16/1605581415866.png)
 
 - **全限定类名**：
+  
   - chapter16/Demo 这个就是类的全限定名，仅仅是把包名的"."替换为"/"，为了使得连续的多个全限定名之间不产生混淆，在使用时候最后一般会加一个";"，表示全限定名结束
 - **简单名称**：
+  
   - 简单名称指的是没有类型和参数修饰的方法或者字段名称，上面例子中的add() 方法和 num 字段的简单名称都是add和num
 - **描述符**：
   * 描述符的作用是用来描述字段的数据类型、方法的参数列表（包括数量、类型以及顺序）和返回值。 
@@ -588,8 +531,20 @@ Process finished with exit code 1
 
 - 访问标识（access_flag、访问标记、访问标志）
 - 在常量池后，紧跟着访问标记，该标记使用两个字节标识，用于识别一些类或者接口层次的访问信息，包括：这个Class是类还是接口；是否定义为 public 类型；是否定义为 abstract 类型，是否声明为 fianl等，各种访问标记如下：
+  - 标识符是组合而成不是单独设置的：比如一个public的类，它的访问标识是0x0021，是由ACC_PUBLIC和ACC_SUPER组合而成。
 
-![1605586297263](../image/chapter16/1605586297263.png)
+| 标志名称       | 标志值 | 含义                                                         |
+| -------------- | ------ | ------------------------------------------------------------ |
+| ACC_PUBLIC     | 0x0001 | 标志为public类型                                             |
+| ACC_FINAL      | 0x0010 | 标志被声明为final，只有类可以设置                            |
+| ACC_SUPER      | 0x0020 | 标志允许使用invokespecial字节码指令的新语义，JDK1.0.2之后编译出来的类的这个标志默认为真。（使用增强的方法调用父类方法） |
+| ACC_INTERFACE  | 0x0200 | 标志这是一个接口                                             |
+| ACC_ABSTRACT   | 0x0400 | 是否为abstract类型，对于接口或者抽象类来说，次标志值为真，其他类型为假 |
+| ACC_SYNTHETIC  | 0x1000 | 标志此类并非由用户代码产生（即：由编译器产生的类，没有源码对应） |
+| ACC_ANNOTATION | 0x2000 | 标志这是一个注解                                             |
+| ACC_ENUM       | 0x4000 | 标志这是一个枚举                                             |
+
+
 
 - 类的访问权限通常以 ACC_ 开头的常量
 - 每一种类型都表示通过设置访问标志的32位中的特定位来实现的，比如：如果是 public final 的类，则该标记为 ACC_PUBLIC | ACC_FINAL
@@ -601,53 +556,72 @@ Process finished with exit code 1
   - 如果有一个class文件被设置了 ACC_INTERFACE 标志，那么同时也得设置 ACC_ABSTRACT 标志，同时它不能再设置为 ACC_FINAL、ACC_SUPER、ACC_ENUM 标志
   - 如果没有设置ACC_INTERFACE标志，那么这个class文件可以具有上表除了ACC_ANNOTATION 外的其他所有标志，当然ACC_FINAL 和 ACC_ABSTRACT 着类互斥的标志除外，这两个标志不得同时设置
 - ACC_SUPER 标志用于确定类或者接口里面的 ***invokespecial*** 指令使用的是哪一种执行语义。**针对Java虚拟机指令集的编译器都应该设置这个标志**。对于JavaSE 8 以及后续版本来说，无论Class文件中这个类的标志的实际值是什么，也不管Class文件的版本号是多少，JVM为每个Class文件都设置了ACC_SUPER标志
-- ACC_SUPER 标志是为了向后兼容的由旧的Java编译器所编译的代码而设计的。目前的ACC_SUPER标志是由JDK1.0.2 之前的编译器生成的 access_flags 中是没有确定含义的，如果设置了该标志，那么 Oracle 的Java虚拟机实现会将其忽略
+  - ACC_SUPER 标志是为了向后兼容的由旧的Java编译器所编译的代码而设计的。目前的ACC_SUPER标志是由JDK1.0.2 之前的编译器生成的 access_flags 中是没有确定含义的，如果设置了该标志，那么 Oracle 的Java虚拟机实现会将其忽略
 - ACC_SYNTHETIC 标志意味着该类或者该接口是由编译器生成的，而不是由源代码生成的
 - 注解类型必须设置 ACC_ANNOTATION 标志，如果设置了ACC_ANNOTATION标志，那么也必须设置ACC_INTERFACE标志
-- ACC_ENUM标志表名该类或者父类为枚举类型
+- ACC_ENUM标志表明该类或者父类为枚举类型
 - 表中没有使用access_flags 标志是为未来拓展而预留的，预留的标记在编译器中设置为0，Java虚拟机实现也应该忽略他们。
 
-##### 类索引、父类索引、接口索引集合
+### 16.3.5 类索引、父类索引、接口索引集合
 
 - 在访问标记后，会指定该类的类别、父类类别以及实现的接口，格式如下：
 
-![1605587496647](../image/chapter16/1605587496647.png)
+  | 长度 | 含义                         |
+  | ---- | ---------------------------- |
+  | u2   | this_class                   |
+  | u2   | super_class                  |
+  | u2   | interfaces_count             |
+  | u2   | interfaces[interfaces_count] |
+
 
 - 这三项数据来确定这个类的继承关系
   - 类索引用于确定这个类的全限定名
   - 父类索引用于确定这个类的父类的全限定名。由于Java语言不允许多继承，所以父类索引只有一个，除了java.lang.Object之外，所有的Java类都有父类。因此除了java.lang.Object 外，所有Java类的父类索引都不能为0
   - 接口索引集合就是用来描述这个类实现了哪些接口，这些被实现的接口将按 implements 语句（如果这个类本身就是一个接口，就应该是 extends 语句）后的接口顺序从左到右排列到接口索引集合中。
-- **this_class （类索引）**
-  - 2字节无符号整数，指向常量池的索引。它提供了类的全限定名，如 cn/icanci/java/Demo。this_class 的值必须是对常量池中的某项的一个有效的索引值。常量池在这个索引处的成员必须是 CONSTANT_Class_info 类结构体，该结构体表示这个class文件所定义的类或者接口。
-- **super_class (父类索引)**
-  - 2字节无符号整数，指向常量池的索引，它提供了当前类的父类全限定名。如果没有继承任何类，其默认继承的就是java/lang/Object 类，同时，由于Java不支持多继承，所以其父类只有一个。
-  - super_class 指向的父类不能为final
-- **interfaces**
-  - 指向常量池索引集合，它提供了一个符号引用到所有已经实现的接口
-  - 由于一个类可以实现多个接口，因此需要以数组形式保存多个接口的索引，表示接口的每个索引也是一个指向常量池的CONSTANT_Class （当然这里就必须是接口，不能是类）
-- **interfaces_count （接口计数器）**
-  - interfaces_count 项的值表示当前类或者接口的直接接口的数量
-- **interfaces[interfaces_count]（接口索引集合）**
-  - interfaces [] 中每个成员的值必须是常量池表中某项有效的索引值，它的长度为 interfaces_count，每个成员interfaces[i] 必须为CONSTANT_Class_info 结构，其中 0<=i < interfaces_count
-  - 在interfaces[] 中，各个成员所表示的接口顺序和对应的源代码中给定的接口顺序是一致的（从左到右），也就是说 interfaces[0] 对应的是源代码中最左边的接口。
 
-##### 字段表集合
+#### 16.3.5.1 this_class （类索引）
+
+* 2字节无符号整数，指向常量池的索引。它提供了类的全限定名，如 chapter16/Demo。this_class 的值必须是对常量池中的某项的一个有效的索引值。常量池在这个索引处的成员必须是 CONSTANT_Class_info 类结构体，该结构体表示这个class文件所定义的类或者接口。
+
+#### 16.3.5.2 super_class (父类索引)
+
+* 2字节无符号整数，指向常量池的索引，它提供了当前类的父类全限定名。如果没有继承任何类，其默认继承的就是java/lang/Object 类，同时，由于Java不支持多继承，所以其父类只有一个。
+
+* super_class 指向的父类不能为final
+
+#### 16.3.5.3 interfaces
+
+* 指向常量池索引集合，它提供了一个符号引用到所有已经实现的接口
+
+* 由于一个类可以实现多个接口，因此需要以数组形式保存多个接口的索引，表示接口的每个索引也是一个指向常量池的CONSTANT_Class （当然这里就必须是接口，不能是类）
+
+##### 16.3.5.3.1 interfaces_count （接口计数器）
+
+* interfaces_count 项的值表示当前类或者接口的直接接口的数量
+
+##### 16.3.5.3.2 interfaces[interfaces_count]（接口索引集合）
+
+* interfaces [] 中每个成 员的值必须是常量池表中某项有效的索引值，它的长度为 interfaces_count，每个成员interfaces[i] 必须为CONSTANT_Class_info 结构，其中 0<=i < interfaces_count
+
+* 在interfaces[] 中，各个成员所表示的接口顺序和对应的源代码中给定的接口顺序是一致的（从左到右），也就是说 interfaces[0] 对应的是源代码中最左边的接口。
+
+### 16.3.6 字段表集合
 
 - **fields**
   - 用于描述接口或者类中声明的变量。字段（field）包括**类级别变量和实例级变量**，但是不包括方法内部、代码块内部声明的局部变量
   - 字段叫什么名字、字段定义的数据类型，这些都是无法固定的，只能引用常量池中的常量来描述
-  - 它指向常量池索引几个，它描述了每个字段的完整信息。比如**字段的标识符、访问修饰符（public 、private、protected）、是类变量还是实例变量（static修饰符）、是否是常量（final修饰）**等
+  - 它指向常量池索引几个，它描述了每个字段的完整信息。比如字段的标识符、访问修饰符（public 、private、protected）、是类变量还是实例变量（static修饰符）、是否是常量（final修饰）等
   - 注意事项
     - 字段表集合中不会列出对外部类或者实现的接口中继承而来的字段，但有可能列出原本Java代码中不存在的字段。比如在内部类中为了保持对外部类的访问性，会自动添加指向外部类实例的字段
     - 在Java语言中字段是无法重载的，两个字段的数据类型、修饰符不管是不是相同。都必须使用不一样的名称，但是对于字节码来说，如果两个字段的描述符不一致，那么字段重名就是合法的。
 
-###### 字段计数器
+#### 16.3.6.1 字段计数器
 
 - **fields_count （字段计数器）**
   - fields_count 的值表示当前class文件fields表的成员个数。使用2个字节表示
   - fields表中的每一个成员都是一个 field_info 结构，用于表示该类或者接口所声明的所有类或者实例字段，不包括方法内部声明的变量，也不包括从父类或者父接口继承的那些字段
 
-###### 字段表
+#### 16.3.6.2 字段表
 
 - **fields[] 字段表**
   
@@ -664,38 +638,87 @@ Process finished with exit code 1
   
   ![1605590760197](../image/chapter16/1605590760197.png)
   
-  - **字段表访问标识**：一个字段可以被各种关键字去修饰，比如：作用域修饰符（public、private、protected）、static修饰符、final修饰符、volatile修饰符。因此，可以像类一样，使用一些标记来标记字段。字段的访问标记有如下这些：
-  
-  ![1605590952971](../image/chapter16/1605590952971.png)
 
-- **字段名索引**：根据字段名索引的值，查询常量池中指定索引项即可
+##### 16.3.6.2.1 字段表访问标识
 
-- **描述符索引：** **描述符的作用是用来描述字段的数据类型、方法的参数列表（包括数量、类型以及顺序）和返回值。** 根据描述符规则，基本数据类型（byte、char、double、float、int、long、short、boolean）以及代表无返回值的void类型都用一个大写字符来表示，而对象类型则用字符L加对象的全限定名来表示 （数据类型：基本数据类型、引用数据类型），详见下表：
-  
-  ![1605582396452](../image/chapter16/1605582396452.png)
+​	一个字段可以被各种关键字去修饰，比如：作用域修饰符（public、private、protected）、static修饰符、final修饰符、volatile修饰符。因此，可以像类一样，使用一些标记来标记字段。字段的访问标记有如下这些：
 
-- 属性表集合：一个字段还可能拥有一些属性，用于存储更多的额外信息。比如初始化值、一些注释信息等。属性个数存在attribute_count 中，属性具体内容存放在 attributes数组中。
+| 标志名称      | 标志值 | 含义                       |
+| ------------- | ------ | -------------------------- |
+| ACC_PUBLIC    | 0x0001 | 字段是否为public           |
+| ACC_PRIVATE   | 0x0002 | 字段是否为private          |
+| ACC_PROTECTED | 0x0004 | 字段是否为protected        |
+| ACC_STATIC    | 0x0008 | 字段是否为static           |
+| ACC_FINAL     | 0x0010 | 字段是否为final            |
+| ACC_VOLATILE  | 0x0040 | 字段是否为volatile         |
+| ACC_TRANSTENT | 0x0080 | 字段是否为transient        |
+| ACC_SYNCHETIC | 0x1000 | 字段是否为由编译器自动产生 |
+| ACC_ENUM      | 0x4000 | 字段是否为enum             |
+
+##### 16.3.6.2.2 字段名索引
+
+​	根据字段名索引的值，查询常量池中指定索引项即可
+
+##### 16.3.6.2.3 描述符索引
+
+​	**描述符的作用是用来描述字段的数据类型、方法的参数列表（包括数量、类型以及顺序）和返回值。** 根据描述符规则，基本数据类型（byte、char、double、float、int、long、short、boolean）以及代表无返回值的void类型都用一个大写字符来表示，而对象类型则用字符L加对象的全限定名来表示 （数据类型：基本数据类型、引用数据类型），详见下表：
+
+| 标志符 | 含义                                                 |
+| ------ | ---------------------------------------------------- |
+| B      | 基本数据类型by.te                                    |
+| C      | 基本数据类型char                                     |
+| D      | 基本数据类型double                                   |
+| F      | 基本数据类型float                                    |
+| I      | 基本数据类型int                                      |
+| J      | 基本数据类型long                                     |
+| S      | 基本数据类型short                                    |
+| Z      | 基本数据类型boolean                                  |
+| V      | 代表void类型                                         |
+| L      | 对象类型，比如：`Ljava/lang/Object;`                 |
+| [      | 数组类型，代表一维数组。比如：`double[][][] is [[[D` |
+
+##### 16.3.6.2.4 属性计数器
+
+* attributes_count 的值表示当前字段属性个数。使用2个字节表示。
+
+##### 16.3.6.2.5 属性表集合
+
+* 一个字段还可能拥有一些属性，用于存储更多的额外信息。
+  * 比如初始化值（常量才有 ）、一些注释信息等。
+  * 属性个数存在attribute_count 中，属性具体内容存放在 attributes数组中。
+  * 结构可以参考属性表结合。
+
+```java
+以常量属性为例，结构为：
+ConstantValue_attribute{
+	u2 attribute_name_index;
+	u4 attribute_length;
+	u3 constantvalue_index;
+}
+```
 
 - 对于常量属性而言，attribute_length 值恒为2
 
-##### 方法表集合
+![image-20240101145129237](../image/chapter16/image-20240101145129237.png)
+
+### 16.3.7  方法表集合
 
 - **methods：指向常量池索引集合，它完整描述了每个方法的签名**
-  - 在字节码文件中，**每一个method_info 项都对应着一个类或者接口中的方法信息**。比如方法的访问修饰符（public、private、protected），方法的返回值类型以及方法的参数信息等
+  - 在字节码文件中，**每一个method_info(每个方法) 项都对应着一个类或者接口中的方法信息**。比如方法的访问修饰符（public、private、protected），方法的返回值类型以及方法的参数信息等
   - 如果这个方法不是抽象的或者不是native的，那么字节码中会体现出来
-  - 一方面，methods表只描述当前类火接口中声明的方法，不包括从父类或者父接口继承的方法。另一方面，methods表可能会出现由编译器自动添加的方法，最典型的就是编译器产生的方法信息（比如：类(接口) 初始化方法<client> 和实例初始化方法 <init>()）
+  - 一方面，methods表只描述当前类或接口中声明的方法，不包括从父类或者父接口继承的方法。另一方面，methods表可能会出现由编译器自动添加的方法，最典型的就是编译器产生的方法信息（比如：类(接口) 初始化方法<client> 和实例初始化方法 <init>()）
 - **使用注意事项**
   - 在 Java 语言中，要重载(Overload)一个方法，除了要与原方法具有相同的简单名称之外，还要求必须拥有一个与原方法不同的特征签名，特征签名就是一个方法中各个参数在常量池中的字段符号引用的集合，也就是因为返回值不会包含在特征签名之中，因此 Java 语言里无法仅仅依靠返回值的不同来对一个已有方法进行重载。
   - 但在 Class 文件格式中，特征签名的范围更大一些，只要描述符不是完全一致的两个方法就可以共存。也就是说，如果两个方法有相同的名称和特征签名，但返回值不同，那么也是可以合法共存于同一个 Class 文件中。
   - 也就是说，尽管 Java 语法规范并不允许在一个类或者接口中声明多个方法签名相同的方法，但是和 Java 语法规范相反，字节码文件中却恰恰允许存放多个方法签名相同的方法，唯一的条件就是这些方法之间的返回值不能相同 
 
-###### 方法计数器
+#### 16.3.7.1方法计数器
 
 - **methods_count (方法计数器)**
   - methods_count 的值表示当前class文件的methods表的成员个数。使用两个字节表示
   - methods 表中每个成员都是一个method_info 结构
 
-###### 方法表
+#### 16.3.7.2 方法表
 
 - methods 表中的每个成员都必须是一个 method_info 结构，用于表示当前类或接口中某个方法的完整描述。如果某个 method_info 结构的 access_flags 项既没有设置 ACC_NATIVE 标志也没有设置 ACC_ABSTRACT 标志，那么该结构中也应包含实现这个方法所有的 Java 虚拟机指令 
 - method_info 结构可以表示类和接口中定义的所有方法，包括实例方法、类方法、实例初始化方法和类或接口初始化方法
@@ -703,11 +726,31 @@ Process finished with exit code 1
 
 ![1605610681511](../image/chapter16/1605610681511.png)
 
-- **方法表访问标志**： 跟字段表一样，方法表也有访问标志，而且他们的标志有部分相同，部分则不同，方法表的具体访问标志如下： 
+##### 16.3.7.2.1 方法表访问标志
 
-![1605611172729](../image/chapter16/1605611172729.png)
+跟字段表一样，方法表也有访问标志，而且他们的标志有部分相同，部分则不同，方法表的具体访问标志如下： 
 
-##### 属性表集合
+![img](../image/chapter16/SouthEast)
+
+##### 16.3.7.2.2 方法名索引
+
+* 根据字段名索引的值，查询常量池中指定索引项即可
+
+##### 16.3.7.2.3 描述符索引
+
+* 描述符的作用是用来描述字段的数据类型、方法的参数列表（包括数量、类型以及顺序）和返回值。
+
+##### 16.3.7.2.4 属性计数器
+
+* attributes_count 的值表示当前class文件属性个数。使用2个字节表示。
+
+##### 16.3.7.2.4 属性集合
+
+一个方法还可能拥有一些属性，用于存储更多的额外信息。
+
+* 结构可以参考属性表结合。
+
+### 16.3.8 属性表集合
 
 - 方法表集合之后的属性表集合，**指的是 Class 文件所携带的辅助信息**，比如该 Class 文件的源文件的名称。以及任何带有 RetentionPolicy.CLASS 或者 RetentionPolicy.RUNTIME 的注解。这类信息通常被用于 Java 虚拟机的验证和运行，以及 Java 程序的调试，**一般无需深入了解**
 
@@ -715,31 +758,34 @@ Process finished with exit code 1
 
 - 属性表集合的限制没有那么严格，不再要求各个属性表具有严格的顺序，并且只要不与已有的属性名重复，任何人实现的编译器都可以向属性表中写入自己定义的属性信息，但 Java 虚拟机运行时会忽略掉它不认识的属性
 
-###### attributes_count(属性计数器)
+#### 16.3.8.1 attributes_count(属性计数器)
 
-- attributes_count 的值表示当前 Class 文件属性表的成员个数。属性表中每一项都是一个 attribute_info 结构
+- attributes_count 的值表示当前 Class 文件属性表的成员个数，u2两个字节表示。属性表中每一项都是一个 attribute_info 结构
 
-###### attributes[] (属性表)
+#### 16.3.8.2 attributes[] (属性表)
 
 - 属性表的每个项的值必须是 attribute_info 结构。属性表的结构比较灵活，各种不同的属性只要满足以下结构即可
 
-- **属性的通用格式**
+
+##### 16.3.8.2.1 属性的通用格式
 
 ![1605611379111](../image/chapter16/1605611379111.png)
 
 - 即只需说明属性的名称以及占用位数的长度即可，属性表具体的结构可以去自定义 
-- **属性类型**
-- 属性表实际上可以有很多类型，上面看到的 Code 属性只是其中一种， Java 8 里面定义了23种属性，下面这些是虚拟机中预定义的属性：
+
+##### 16.3.8.2.2 属性类型
+
+- 属性表实际上可以有很多类型，上面看到的 Code 属性只是其中一种， Java 8 里面定义了23种属性，不同的属性的格式不一样，也就是info的内容可能不一样，需要去查询。下面这些是虚拟机中预定义的属性：
 
 ![1605611596272](../image/chapter16/1605611596272.png)
 
-###### 部分属性详解
+##### 16.3.8.2.3 部分属性详解
 
 - ConstantValue 属性
 
-- ConstantValue 属性表示一个常量字段的值。位于 field_info 结构的属性表中
+  - ConstantValue 属性表示一个常量字段的值。位于 field_info 结构的属性表中
 
-- ```java
+  ```java
   ConstantValue_attribute {
       u2 attribute_name_index;
       u4 attribute_length;
@@ -749,7 +795,7 @@ Process finished with exit code 1
 
 - Deprecated 属性
 
-- ```java
+  ```java
   Deprecated_attribute {
       u2 attribute_name_index;
       u4 attribute_length;
@@ -758,29 +804,26 @@ Process finished with exit code 1
 
 - Code 属性
 
-- Code 属性就是存放方法体里面的代码，但是，并非所有方法表都有 Code 属性，像接口或者抽象方法，他们没有具体的方法体，因此也就不会有 Code 属性了
-
-- Code 属性表的结构，如下：
+  - Code 属性就是存放方法体里面的代码，但是，并非所有方法表都有 Code 属性，像接口或者抽象方法，他们没有具体的方法体，因此也就不会有 Code 属性了
+  - Code 属性表的结构，如下：
+  - 可以看到：Code 属性表的前两项跟属性表是一致的，即 Code 属性表遵循属性表的结构，后面那些则是他自定义的结构 
 
 ![1605611767677](../image/chapter16/1605611767677.png)
 
-- 可以看到：Code 属性表的前两项跟属性表是一致的，即 Code 属性表遵循属性表的结构，后面那些则是他自定义的结构 
-
 - **InnerClasses 属性**
 
-- 为了方便说明特别定义一个表示类或接口的 Class 格式为 C。如果 C 的常量池中包含某个 CONSTANT_Class_info 成员，且这个成员所表示的类或接口不属于任何一个包，那么 C 的 ClassFile 结构的属性表中就必须含有对应的 InnerClasses 属性。InnerClasses 属性是在 JDK 1.1 中为了支持内部类和内部接口而引入的，位于 ClassFile 结构的属性表
+  - 为了方便说明特别定义一个表示类或接口的 Class 格式为 C。如果 C 的常量池中包含某个 CONSTANT_Class_info 成员，且这个成员所表示的类或接口不属于任何一个包，那么 C 的 ClassFile 结构的属性表中就必须含有对应的 InnerClasses 属性。InnerClasses 属性是在 JDK 1.1 中为了支持内部类和内部接口而引入的，位于 ClassFile 结构的属性表
 
 - **LineNumberTable 属性**
 
-- LineNumberTable 属性是可选变长属性，位于 Code 结构的属性表
+  - LineNumberTable 属性是可选变长属性，位于 Code 结构的属性表
 
-- LineNumberTable 属性是**用来描述 Java 源码行号与字节码行号之间的对应关系**，这个属性可以用来在调试的时候定位代码执行的行数
-  
+  - LineNumberTable 属性是**用来描述 Java 源码行号与字节码行号之间的对应关系**，这个属性可以用来在调试的时候定位代码执行的行数
   - start_pc，即字节码行号；line_number，即 Java 源代码行号
 
-- 在 Code 属性的属性表中，LineNumberTable 属性可以按照任意顺序出现，此外，多个 LineNumberTable 属性可以共同表示一个行号在源文件中表示的内容，即 LineNumberTable 属性不需要与源文件的行一一对应
+  - 在 Code 属性的属性表中，LineNumberTable 属性可以按照任意顺序出现，此外，多个 LineNumberTable 属性可以共同表示一个行号在源文件中表示的内容，即 LineNumberTable 属性不需要与源文件的行一一对应
 
-- LineNumberTable 属性表结构：
+  - LineNumberTable 属性表结构：
 
 ```java
 LineNumberTable_attribute {
@@ -796,14 +839,13 @@ LineNumberTable_attribute {
 
 - **LocalVariableTable 属性**
 
-- LocalVariableTable 是可选变长属性，位于 Code 属性的属性表中。它被调试器**用于确定方法在执行过程中局部变量的信息。**在 Code 属性的属性中，LocalVariableTable 属性可以按照任意顺序出现。Code 属性中的每个局部变量最多只能有一个 LocalVariableTable 属性。
-  
-  - start_pc + length 表示这个变量在字节码中的生命周期起始和结束的偏移位置(this 生命周期从头0到结尾10)
-  - index 就是这个变量在局部变量表中的槽位(槽位可复用)
-  - name 就是变量名称
-  - Descriptor 表示局部变量类型描述
-
-- LocalVariableTable 属性表结构： 
+  - LocalVariableTable 是可选变长属性，位于 Code 属性的属性表中。它被调试器**用于确定方法在执行过程中局部变量的信息。**在 Code 属性的属性中，LocalVariableTable 属性可以按照任意顺序出现。Code 属性中的每个局部变量最多只能有一个 LocalVariableTable 属性。
+    - start_pc + length 表示这个变量在字节码中的生命周期起始和结束的偏移位置(this 生命周期从头0到结尾10)
+    - index 就是这个变量在局部变量表中的槽位(槽位可复用)
+    - name 就是变量名称
+    - Descriptor 表示局部变量类型描述
+    
+  - LocalVariableTable 属性表结构： 
 
 ```java
 LocalVariableTable_attribute {
@@ -822,21 +864,20 @@ LocalVariableTable_attribute {
 
 - **Signature 属性**
 
-- Signature 属性是可选的定长属性，位于 ClassFile，field_info 或 method_info 结构的属性表中。在 Java 语言中，任何类、接口、初始化方法或成员的泛型签名如果包含了类型变量(Type Variables)或参数化类型(Parameterized Types)，则 Signature 属性会为它记录泛型签名信息
+  - Signature 属性是可选的定长属性，位于 ClassFile，field_info 或 method_info 结构的属性表中。在 Java 语言中，任何类、接口、初始化方法或成员的泛型签名如果包含了类型变量(Type Variables)或参数化类型(Parameterized Types)，则 Signature 属性会为它记录泛型签名信息
 
 - **SourceFile 属性**
 
-- SourceFile 属性结构
+  - SourceFile 属性结构
+  - 可以看到，其长度总是固定的8个字节
 
 ![1605613914286](../image/chapter16/1605613914286.png)
 
-- 可以看到，其长度总是固定的8个字节
-
 - **其他属性**
 
-- Java 虚拟机中预定义的属性有20多个，这里就不一一介绍了，通过上面几个属性的介绍，只要领会其精髓，其他属性的解读也是易如反掌
+  - Java 虚拟机中预定义的属性有20多个，这里就不一一介绍了，通过上面几个属性的介绍，只要领会其精髓，其他属性的解读也是易如反掌
 
-#### 小结
+#### 16.3.9 小结
 
 - 本章主要介绍了 Class 文件的基本格式
 
@@ -844,7 +885,7 @@ LocalVariableTable_attribute {
 
 - 从 Java 虚拟机的角度看，通过 Class 文件，可以让更多的计算机语言支持 Java 虚拟机平台。因此，Class 文件结构不仅仅是 Java 虚拟机的执行入口，更是 Java 生态圈的基础和核心
 
-#### 使用 javap 指令解析 Class 文件
+## 16.4 使用 javap 指令解析 Class 文件
 
 - 自己分析类文件结构太麻烦了！Oracle 提供了 javap 工具
 
@@ -852,7 +893,7 @@ LocalVariableTable_attribute {
 
 - 通过反编译生成的汇编代码，我们可以深入的了解 Java 代码的工作机制。比如我们看到的 i++，这行代码实际运行时是先获取变量 i 的值，然后将这个值加1，最后再将加1后的值赋值给变量 i
 
-##### 解析字节码的作用
+### 16.4.1 解析字节码的作用
 
 - 通过反编译生成的字节码文件，我们可以深入的了解 Java 代码的工作机制。但是，自己分析类文件结构太麻烦了，除了使用第三方的 jclasslib 工具之外，Oracle 官方也提供了工具：javap
 
@@ -860,42 +901,68 @@ LocalVariableTable_attribute {
 
 - 通过局部变量表，我们可以查看局部变量的作用域范围、所在槽位等信息，甚至可以看到槽位复用等信息
 
-##### javac -g 操作
+### 16.4.2 javac -g 操作
 
 - 解析字节码文件得到的信息中，有些信息(如局部变量表、指令和代码行偏移量映射表、常量池中方法的参数名称等等)需要在使用 javac 编译成 Class 文件时，指定参数才能输出
 
-- 比如，你直接 javac xx.java，就不会在生成对应的局部变量表等信息，如果你使用 javac -g xx.java 就可以生成所有相关信息了。如果你使用的 Eclipse 或 IDEA，则默认情况下，Eclipse、IDEA 在编译时会帮你生成局部变量表、指令和代码行偏移量映射表等信息
+- 比如，你直接 javac xx.java，不加-g参数，就**不会在生成对应的局部变量表等信息**，如果你使用 javac -g xx.java 就可以生成所有相关信息了。如果你使用的 Eclipse 或 IDEA，则默认情况下，Eclipse、IDEA 在编译时会帮你生成局部变量表、指令和代码行偏移量映射表等信息
 
-##### javap 的用法
+### 16.4.3 javap 的用法
 
-- javap 的用法格式：javap
+- javap 的用法格式：
+
+```shell
+javap <options> <classes>
+```
 
 - 其中，classes 就是你要反编译的 Class 文件
-
 - 在命令行中直接输入 javap 或 javap -help 可以看到 javap 的 options 有如下选项：
 
 ![1605614277542](../image/chapter16/1605614277542.png)
 
-- 一般常用的是 -v -l -c 三个选项
+```
+javap -help 或--help 或 -？ 输出此用法消息
+javap -version  版本信息，是当前javap所在的JDK版本信息，不是生成class的jdk版本信息。
+```
 
-- javap -l 会输出行号和本地变量表信息
+```
+javap -public <classes>仅显示公共类和成员
+javap -protected <classes> 显示受保护的/公共类和成员。即显示>=protected的
+javap -p或private <classes> 显示所有类和成员，即显示>=private的
+javap -package <classes> 显示程序包/受保护的/公共类
+javap -sysinfo <classes> 显示正在处理的类的系统信息（路径、大小、日期、md5,源文件名）
+```
 
-- javap -c 会对当前 Class 字节码进行反编译生成汇编代码
+```
+javap -s <classes> 输出内部类型签名
+javap -l <classes> 会输出行号和本地变量表信息
+javap -c <classes> 会对当前 Class 字节码进行反编译生成汇编代码
+javap -v 或verbose <classes> 除了包含 -c 内容外，还会输出行号、局部变量表信息、常量池等信息
+```
 
-- javap -v classxx 除了包含 -c 内容外，还会输出行号、局部变量表信息、常量池等信息
+```
+javap -classpath <path>  指定查找用户类文件位置
+javap -cp <path> 指定查找用户类文件位置
+```
 
-#### 总结
+- 一般常用使用的是 javap -p -v <classes>
 
-- 通过 javap 命令可以查看一个 Java 类反汇编得到的 Class 文件版本号、常量池、访问标识、变量表、指令代码行号表等信息。不显式类索引、父类索引、接口索引集合、()、()等结构
+### 16.4.4 总结
+
+- 通过 javap 命令可以查看一个 Java 类反汇编得到的 Class 文件版本号、常量池、访问标识、变量表、指令代码行号表等信息。不显式类索引、父类索引、接口索引集合、<clinit>()、<init>()等结构。
+
+- javap命令会不会像jclasslib一样是源文件显示，会将clinit，init方法等转换成构造器显示。
 
 - 通过对前面的例子代码反汇编文件的简单分析，可以发现，一个方法的执行通常会涉及下面几块内存的操作
 
-- Java 栈中：局部变量表、操作数栈
+  - Java 栈中：局部变量表、操作数栈
 
-- Java 堆： 通过对象的地址引用去操作
+  - Java 堆： 通过对象的地址引用去操作
 
-- 常量池
+  - 常量池
 
-- 其他如帧数据区、方法区的剩余部分等情况，测试中没有显示出来，这里说明一下
+  - 其他如帧数据区、方法区的剩余部分等情况，测试中没有显示出来，这里说明一下
 
 - 平常，我们比较关注的是 Java 类中每个方法的反汇编中的指令操作过程，这些指令都是顺序执行的，可以参考官方文档查看每个指令含义
+
+  https://docs.oracle.com/javase/specs/jvms/se7/html/jvms-6.html
