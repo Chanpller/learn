@@ -1,22 +1,34 @@
-
-
 # 第8章：Vue3
 
 ## 8.1 vue3简介
+
 * 2020你那9月18日，vue.js发布3.0版本，代号：One Piece（海贼王）
+
 * 耗时2年多、2600+次提交、30+RFC、600+此PR、99位贡献者
+
 * github的tags地址：https://github.com/vuejs/core/releases/tag/v3.0.0
-## 8.2 vue3带来了什么
-### 8.3.1 性能提升
+  
+  ## 8.2 vue3带来了什么
+  
+  ### 8.3.1 性能提升
+
 * 打包大小减少41%
+
 * 初次渲染快55%,更新渲染快133%
+
 * 内存减少54%
-### 8.3.2 源码的升级
+  
+  ### 8.3.2 源码的升级
+
 * 使用Proxy代替defineProperty实现响应式
+
 * 重写虚拟DOM的实现和Tree-Sharking（去除多余代码）
-### 8.3.3 拥抱TypeScriprt
+  
+  ### 8.3.3 拥抱TypeScriprt
+
 * vue3可以更好的支持TypeScriprt
-### 8.3.4 新特性
+  
+  ### 8.3.4 新特性
 1. Composition(组合API)
 * setup配置
 * ref和reactive
@@ -25,33 +37,40 @@
 2. 新的内置组件
 * Fragment
 * Teleport
-Suspense
+  Suspense
 3. 其他改变
 * 新的生命周期钩子
+
 * data选项应始终被声明一个函数（不能声明为对象）
+
 * 移除KeyCode支持作为v-on的修饰符（不能使用数字键了，比如@key-up.13这种不能使用了）
-## 8.3 创建vue3.0
-### 8.3.1 使用vue-cli创建
-```## 官方文档：https://v3.cn.vuejs.org/guide/installation.html
-## 查看版本号
-vue --version
-## 全局安装，vue/cli脚手架必须时4.5.0以上
-npm install -g @vue/cli
-vue create vue3_test 创建vue3的工程
-```
-### 8.3.2 使用vite创建
-官方文档:https://v3.cn.vuejs.org/guide/installation.html#vite  
-vite官网:https://cn.vitejs.dev/  
+  
+  ## 8.3 创建vue3.0
+  
+  ### 8.3.1 使用vue-cli创建
+  
+  ```##
+  ## 查看版本号
+  vue --version
+  ## 全局安装，vue/cli脚手架必须时4.5.0以上
+  npm install -g @vue/cli
+  vue create vue3_test 创建vue3的工程
+  ```
+  
+  ### 8.3.2 使用vite创建
+  
+  官方文档:https://v3.cn.vuejs.org/guide/installation.html#vite  
+  vite官网:https://cn.vitejs.dev/  
 1. 什么时vite?---新一代前端构建工具
 2. 优势如下：
 * 开发环境中，无需打包操作，可快速的冷启动。
 * 轻量快速的热重载(HMR)。
 3. 真正的按需编译，不再等待整个应用编译完成。
-传统构建与vite构建对比图
-![](./../image/bundler.37740380.png)
-![](./../image/esm.3070012d.png)
+   传统构建与vite构建对比图
+   ![](./../image/bundler.37740380.png)
+   ![](./../image/esm.3070012d.png)
 
-```# npm 6.x
+```#
 ## 创建项目，也可以用 npm init vite-app <project-name>
 $ npm init vite@latest <project-name> --template vue
 
@@ -62,36 +81,41 @@ $ cd <project-name>
 $ npm install
 $ npm run dev
 ```
+
 ## 8.4 初识vue3工程结构
+
 ### 8.4.1 main.js改变
+
 * 引入的不再是vue的构造函数了，引入的时一个名为createApp的工厂函数
+
 * 创建的应用实例对象--app（类似与vue2中的vm，但是app比vm更“轻”,app是个对象）
+
 * vue2中的Vue不再是构造函数，已经移除，不能使用下面方式创建了。
+
 * vue文件中的template可以没有根标签
-demo
-```vue
-//引入的不再是vue的构造函数了，引入的时一个名为createApp的工厂函数，不再是构造函数。
-import { createApp } from 'vue'
-import App from './App.vue'
-//创建的应用实例对象--app（类似与vue2中的vm，但是app比vm更“轻”,app是个对象）
-const app = createApp(App)
-console.log(app)
-app.mount('#app')
+  demo
+  
+  ```vue
+  //引入的不再是vue的构造函数了，引入的时一个名为createApp的工厂函数，不再是构造函数。
+  import { createApp } from 'vue'
+  import App from './App.vue'
+  //创建的应用实例对象--app（类似与vue2中的vm，但是app比vm更“轻”,app是个对象）
+  const app = createApp(App)
+  console.log(app)
+  app.mount('#app')
+  ```
 
 // setTimeout(()=>{
 //     app.unmount('#app');//卸载
 // },2000)
 
-
 // createApp(App).mount('#app')
-
 
 //vue2中的Vue不再是构造函数，已经移除，不能使用下面方式创建了。Vue是undfined
 // import Vue from 'vue'
 // const  vm = new Vue({
 //     render:h=>h(App)
 // })
-
 
 ```
 ## 8.5 常用Composition API
@@ -171,7 +195,9 @@ export default {
 <style>
 </style>
 ```
+
 Demo 返回一个渲染函数
+
 ```vue
 <template>
 
@@ -193,22 +219,37 @@ export default {
 
 </style>
 ```
+
 ## 8.6 ref函数
+
 ### 8.6.1 作用
+
 定义一个响应式的数据
+
 ### 8.6.2 语法
+
 * const xxx = ref(initValue)
+
 * 创建一个包含响应式数据的引用对象（reference对象，简称ref对象）
+
 * 操作数据：xxx.value
+
 * 模板中读取数据：不需要xxx.value，直接写：{{xxx}}
+
 * 如果是对象类型，模板中直接写 对象名.属性名。
+
 * 对象类型修改数据，xxx.value.属性名
-### 8.6.3 备注
+  
+  ### 8.6.3 备注
+
 * 接收的数据可以是：基本类型，也可以是对象类型
+
 * 基本类型的数据：响应式依旧是靠Object.defineProperty()的get与set完成。
+
 * 对象类型的数据：内部“求组”了vue3.0中的一个新函数----reactive函数变成Proxy对象(封装了es6 proxy，ref引用reactive函数，reactive函数再引用proxy实现)。
-```vue
-<template>
+  
+  ```vue
+  <template>
   <h1>一个人的信息</h1>
   <h2>姓名:{{ name }}</h2>
   <h2>年龄:{{ age }}</h2>
@@ -218,7 +259,8 @@ export default {
   <button @click="changeName()">改变名字</button>
   <button @click="changeAge()">改变年龄</button>
   <button @click="changeJob()">修改薪资</button>
-</template>
+  </template>
+  ```
 
 <script>
 import {ref} from 'vue'
@@ -267,6 +309,7 @@ export default {
 
 <style>
 </style>
+
 ```
 ## 8.7 reactive函数
 ### 8.7.1 作用
@@ -345,23 +388,31 @@ export default {
 <style>
 </style>
 ```
+
 ## 8.8 vue3.0中的响应式原理
+
 ### 8.8.1 vue2.x的响应式
+
 1. 实现原理
 * 对象类型：通过Object.defineProperty()对属性的读取，修改进行拦截（数据劫持）。
 * 数组类型：通过重写更新数组的一系列方法来实现拦截。（对数组的变更方法进行包裹）
 2. 存在问题
 * 新增属性、删除属性，界面不会更新。需要借助（vm实例的$set(对象，属性名，值)、$delete（对象，属性名，值）或Vue的set或delete才能实现页面更新）
+
 * 直接通过下标修改数组，界面不会自动更新。需要借助（vm实例的$set(对象，属性名，值)、$delete（对象，属性名，值）或Vue的set或delete才能实现页面更新），或者数组的splice等方法才能更新。
-### 8.8.2 vue3的响应式
+  
+  ### 8.8.2 vue3的响应式
 1. 是实现原理
 * 通过Proxy(代理):拦截对象中任意属性的变化，包括属性的读写、属性的添加、属性的删除等。
+
 * 通过Reflect(反射):对被代理对象的属性进行操作。
+
 * MDN文档中描述的Proxy和Reflect:
-Proxy:https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Proxy  
-Reflect:https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Reflect
-```vue
-<script>
+  Proxy:https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Proxy  
+  Reflect:https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Reflect
+  
+  ```vue
+  <script>
         const proxyPerson = {
             name:'张三',
             age:18
@@ -383,7 +434,7 @@ Reflect:https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global
                 console.log('set-propName',propName)
                 console.log('set-value',value)
                 console.log('set-receiver',receiver)
-
+  
                 //vue3通过Reflect进行设置的，该方法返回一个设置成功或失败。
                 //Reflect如果有相同对象，相同的属性名，修改值不会报错，只会返回成功或失败。
                 //如果借助Object.defineProperty进行set操作，有相同对象，相同的属性名会报错。
@@ -397,8 +448,9 @@ Reflect:https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global
             }
         })
     </script>
-```
-## 8.9 reactive对比ref
+  ```
+  
+  ## 8.9 reactive对比ref
 1. 从定义数据角度对比
 * ref用来定义**<font color='red'>基本数据类型</font>**数据
 * reactive用来定义**<font color='red'>对象或数组类型</font>**数据
@@ -413,32 +465,30 @@ Reflect:https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global
 ## 8.11 setup的两个注意点
 
 1. setup执行的时机
-
 * 在beforeCreate之前执行一次，this是undefined
-
 2. setup的参数
-
 * props：值为对象，包含：组件外部传递过来，且组件内部声明接收了的属性。
 * context：上下文对象。里面包含三个属性：attrs:值为对象，包含：组件外部传递过来，但没有在props配置中声明的属性，相当于vue2中的this.$attrs。slots:收到的插槽内容，相当于Vue2中的this.$slots。emit:分发自定义事件的函数，相当于vue2中的this.$emit。 
 
 ## 8.12计算属性与监视
 
 1. computed函数
+   
    * 与vue2中computed配置功能一致。也可以按照vue2的方式写
    
    * 写法
-   
+     
      ```
      import {computed} from 'vue'
      
      setup(){
-     	...
-     	//计算属性简写，不是响应式的，只能读取
-     	let fullName = computed(()=>{
-     		return person.firstName + '-' + person.lastName
-     	})
-     	//计算属性完整写法，响应式的
-     	let fullName = computed({
+         ...
+         //计算属性简写，不是响应式的，只能读取
+         let fullName = computed(()=>{
+             return person.firstName + '-' + person.lastName
+         })
+         //计算属性完整写法，响应式的
+         let fullName = computed({
              get(){
                return person.firstName + '-' + person.lastName
              },
@@ -451,185 +501,180 @@ Reflect:https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global
      
      }
      ```
-   
-     
-   
-   * 调试computed 3.2+
-   
-     `computed` 可接受一个带有 `onTrack` 和 `onTrigger` 选项的对象作为第二个参数：
-   
-     - `onTrack` 会在某个响应式 property 或 ref 作为依赖被追踪时调用。
-     - `onTrigger` 会在侦听回调被某个依赖的修改触发时调用。
-   
-     所有回调都会收到一个 debugger 事件，其中包含了一些依赖相关的信息。推荐在这些回调内放置一个 `debugger` 语句以调试依赖。
-   
-     ```js
-     const plusOne = computed(() => count.value + 1, {
-       onTrack(e) {
-         // 当 count.value 作为依赖被追踪时触发
-         debugger
-       },
-       onTrigger(e) {
-         // 当 count.value 被修改时触发
-         debugger
-       }
-     })
-     // 访问 plusOne，应该触发 onTrack
-     console.log(plusOne.value)
-     // 修改 count.value，应该触发 onTrigger
-     count.value++
-     ```
-   
-     `onTrack` 和 `onTrigger` 仅在开发模式下生效。
-
+* 调试computed 3.2+
+  
+  `computed` 可接受一个带有 `onTrack` 和 `onTrigger` 选项的对象作为第二个参数：
+  
+  - `onTrack` 会在某个响应式 property 或 ref 作为依赖被追踪时调用。
+  - `onTrigger` 会在侦听回调被某个依赖的修改触发时调用。
+  
+  所有回调都会收到一个 debugger 事件，其中包含了一些依赖相关的信息。推荐在这些回调内放置一个 `debugger` 语句以调试依赖。
+  
+  ```js
+  const plusOne = computed(() => count.value + 1, {
+    onTrack(e) {
+      // 当 count.value 作为依赖被追踪时触发
+      debugger
+    },
+    onTrigger(e) {
+      // 当 count.value 被修改时触发
+      debugger
+    }
+  })
+  // 访问 plusOne，应该触发 onTrack
+  console.log(plusOne.value)
+  // 修改 count.value，应该触发 onTrigger
+  count.value++
+  ```
+  
+  `onTrack` 和 `onTrigger` 仅在开发模式下生效。
 1. watch 函数
-
+   
    * 与vue2中watch配置功能一致。
-
+   
    * 监视对象：数组，ref对象（需要手动开启深度监视），reactive对象（默认开启深度监视），不能监视基本数据类型。
    
    * 注意事项：
+     
      * 监视reactive定义的响应式数据时：oldValue无法正确获取、强制开启了深度监视（deep配置失效）（和vue2中是一样的，都是对象的引用）
-  * 监视reactive定义的响应式数据中某个属性时：deep配置有效。 
-    
+   
+   * 监视reactive定义的响应式数据中某个属性时：deep配置有效。 
 * 监视的newValue,oldValue始终返回该对象的当前值和上一个状态值的引用，普通数据引用会改变，如果是对象，将会是proxy对象，引用是不会改变的。所以newValue,oldValue结果是一样的。
   
-   *  写法
-
-     * 监听单个数据
-     
-       ```js
-       // 侦听一个 getter
-       const state = reactive({ count: 0 })
-       watch(
-         () => state.count,
-         (count, prevCount) => {
-           /* ... */
-         }
-       )
-       
-       // 直接侦听ref
-       const count = ref(0)
-       watch(count, (count, prevCount) => {
+  * 写法
+    
+    * 监听单个数据
+      
+      ```js
+      // 侦听一个 getter
+      const state = reactive({ count: 0 })
+      watch(
+       () => state.count,
+       (count, prevCount) => {
          /* ... */
-       ```
-
+       }
+      )
+      
+      // 直接侦听ref
+      const count = ref(0)
+      watch(count, (count, prevCount) => {
+       /* ... */
+      ```
+    
     })
-       ```
-   
-     * 监听多个数据
-       
-       ```js
-       const firstName = ref('')
-       const lastName = ref('')
-       
-       watch([firstName, lastName], (newValues, prevValues) => {
-         console.log(newValues, prevValues)
-       })
-       
-       firstName.value = 'John' // logs: ["John", ""] ["", ""]
+    
+    ```
+    * 监听多个数据
+    
+    ```js
+    const firstName = ref('')
+    const lastName = ref('')
+    
+    watch([firstName, lastName], (newValues, prevValues) => {
+      console.log(newValues, prevValues)
+    })
+    
+    firstName.value = 'John' // logs: ["John", ""] ["", ""]
     lastName.value = 'Smith' // logs: ["John", "Smith"] ["John", ""]
-       ```
-   
-     * 监听响应式对象
-       
-       ```js
-       const numbers = reactive([1, 2, 3, 4])
-       
-       watch(
-         () => [...numbers],
-         (numbers, prevNumbers) => {
-           console.log(numbers, prevNumbers)
-         }
-       )
-       
-       ```
-   
+    ```
+    
+    * 监听响应式对象
+      
+      ```js
+      const numbers = reactive([1, 2, 3, 4])
+      
+      watch(
+       () => [...numbers],
+       (numbers, prevNumbers) => {
+         console.log(numbers, prevNumbers)
+       }
+      )
+      ```
+    
     numbers.push(5) // logs: [1,2,3,4,5] [1,2,3,4]
-       ```
-   
-     * 深度嵌套对象或数组中的 property 变化时，仍然需要 `deep` 选项设置为 true。
-       
-       ```js
-       const state = reactive({ 
-         id: 1,
-         attributes: { 
-           name: '',
-         }
-       })
-       
-       watch(
-         () => state,
-         (state, prevState) => {
-           console.log('not deep', state.attributes.name, prevState.attributes.name)
-         }
-       )
-       
-       watch(
-         () => state,
-         (state, prevState) => {
-           console.log('deep', state.attributes.name, prevState.attributes.name)
-         },
-         { deep: true }
-       )
-       
-       ```
-   
+    
+    ```
+    * 深度嵌套对象或数组中的 property 变化时，仍然需要 `deep` 选项设置为 true。
+    
+    ```js
+    const state = reactive({ 
+      id: 1,
+      attributes: { 
+        name: '',
+      }
+    })
+    
+    watch(
+      () => state,
+      (state, prevState) => {
+        console.log('not deep', state.attributes.name, prevState.attributes.name)
+      }
+    )
+    
+    watch(
+      () => state,
+      (state, prevState) => {
+        console.log('deep', state.attributes.name, prevState.attributes.name)
+      },
+      { deep: true }
+    )
+    ```
+    
     state.attributes.name = 'Alex' // 日志: "deep" "Alex" "Alex"
-       ```
-   
-     * 如果你在同一个函数里同时改变这些被监听的来源，监听器仍只会执行一次：
-       
-       ```js
-       setup() {
-         const firstName = ref('')
-         const lastName = ref('')
-       
-         watch([firstName, lastName], (newValues, prevValues) => {
-           console.log(newValues, prevValues)
-         })
-       
-         const changeValues = () => {
-           firstName.value = 'John'
-           lastName.value = 'Smith'
-           // 打印 ["John", "Smith"] ["", ""]
-         }
-       
-         return { changeValues }
+    
+    ```
+    * 如果你在同一个函数里同时改变这些被监听的来源，监听器仍只会执行一次：
+    
+    ```js
+    setup() {
+      const firstName = ref('')
+      const lastName = ref('')
+    
+      watch([firstName, lastName], (newValues, prevValues) => {
+        console.log(newValues, prevValues)
+      })
+    
+      const changeValues = () => {
+        firstName.value = 'John'
+        lastName.value = 'Smith'
+        // 打印 ["John", "Smith"] ["", ""]
+      }
+    
+      return { changeValues }
     }
-       ```
-   
-     * 通过更改设置 `flush: 'sync'`，我们可以为每个更改都强制触发监听器，尽管这通常是不推荐的。或者，可以用 [nextTick](https://v3.cn.vuejs.org/api/global-api.html#nexttick) 等待侦听器在下一步改变之前运行。
-       
-       ```js
-       const changeValues = async () => {
-         firstName.value = 'John' // 打印 ["John", ""] ["", ""]
-         await nextTick()
-         lastName.value = 'Smith' // 打印 ["John", "Smith"] ["John", ""]
-    }
-       ```
-   
-     * 监听一个响应式对象或数组将始终返回该对象的当前值和上一个状态值的引用。为了完全侦听深度嵌套的对象和数组，可能需要对值进行深拷贝。这可以通过诸如 [lodash.cloneDeep](https://lodash.com/docs/4.17.15#cloneDeep) 这样的实用工具来实现
-       
-       ```js
-       import _ from 'lodash'
-       
-       const state = reactive({
-         id: 1,
-         attributes: {
-           name: '',
-         }
-       })
-       
-       watch(
-         () => _.cloneDeep(state),
-         (state, prevState) => {
-           console.log(state.attributes.name, prevState.attributes.name)
-         }
-       )
-       
-       state.attributes.name = 'Alex' // 日志: "Alex" ""
-       ```
+    ```
+    
+    * 通过更改设置 `flush: 'sync'`，我们可以为每个更改都强制触发监听器，尽管这通常是不推荐的。或者，可以用 [nextTick](https://v3.cn.vuejs.org/api/global-api.html#nexttick) 等待侦听器在下一步改变之前运行。
+      
+      ```js
+      const changeValues = async () => {
+       firstName.value = 'John' // 打印 ["John", ""] ["", ""]
+       await nextTick()
+       lastName.value = 'Smith' // 打印 ["John", "Smith"] ["John", ""]
+      }
+      ```
+    
+    * 监听一个响应式对象或数组将始终返回该对象的当前值和上一个状态值的引用。为了完全侦听深度嵌套的对象和数组，可能需要对值进行深拷贝。这可以通过诸如 [lodash.cloneDeep](https://lodash.com/docs/4.17.15#cloneDeep) 这样的实用工具来实现
+      
+      ```js
+      import _ from 'lodash'
+      
+      const state = reactive({
+       id: 1,
+       attributes: {
+         name: '',
+       }
+      })
+      
+      watch(
+       () => _.cloneDeep(state),
+       (state, prevState) => {
+         console.log(state.attributes.name, prevState.attributes.name)
+       }
+      )
+      
+      state.attributes.name = 'Alex' // 日志: "Alex" ""
+      ```
 
 ## 8.13 watchEffect函数
 
@@ -670,31 +715,29 @@ setup(){
 ## 8.14 生命周期
 
 1. Vue3中可以继续使用Vue2中的生命周期钩子，但有两个被更名：
-
 * beforeDestroy改名为beforeUnmount
 
 * destroyed改名为unmounted
-
 2. Vue3也提供了Composition API形式的生命周期钩子，与Vue2的对应关系如下：
 
-| 选项式 API        | Hook inside `setup`            |
-| ----------------- | ------------------------------ |
+| 选项式 API           | Hook inside `setup`     |
+| ----------------- | ----------------------- |
 | `beforeCreate`    | Not needed*（setup相当于这个） |
 | `created`         | Not needed*（setup相当于这个） |
-| `beforeMount`     | `onBeforeMount`                |
-| `mounted`         | `onMounted`                    |
-| `beforeUpdate`    | `onBeforeUpdate`               |
-| `updated`         | `onUpdated`                    |
-| `beforeUnmount`   | `onBeforeUnmount`              |
-| `unmounted`       | `onUnmounted`                  |
-| `errorCaptured`   | `onErrorCaptured`              |
-| `renderTracked`   | `onRenderTracked`              |
-| `renderTriggered` | `onRenderTriggered`            |
-| `activated`       | `onActivated`                  |
-| `deactivated`     | `onDeactivated`                |
+| `beforeMount`     | `onBeforeMount`         |
+| `mounted`         | `onMounted`             |
+| `beforeUpdate`    | `onBeforeUpdate`        |
+| `updated`         | `onUpdated`             |
+| `beforeUnmount`   | `onBeforeUnmount`       |
+| `unmounted`       | `onUnmounted`           |
+| `errorCaptured`   | `onErrorCaptured`       |
+| `renderTracked`   | `onRenderTracked`       |
+| `renderTriggered` | `onRenderTriggered`     |
+| `activated`       | `onActivated`           |
+| `deactivated`     | `onDeactivated`         |
 
 3. setup中的生命钩子比在外面定义的生命周期钩子先执行
-
+   
    ```vue
    <template>
      <button @click="isShow = !isShow">开关隐藏</button>
@@ -792,9 +835,9 @@ setup(){
 * 自定义hook的优势，复用代码，让setup中的逻辑更清楚易懂。
 
 * 使用:定义一个js，将内容拿出去，返回对应数据。
-
+  
   DemoDemo组件
-
+  
   ```vue
   <template>
     <h2>当前点击时鼠标的坐标为：x:{{point.x}},y:{{point.y}}</h2>
@@ -813,9 +856,9 @@ setup(){
   }
   </script>
   ```
-
+  
    usePoint.js
-
+  
   ```json
   import {onBeforeMount, onBeforeUnmount, reactive} from "vue";
   
@@ -911,6 +954,7 @@ shallowRef：只处理基本数据类型的响应式，不进行对象的响应�
 什么时候用：如果有一个对象数据，结构比较深，但变化时只是外出属性变化，使用shallowReacitve。
 
 如果有一个对象数据，后续功能不会修改该对象中的属性，而是生成新的对象来替换，使用shallowRef。
+
 ```vue
 <template>
   <h2>num：{{num}}</h2>
@@ -966,12 +1010,17 @@ export default {
 
 </style>
 ```
+
 ## 8.19 readonly与shallowReadonly
+
 * readonly：让一个响应式数据变为只读的（深只读）
+
 * shallowReadonly：让一个响应式数据变为只读的（浅只读）
+
 * 应用场景：不希望数据被修改时，比如别的组件传给你的数据，表单校验后不允许修改。
-```vue
-<template>
+  
+  ```vue
+  <template>
   <h2>num：{{num}}</h2>
   <button @click="num++">num加1 </button>
   <br/>
@@ -986,6 +1035,7 @@ export default {
   <button @click="person.age ++ ">增长年龄</button>
   <button @click="person.job.ji.salary ++">涨薪</button>
   <br/>
+  ```
 
 </template>
 
@@ -1026,6 +1076,7 @@ export default {
 <style scoped>
 
 </style>
+
 ```
 ## 8.20 toRaw与markRaw
 * toRaw:
@@ -1114,14 +1165,18 @@ export default {
 
 </style>
 ```
+
 ## 8.21 customRef自定义ref
+
 * 作用：创建一个自定义的ref，并对其以来项跟踪和更新触发进行显示控制。
+  
   * 格式：
-```js
-  //引入customRef
-  import { customRef} from 'vue'
-   //定义自己的ref函数
-  function myRef(value){
+    
+    ```js
+    //引入customRef
+    import { customRef} from 'vue'
+    //定义自己的ref函数
+    function myRef(value){
       //track时追踪，trigger触发
       return customRef((track, trigger) => {
       return {
@@ -1136,16 +1191,19 @@ export default {
       }
       })
     }
-  //使用
-  let keyWord = myRef('helloworld')
-```
-demo
-```vue 
-<template>
-  <input type="text" v-model="keyWord" />
-
+    //使用
+    let keyWord = myRef('helloworld')
+    ```
+    
+    demo
+    
+    ```vue
+    <template>
+    <input type="text" v-model="keyWord" />
+    ```
+  
   <h2>{{keyWord}}</h2>
-</template>
+  </template>
 
 <script>
 import { customRef} from 'vue'
@@ -1185,4 +1243,7 @@ export default {
 <style scoped>
 
 </style>
+
+```
+
 ```
