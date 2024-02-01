@@ -1,6 +1,6 @@
 package chapter17;
 
-import org.junit.Test;
+//import org.junit.Test;
 
 
 /**
@@ -25,7 +25,7 @@ public class ClassCastTest {
         double d2 = f1;
     }
     //举例：精度损失的问题
-    @Test
+//    @Test
     public void upCast2(){
         int i = 123123123;
         float f = i;
@@ -81,14 +81,14 @@ public class ClassCastTest {
     }
 
     //窄化类型转换的精度损失
-    @Test
+//    @Test
     public void downCast4(){
         int i = 128;
         byte b = (byte)i;
         System.out.println(b);
     }
     //测试NaN,无穷大的情况
-    @Test
+//    @Test
     public void downCast5(){
         double d1 = Double.NaN; //0.0 / 0.0
         int i = (int)d1;
