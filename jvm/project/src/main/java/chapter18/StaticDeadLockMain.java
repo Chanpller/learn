@@ -1,8 +1,6 @@
 package chapter18;
 
 /**
- * @author shkstart
- * @create 2020-09-13 12:31
  */
 class StaticA {
     static {
@@ -11,7 +9,7 @@ class StaticA {
         } catch (InterruptedException e) {
         }
         try {
-            Class.forName("com.atguigu.java1.StaticB");
+            Class.forName("chapter18.StaticB");
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
@@ -25,7 +23,7 @@ class StaticB {
         } catch (InterruptedException e) {
         }
         try {
-            Class.forName("com.atguigu.java1.StaticA");
+            Class.forName("chapter18.StaticA");
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
@@ -44,7 +42,7 @@ public class StaticDeadLockMain extends Thread {
     @Override
     public void run() {
         try {
-            Class.forName("com.atguigu.java1.Static" + flag);
+            Class.forName("chapter18.Static" + flag);
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }

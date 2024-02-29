@@ -1,8 +1,6 @@
 package chapter18;
 
 /**
- * @author shkstart
- * @create 2020-09-13 11:59
  */
 public class SubInitialization extends InitializationTest {
     static{
