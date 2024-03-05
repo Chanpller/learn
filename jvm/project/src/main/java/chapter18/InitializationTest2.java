@@ -30,7 +30,7 @@ public class InitializationTest2 {
     public static final String s0 = "helloworld0";//在链接阶段的准备环节赋值
     public static final String s1 = new String("helloworld1");//在初始化阶段<clinit>()中赋值
 
-    public static String s2 = "helloworld2";
+    public static String s2 = "helloworld2";//在初始化阶段<clinit>()中赋值
 
     public static final int NUM1 = new Random().nextInt(10);//在初始化阶段<clinit>()中赋值
 }

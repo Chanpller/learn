@@ -12,11 +12,12 @@ package chapter18;
  *  拓展：如果使用字面量的方式定义一个字符串的常量的话，也是在准备环节直接进行显示赋值。
  */
 public class LinkingTest {
-    private static long id;//
+    private static long age;//
+    private static long id = 1;//
     private static final int num = 1; //
 
     public static final String constStr = "CONST";
-//    public static final String constStr1 = new String("CONST");
+    public static final String constStr1 = new String("CONST2");
 
     public Object getObj(){
         return null;
