@@ -58,14 +58,13 @@ public class UserClassLoader extends ClassLoader {
             //创建自定义的类的加载器1
             UserClassLoader loader1 = new UserClassLoader(rootDir);
             Class clazz1 = loader1.findClass("chapter19.User");
-
             //创建自定义的类的加载器2
             UserClassLoader loader2 = new UserClassLoader(rootDir);
             Class clazz2 = loader2.findClass("chapter19.User");
             //不能再加载了，会报错
             //loader (instance of  chapter19/UserClassLoader): attempted  duplicate class definition for name: "chapter19/User"
 //            Class clazz25 = loader2.findClass("chapter19.User");
-
+            System.out.printf(loader2.getParent().toString());
 
             System.out.println(clazz1 == clazz2); //clazz1与clazz2对应了不同的类模板结构。
             System.out.println(clazz1.getClassLoader());//chapter19.UserClassLoader@6e0be858

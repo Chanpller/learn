@@ -1,4 +1,4 @@
-package com.atguigu.java;
+package chapter19;
 
 /**
  * @author shkstart
@@ -19,10 +19,10 @@ public class ClassLoaderTest1 {
         //###########################
         try {
             ClassLoader classLoader = Class.forName("java.lang.String").getClassLoader();
-            System.out.println(classLoader);
+            System.out.println(classLoader);//null  String是引导类加载器加载的
             //自定义的类默认使用系统类加载器
-            ClassLoader classLoader1 = Class.forName("com.atguigu.java.ClassLoaderTest1").getClassLoader();
-            System.out.println(classLoader1);
+            ClassLoader classLoader1 = Class.forName("chapter19.ClassLoaderTest1").getClassLoader();
+            System.out.println(classLoader1);//sun.misc.Launcher$AppClassLoader@14dad5dc
 
             //关于数组类型的加载:使用的类的加载器与数组元素的类的加载器相同
             String[] arrStr = new String[10];
@@ -35,7 +35,7 @@ public class ClassLoaderTest1 {
             System.out.println(arr2.getClass().getClassLoader());//null:不需要类的加载器
 
 
-            System.out.println(Thread.currentThread().getContextClassLoader());
+            System.out.println(Thread.currentThread().getContextClassLoader());//线程是系统类加载器 sun.misc.Launcher$AppClassLoader@14dad5dc
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
