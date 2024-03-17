@@ -2,6 +2,6 @@ package java.lang;
 
 /**
  */
-public class String {
-    char[] values;
-}
+//public class String {
+//    char[] values;
+//}

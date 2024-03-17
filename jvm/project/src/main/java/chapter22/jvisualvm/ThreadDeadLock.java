@@ -1,10 +1,8 @@
-package chapter21.jstack;
-
-import java.util.Map;
-import java.util.Set;
+package chapter22.jvisualvm;
 
 /**
  * 演示线程的死锁问题
+ *
  */
 public class ThreadDeadLock {
 
@@ -67,28 +65,5 @@ public class ThreadDeadLock {
             }
         }).start();
 
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                Map<Thread, StackTraceElement[]> all = Thread.getAllStackTraces();//追踪当前进程中的所有的线程
-                Set<Map.Entry<Thread, StackTraceElement[]>> entries = all.entrySet();
-                for(Map.Entry<Thread, StackTraceElement[]> en : entries){
-                    Thread t = en.getKey();
-                    StackTraceElement[] v = en.getValue();
-                    System.out.println("【Thread name is :" + t.getName() + "】");
-                    for(StackTraceElement s : v){
-                        System.out.println("\t" + s.toString());
-                    }
-                }
-            }
-        }).start();
     }
-
-
 }

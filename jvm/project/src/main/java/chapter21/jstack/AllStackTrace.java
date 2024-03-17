@@ -3,10 +3,7 @@ package chapter21.jstack;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * @author shkstart
- * @create 15:51
- */
+
 public class AllStackTrace {
     public static void main(String[] args) {
         Map<Thread, StackTraceElement[]> all = Thread.getAllStackTraces();

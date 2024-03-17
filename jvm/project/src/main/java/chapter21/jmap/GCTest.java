@@ -3,8 +3,6 @@ package chapter21.jmap;
 import java.util.ArrayList;
 
 /**
- * @author shkstart
- * @create 17:49
  * -Xms60m -Xmx60m -XX:SurvivorRatio=8
  */
 public class GCTest {
@@ -15,7 +13,7 @@ public class GCTest {
             byte[] arr = new byte[1024 * 100];//100KB
             list.add(arr);
             try {
-                Thread.sleep(60);
+                Thread.sleep(60*5);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

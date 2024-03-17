@@ -2,9 +2,6 @@ package chapter21.jstack;
 
 /**
  * 演示线程：TIMED_WAITING
- *
- * @author shkstart
- * @create 15:28
  */
 public class TreadSleepTest {
     public static void main(String[] args) {
