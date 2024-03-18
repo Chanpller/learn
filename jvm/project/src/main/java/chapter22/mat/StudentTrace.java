@@ -9,8 +9,6 @@ import java.util.Vector;
  * 它由三个部分组成：Student、WebPage和StudentTrace三个类
  *
  *  -XX:+HeapDumpBeforeFullGC -XX:HeapDumpPath=d:\student.hprof
- * @author shkstart
- * @create 16:11
  */
 public class StudentTrace {
     static List<WebPage> webpages = new ArrayList<WebPage>();
@@ -25,7 +23,8 @@ public class StudentTrace {
         }
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
+
         createWebPages();//创建了100个网页
         //创建3个学生对象
         Student st3 = new Student(3, "Tom");
@@ -42,7 +41,7 @@ public class StudentTrace {
         }
         webpages.clear();
         System.gc();
-
+        Thread.sleep(100000);
     }
 }
 
