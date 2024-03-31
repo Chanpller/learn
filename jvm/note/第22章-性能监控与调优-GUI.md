@@ -188,11 +188,13 @@
 
 ![image-20240317233119705](../image/chapter22/image-20240317233119705.png)
 
-### 22.4.3.4 浅堆与深堆
+#### 22.4.3.4 浅堆与深堆
 
-#### 22.4.3.4.1 shallow heap
+##### 22.4.3.4.1 shallow heap
 
 ​	浅堆是指一个对象所消耗的内存。在32位系统中，一个对象引用会占据4个字节，一个int类型会占据4个字节，long类型会占据8个字节，每个对象头需要占据8个字节。根据堆快照格式不同，对象的大小可能会向8个字节对齐.
+
+​	数组浅堆大小=12文件头+4数组长度+数组元素*4（引用）
 
 ​	以String为例：2个int值共占8个字节，对象引用占4字节，对象头8字节，合计20字节，向8字节对齐，故占24字节。（JDK7中)
 
@@ -203,7 +205,7 @@
 
 ​	这24字节为String对象的浅堆大小。它与String的Value实际取值无关，无论字符串长度如何，浅堆大小始终是24字节。	
 
-#### 22.4.3.4.2 retained heap
+##### 22.4.3.4.2 retained heap
 
 * 保留集（Retained Set）
   * 对象A的保留集指当对象A被垃圾回收后，可以被释放的所有的对象集合（包括对象A本身），即对象A的保留集可以被认为是只能通过对象A被直接或间接访问到的所有对象的集合。通俗的说，就是指仅被对象A所持有的对象的集合。
@@ -215,7 +217,7 @@
   * S2-->hash32，S2-->hash，S2-->hash32，S2-->value->hello三个引用
   * 如果s1和s2都引用了hello字符串，则它们的深堆不包含hello字符串的大小。
 
-#### 22.4.3.4.3 补充：对象实际大小
+##### 22.4.3.4.3 补充：对象实际大小
 
 ​	另外一个常用的概念是对象的实际大小。这里，对象的实际大小定义为一个对象所能触及的所有对象的浅堆大小之和，也就是通常意义上我们说的对象大小。与深堆相比，似乎这个在日常开发中更为直观和被人接受，但实际上，这个概念和垃圾回收无关。
 
@@ -223,7 +225,7 @@
 
 ![image-20240318081245149](../image/chapter22/image-20240318081245149.png)
 
-#### 22.4.3.4.4 练习
+##### 22.4.3.4.4 练习
 
 ![image-20240318081409506](../image/chapter22/image-20240318081409506.png)
 
@@ -235,7 +237,7 @@
 
 ​	这里不包括D对象，因为D对象被GC Roots直接引用。
 
-#### 22.4.3.4.5 案例分析：StudentTrace
+##### 22.4.3.4.5 案例分析：StudentTrace
 
 ​	浅堆的Student对象都占24个字节，深堆大小不一样
 
@@ -243,9 +245,386 @@
 
 ![image-20240318082843923](../image/chapter22/image-20240318082843923.png)
 
-### 22.4.3.5 支配树
+考虑Lily同学：15个webpage，每个对应152字节，13X152+144X2=2264字节，即为实际的elementData的实际大小。
+
+elementData的深堆1288如何计算，除了自己引用webpage还有其他引用的webpage，通过计算得知（能被7整除，且能被3整除的）一个7个，6X152+1X44=1056字节。
+
+2264-1056-1288=80节，15个webpage对象头4个字节，15*4=60，再加自己的对象头12个字节，数组长度4个字节，一共60+16=76字节，76每对齐，加上对齐，就是80字节。
+
+![image-20240330143433061](D:\ideaprojects\learn\jvm\image\chapter22\image-20240330143433061.png)
+
+
+
+#### 22.4.3.5 支配树
+
+​	支配树（Dominator Tree）概念源自图论
+
+​	MAT提供了一个成为支配树的对象图。支配树体现了对象实例间的支配关系。在对象引用图中，所有指向对象B的路径都经过对象A，则认为对象A支配对象B。如果对象A是离对象B最近的一个支配对象，则认为对象A为对象B的直接支配者。支配树是基于对象间的引用图所建立的，它有以下基本性质：
+
+* 对象A的子树（所有被对象A支配的对象集合）表示对象A的保留集(retained  set)，即深堆。
+
+* 如果对象A支配对象B，那么对象A的直接支配着也支配对象B。
+
+* 支配树的边与对象引用图的边不直接对应。
+
+  如下图所示：作图表示对象引用图，右图表示左图所对应的支配树。对象A和B由根对象直接支配，由于在到对象C的路径中，可以经过A，也可以经过B，因此对象C的直接支配者是根对象。对象F与对象D相互引用，因为到对象F的所有路径必须经过对象D，因此，对象D是对象F的直接支配者。而到对象D的所有路径中，必然经过对象C，即使是从对象F到对象D的引用，从根节点出发，也是经过对象C的，所以对象D的直接支配者为对象C。同理，对象E支配对象G。到达对象H的可以通过对象D，也可以通过对象E，因此对象D和E都不能支配对象H，而经过对象C即可以到达D也可以到达E，因此对象C为对象H的直接支配者。
+
+  ![image-20240330154536397](D:\ideaprojects\learn\jvm\image\chapter22\image-20240330154536397.png)
+
+  没有多个对象直接引用的，就是支配者，C有两个对象引用，根节点就是支配者，H有F和G引用，那么C通过线路可以到达H，只有C引用，那么C就是H的直接支配着。
 
 ### 22.4.4 案例：Tomcat堆溢出分析
+
+#### 22.4.4.1 说明
+
+​	Tomcat是最常用的Java Servlet容器之一，同时也可以当作单独的web服务器用。Tomcat本身使用Java实现，并运行与Java虚拟机之上。在大规模请求时，Tomcat有可能会因为无法承受压力而发生内存溢出错误。这里根据一个被压垮的Tomcat的堆快照文件，来分析Tomcat在崩溃时的内部情况。
+
+22.4.4.2 分析过程
+
+![image-20240330155448411](D:\ideaprojects\learn\jvm\image\chapter22\image-20240330155448411.png)
+
+![image-20240330155512210](D:\ideaprojects\learn\jvm\image\chapter22\image-20240330155512210.png)
+
+![image-20240330155531698](D:\ideaprojects\learn\jvm\image\chapter22\image-20240330155531698.png)
+
+![image-20240330155551579](D:\ideaprojects\learn\jvm\image\chapter22\image-20240330155551579.png)
+
+![image-20240330155618377](D:\ideaprojects\learn\jvm\image\chapter22\image-20240330155618377.png)
+
+![image-20240330155643282](D:\ideaprojects\learn\jvm\image\chapter22\image-20240330155643282.png)
+
+![image-20240330155703650](D:\ideaprojects\learn\jvm\image\chapter22\image-20240330155703650.png)
+
+![image-20240330155722586](D:\ideaprojects\learn\jvm\image\chapter22\image-20240330155722586.png)
+
+## 补充1：在谈内存泄漏
+
+### 内存泄漏的理解和分类
+
+​	何为内存泄漏(memory leak)
+
+![image-20240330160415640](D:\ideaprojects\learn\jvm\image\chapter22\image-20240330160415640.png)
+
+​	可达性分析算算法来判断对象是否是不再使用的对象，本质时判断一个对象是否还被引用。那么对于这种情况下，由于代码的实现不同就会出现很多中内存泄漏问题（上JVM误以为此对象还在引用中，无法回收，造成内存泄漏）
+
+​	内存泄漏的理解：严格来说，只有对象不会再被程序用到了，但是GC又不能回收他们的情况，才叫内存泄漏。但实际情况很多时候一些不太好的实践（或疏忽）会导致对象的生命周期变得很长甚至导致OOM，也可以叫做宽泛意义上的内存泄漏
+
+​	内存泄漏与内存溢出的关系
+
+* 内存泄漏(memory leak)
+
+  * 申请了内存用完了不是放
+
+* 内存溢出(out of memory )
+
+  * 申请了内存，没有足够的内存使用
+
+* 关系：内存泄漏的增多，最终会导致内存溢出
+
+  泄漏的分类
+
+* 经常发生：发生内存泄漏的代码会被多次执行，每次执行，泄漏一块内存。
+* 偶尔发生：在某些特定情况看下才会发生
+* 一次性：发成内存泄漏的方法只会执行一次
+* 隐式泄漏：一直站着内存不是放，直到执行结束；严格的说这个不算内存泄漏，因为最终释放了。
+
+### Java内存泄漏的8中情况
+
+#### 1、静态集合类
+
+​	静态类集合，比如HashMap、LinkedList等等。如果这些容器为静态的，那么它们的生命周期与JVM程序一致，则容器中的对象在程序结束前不能被释放，从而造成内存泄漏。简单而言，长生命周期的对象持有短生命周期对象的引用，尽管短生命周期的对象不再使用，但是因为长生命周期对象持有它的引用而导致不能被回收。
+
+```java
+public class MemoryLeak {
+    static List list = new ArrayList();
+    public void oomTests() {
+        Object obj = new Object();
+        list.add(obj);
+    }
+}
+```
+
+#### 2、单例模式
+
+​	单例模式，和静态集合导致内存泄漏的原因类似，因为单例的静态特性，它的生命周期和JVM生命周期一样长，所以如果单例对象持有外部对象的引用，那么这个外部对象也不会被回收，那么就会造成内存泄漏。
+
+#### 3、内部类持有外部类
+
+​	内部类持有外部类，如果一个外部类的实例方法返回了一个内部类的实例对象。这个内部类对象被长期引用了，即使那个外部类实例对象不再被使用，但由于内部类持有外部类的实例对象，这个外部类对象将不会被垃圾回收器回收，这也会造成内存泄漏。
+
+#### 4、各种连接，比如数据库连接、网络连接和IO连接等
+
+​	在对数据库操作过程中，首先需要建立与数据库的连接，当不再使用时，需要调用close方法来释放与数据库的连接。只有连接被关闭后，垃圾回收器才会回收对应的对象。否则，如果在访问数据库的过程中，对Conncetion、Statement或ResultSet不显性的关闭，将会造成大量的对象无法回收，从而引起内存泄漏。
+
+#### 5、变量不合理的作用域
+
+​	变量不合理的作用域，一般而言，一个变量定义的作用范围大于其使用范围，很有可能造成内存泄漏。另一方面，如果没有即使把对象设置为null，很有肯能导致内存泄漏的发生。
+
+```java
+public class UsingRandom {
+    private String msg;
+    public void receiveMse(){
+        readFromNet();//从网络中接受数据保存到msg中
+        saveDB();//把msg保存到数据库库中
+    }
+
+    private void saveDB() {
+    }
+
+    private void readFromNet() {
+    }
+}
+```
+
+​	如上面这个伪代码，通过readFromNet方法把接受大消息保存在变量msg中，然后调用saveDB方法把msg的内容保存到数据库中，此时msg已经没用了，由于msg的生命周期与对象的生命周期相同，此时msg还不能回收，因此造成内存泄漏。把msg设置为null，垃圾回收器就能回收msg的内存空间。
+
+#### 6、改变哈希值
+
+​	当一个对象被存储进HashSet集合以后，就不能修改这个对象中的那些参与计算哈希值的字段了。否则对象秀嘎后的哈希值与最初存储进HashSet集合中时的哈希值就不同了，在这种情况下，即使contains方法使用该对象的当前引用作为的参数去HashSet集合中检索对象，也将返回找不到对象的结果，这会导致无法从HashSet集合中单独删除当前对象，造成内存泄漏。
+
+​	这也是String为什么被设置成了不可变类型，我们可以放心的把String存入HashSet，或者把String当作HashMap的Key值。
+
+```java
+public class ChangeHashCode {
+    public static void main(String[] args) {
+        HashSet set = new HashSet();
+        Person p1 = new Person(1001, "AA");
+        Person p2 = new Person(1002, "BB");
+        set.add(p1);
+        set.add(p2);
+        p1.name = "CC";//导致了内存的泄漏
+        set.remove(p1); //删除失败
+        System.out.println(set);
+        set.add(new Person(1001, "CC"));
+        System.out.println(set);
+        set.add(new Person(1001, "AA"));
+        System.out.println(set);
+
+    }
+}
+class Person {
+    int id;
+    String name;
+    public Person(int id, String name) {
+        this.id = id;
+        this.name = name;
+    }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Person)) return false;
+
+        Person person = (Person) o;
+
+        if (id != person.id) return false;
+        return name != null ? name.equals(person.name) : person.name == null;
+    }
+    @Override
+    public int hashCode() {
+        int result = id;
+        result = 31 * result + (name != null ? name.hashCode() : 0);
+        return result;
+    }
+    @Override
+    public String toString() {
+        return "Person{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                '}';
+    }
+}
+```
+
+#### 7、缓存泄漏
+
+​	一旦对象引用放入缓存中，它就很容易遗忘。比如：测试只加载几百条数据，生产有几百万数据加入到缓存中。
+
+​	对于这个问题，可以用使用WeakHashMap代表缓存，此Map的特点是，当除了自身有对key的引用外，此Key没有其他引用那么此map会自动丢弃此值。
+
+```java
+ublic class MapTest {
+    static Map wMap = new WeakHashMap();
+    static Map map = new HashMap();
+
+    public static void main(String[] args) {
+        init();
+        testWeakHashMap();
+        testHashMap();
+    }
+
+    public static void init() {
+        String ref1 = new String("obejct1");
+        String ref2 = new String("obejct2");
+        String ref3 = new String("obejct3");
+        String ref4 = new String("obejct4");
+        wMap.put(ref1, "cacheObject1");
+        wMap.put(ref2, "cacheObject2");
+        map.put(ref3, "cacheObject3");
+        map.put(ref4, "cacheObject4");
+        System.out.println("String引用ref1，ref2，ref3，ref4 消失");
+
+    }
+
+    public static void testWeakHashMap() {
+
+        System.out.println("WeakHashMap GC之前");
+        for (Object o : wMap.entrySet()) {
+            System.out.println(o);
+        }
+        try {
+            System.gc();
+            TimeUnit.SECONDS.sleep(5);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        System.out.println("WeakHashMap GC之后");
+        for (Object o : wMap.entrySet()) {
+            System.out.println(o);
+        }
+    }
+
+    public static void testHashMap() {
+        System.out.println("HashMap GC之前");
+        for (Object o : map.entrySet()) {
+            System.out.println(o);
+        }
+        try {
+            System.gc();
+            TimeUnit.SECONDS.sleep(5);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        System.out.println("HashMap GC之后");
+        for (Object o : map.entrySet()) {
+            System.out.println(o);
+        }
+    }
+
+}
+/**
+ * 结果
+ * String引用ref1，ref2，ref3，ref4 消失
+ * WeakHashMap GC之前
+ * obejct2=cacheObject2
+ * obejct1=cacheObject1
+ * WeakHashMap GC之后
+ * HashMap GC之前
+ * obejct4=cacheObject4
+ * obejct3=cacheObject3
+ * Disconnected from the target VM, address: '127.0.0.1:51628', transport: 'socket'
+ * HashMap GC之后
+ * obejct4=cacheObject4
+ * obejct3=cacheObject3
+ **/
+```
+
+![image-20240330164358817](D:\ideaprojects\learn\jvm\image\chapter22\image-20240330164358817.png)
+
+​	上图代码和图示主要演示WeakHahMap如何自动释放对象，当init函数执行完成后，局部变量字符串引用weakd1,weakd2,d1,d2都会消失，此时只有静态ma中保存对字符串对象的引用，可以看到，调用GC之后，HashMap的没有被回收，而WeakHashMap里面的缓存被回收了。
+
+#### 8、监听器和回调
+
+​	如果客户端在实现的API中注册回调，却没有显示的取消，那么就会积聚。
+
+​	需要确保回调立即被当作垃圾回收的最佳方法是只保存它的弱引用，例如将他们保存成为WeakHahMap的键。
+
+### 内存泄漏案例分析
+
+#### 案例代码
+
+```java
+public class Stack {
+    private Object[] elements;
+    private int size = 0;
+    private static final int DEFAULT_INITIAL_CAPACITY = 16;
+
+    public Stack() {
+        elements = new Object[DEFAULT_INITIAL_CAPACITY];
+    }
+
+    public void push(Object e) { //入栈
+        ensureCapacity();
+        elements[size++] = e;
+    }
+    //存在内存泄漏,因为没有溢出数据中的元素引用。
+//    public Object pop() { //出栈
+//        if (size == 0)
+//            throw new EmptyStackException();
+//        return elements[--size];
+//    }
+
+    public Object pop() {
+        if (size == 0)
+            throw new EmptyStackException();
+        Object result = elements[--size];
+        elements[size] = null;
+        return result;
+    }
+
+    private void ensureCapacity() {
+        if (elements.length == size)
+            elements = Arrays.copyOf(elements, 2 * size + 1);
+    }
+}
+
+```
+
+#### 分析
+
+![image-20240330165128035](D:\ideaprojects\learn\jvm\image\chapter22\image-20240330165128035.png)
+
+![image-20240330165154299](D:\ideaprojects\learn\jvm\image\chapter22\image-20240330165154299.png)
+
+​	从上图中可以看出，如果栈先增长，再收缩，那么从栈中弹出的对象将不会被当作垃圾回收，即使程序不再使用栈中的这些对象，他们也不会回收，因为栈中仍然保存这个对象的引用，俗称过期引用，这个内存泄漏很隐蔽。
+
+#### 解决办法
+
+过期后，清空引用，将引用置空
+
+```java
+    public Object pop() {
+        if (size == 0)
+            throw new EmptyStackException();
+        Object result = elements[--size];
+        elements[size] = null;//将引用置空
+        return result;
+    }
+```
+
+
+
+## 补充2：支持使用OQL语言查询对象信息
+
+​	MAT支持一种类似与SQL的查询语言OQL（Object Query Language），OQL使用类似SQL语法，可以在队中进行对象的查找和筛选。用F5刷新查询
+
+#### SELECT子句
+
+```sql
+SELECT * FROM java.util.Vector v
+#objects关键字，将返回结果集中的项以对象的形式显示
+SELECT objects v.elmentData FROM java.util.Vector v
+#AS RETAINED SET关键字，可以得到所有对象的保留集
+SELECT AS RETAINED SET * FROM java.util.Vector v
+#objects关键字，将返回结果集中的项以对象的形式显示
+SELECT DISTINCT objects classof(s) FROM java.lang.String s
+```
+
+#### FROM子句
+
+```sql
+执行查询范围，可以是正则表达式或对象或对象地址
+SELECT * FROM java.lang.String s
+SELECT * FROM "java\.util\..*"
+SELECT * FROM 0x37a0b4d
+```
+
+#### WHERE子句
+
+
+
+
+
+#### 内置对象与方法
 
 ## 22.5 JProfiler
 

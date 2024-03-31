@@ -12,7 +12,7 @@ import java.util.Vector;
  */
 public class StudentTrace {
     static List<WebPage> webpages = new ArrayList<WebPage>();
-
+    Object[] objects = new Object[9];
 
     public static void createWebPages() {
         for (int i = 0; i < 100; i++) {
@@ -24,23 +24,27 @@ public class StudentTrace {
     }
 
     public static void main(String[] args) throws InterruptedException {
-
-        createWebPages();//创建了100个网页
-        //创建3个学生对象
-        Student st3 = new Student(3, "Tom");
-        Student st5 = new Student(5, "Jerry");
-        Student st7 = new Student(7, "Lily");
-
-        for (int i = 0; i < webpages.size(); i++) {
-            if (i % st3.getId() == 0)
-                st3.visit(webpages.get(i));
-            if (i % st5.getId() == 0)
-                st5.visit(webpages.get(i));
-            if (i % st7.getId() == 0)
-                st7.visit(webpages.get(i));
+        StudentTrace studentTrace = new StudentTrace();
+        for (int i = 0; i < 9; i++) {
+            studentTrace.objects[i] = new String(i+"");
         }
-        webpages.clear();
-        System.gc();
+
+
+//        //创建3个学生对象
+//        Student st3 = new Student(3, "Tom");
+//        Student st5 = new Student(5, "Jerry");
+//        Student st7 = new Student(7, "Lily");
+//
+//        for (int i = 0; i < webpages.size(); i++) {
+//            if (i % st3.getId() == 0)
+//                st3.visit(webpages.get(i));
+//            if (i % st5.getId() == 0)
+//                st5.visit(webpages.get(i));
+//            if (i % st7.getId() == 0)
+//                st7.visit(webpages.get(i));
+//        }
+//        webpages.clear();
+//        System.gc();
         Thread.sleep(100000);
     }
 }
@@ -51,6 +55,7 @@ class Student {
     private List<WebPage> history = new ArrayList<>();
 
     public Student(int id, String name) {
+
         super();
         this.id = id;
         this.name = name;

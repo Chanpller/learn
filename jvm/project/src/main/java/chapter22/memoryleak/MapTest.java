@@ -8,8 +8,6 @@ import java.util.concurrent.TimeUnit;
 /**
  * 演示内存泄漏
  *
- * @author shkstart
- * @create 14:53
  */
 public class MapTest {
     static Map wMap = new WeakHashMap();
