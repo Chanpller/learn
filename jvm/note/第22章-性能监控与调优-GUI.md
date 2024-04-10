@@ -620,21 +620,226 @@ SELECT * FROM 0x37a0b4d
 
 #### WHERE子句
 
-
-
-
+```sql
+#格式与传统sql相似
+#返回长度大于10的char数组
+select * from char[] s where s.@length>10
+#返回包含java子字符串的所有字符串，使用LIKE操作符，操作符参数为正则表达式
+select * from java.lang.String s WHERE toString(s) LIKE ".*java"
+#返回value域不为null的字符串
+select * from java.lang.String s where s.value!=null
+#支持多个条件的AND、OR运算。返回数组长度大于15.且深堆大于1000字节的所有Vector对象
+select * from java.util.Vector v where v.elementData.@length>15 and v.@retainedHeapSize>1000
+```
 
 #### 内置对象与方法
 
+​	OQL中可以访问堆内对象属性，也可以访问堆内代理对象的属性。访问堆内对象的属性时，格式如下：
+
+​	[<alias>.]<field>.<field>.<field>
+
+​	其中alias为对象名称
+
+​	访问java.io.File对象的path属性，并进一步访问path的value属性：
+
+```sql
+SELECT toString(f.path.value) FROM java.io.File f
+```
+
+​	显示String对象的内容、objectid和objectAddress.
+
+```sql
+SELECT S.toString(),s.@objectId,s.@objectAddress From java.lang.String s
+```
+
+​	显示java.util.Vector内部数组的长度
+
+```sql
+SELECT v.elementData.@length FROM java.util.Vecotr v
+```
+
+​	显示java.util.Vector内对象及其子类型
+
+```sql
+SELECT * FROM INSTANCEOF java.util.Vecotr 
+```
+
 ## 22.5 JProfiler
 
-22.2.1 基本概述
+### 22.2.1 基本概述
 
-22.2.2 启动
+* 介绍
+  * 在运行Java的时候有时候想测试运行时占用内存情况，这时候需要使用测试工具查看了。在eclipse里面又Eclipse Memory Analyzer tool(MAT)插件可以测试，而在IEAD中也有这么一个插件，就是JProfiler。
+  * JProfiler时又ej-technologies公司开发的一款Java应用性能诊断工具。功能强大，但是收费。
+  * 官网加载地址：https://www.ej-technologies.com/products/jprofiler/overview.html
+* 特点
+  * 使用方便、界面操作友好（简单且强大）
+  * 对被分析的应用影响小（提供模板）
+  * CPU，Thread，Memory分析功能尤其强大
+  * 支持对jdbc,nosql,jsp,servlet,socket等进行分析
+  * 支持多种模式（离线、在线）的分析
+  * 支持监控本地、远程JVM
+  * 跨平台，拥有多种操作系统的安装版本
 
-22.2.3 三种链接方式
+![image-20240409122529350](D:\IdeaProjects\learn\jvm\image\chapter22\image-20240409122529350.png)
 
-22.2.4 主要作用
+* 主要功能
+  * 方法调用：对方法调用的分析可以帮助您了解应用程序正在做什么，并找到提高其性能的方法。
+  * 内存分配：用过分析堆上对象、引用链和垃圾收集能帮助您修复内存泄漏问题，优化内存使用。
+  * 线程和锁：JProfiler提供多种针对线程和锁的分析视图助您发现多线程问题。
+  * 高级子系统：许多性能问题都发生在更高的语义级别上。例如，对于JDBC调用，您可能希望找出执行最慢的SQL语句。JProfiler支持对这些子系统进行集成分析
+
+### 22.2.2 安装与配置
+
+* 下载并安装
+  * 下载地址：https://www.ej-technologies.com/download/jprofiler/files
+
+![image-20240409122733356](D:\IdeaProjects\learn\jvm\image\chapter22\image-20240409122733356.png)
+
+* Jprofiler中配置IDEA
+
+  ![image-20240410081028695](D:\IdeaProjects\learn\jvm\image\chapter22\image-20240410081028695.png)
+
+  ![image-20240410081157860](D:\IdeaProjects\learn\jvm\image\chapter22\image-20240410081157860.png)
+
+  ![image-20240410082949846](D:\IdeaProjects\learn\jvm\image\chapter22\image-20240410082949846.png)
+
+* IDEA集成Jprofiler
+
+![image-20240410081425223](D:\IdeaProjects\learn\jvm\image\chapter22\image-20240410081425223.png)
+
+![image-20240410081351245](D:\IdeaProjects\learn\jvm\image\chapter22\image-20240410081351245.png)
+
+### 22.2.3 具体使用
+
+![image-20240410083412288](D:\IdeaProjects\learn\jvm\image\chapter22\image-20240410083412288.png)
+
+#### 22.2.3.1 数据采样方式
+
+​	JProfiler数据采集方式分为两种：Sampling(样本采集)和Instrumentation(重构模式)
+
+* Instrumentation：这是JProfiler全功能模式，在class加载之前，JProfiler把相关功能代码写入到需要分析的class的bytecode中，对正在运行的jvm又一定影响。
+
+  * 优点：功能强大。在此设置中，调用堆栈信息时准确的。
+  * 缺点：若要分析的class较多，则对应用的性能影响较大，CPU开销可能很高（取决于Filter的控制）。因此使用此模式一般配合Filter使用，只对特定的类和包进行分析。
+
+* Sampling：类似于样本统计，每个一定时间（5ms）将每个线程栈中的信息统计出来。
+
+  * 优点：对CPU的开销非常低，对应用影响小（即使你不配置任何Filter）
+  * 缺点：一些数据/特性不能提供（例如方法的调用次数、执行时间）
+
+  注：JProfiler本身没有指出数据的采集类型，这里的采集类型是针对方法调用的采集类型。因为JProfiler的绝大多数核心功能都以来方法调用采集的数据，所以可以直接认为是JProfiler的数据采集类型。
+
+![image-20240410105034544](D:\IdeaProjects\learn\jvm\image\chapter22\image-20240410105034544.png)
+
+![image-20240410105056632](D:\IdeaProjects\learn\jvm\image\chapter22\image-20240410105056632.png)
+
+#### 22.2.3.2 遥感监测Telementries
+
+​	查看JVM的运行信息
+
+* 整体视图Overview：显示堆内存、CPU、线程以及GC等活动视图
+* 内存Memory：显示一张关于内存变化的活动时间表
+* 记录的对象Recorded objects：显示一张关于活动对象与数组的图表的活动时间表。
+* 记录吞吐量Recorded Throughput：显示一段时间累计的JVM生产和释放的活动时间表。
+* 垃圾回收活动GC Activity：显示一张关于垃圾回收活动的活动时间表。
+* 类 Classes：显示一个与已装载类的图表的活动时间表。
+* 线程Threads：显示一个与动态线程图表的活动时间表。
+* CPU负载CPU Load：显示一段时间中CPU的负载图表。
+
+![image-20240410111521394](D:\IdeaProjects\learn\jvm\image\chapter22\image-20240410111521394.png)
+
+#### 22.2.3.3 内存视图Live Memory
+
+内存剖析：class/class instance的相关西悉尼。例如对象的个数、大小、对象创建的方法执行栈，对象创建的热点。
+
+* 所有的对象All Objects
+  * 显示所有加载的类列表和在堆上分配的实例数。只有Java 1.5（JVMTI）才会显示此视图
+  * ![image-20240410112328961](D:\IdeaProjects\learn\jvm\image\chapter22\image-20240410112328961.png)
+* 记录对象Record Objects
+  * 查看特定时间段对象的分配，并记录分配的调用堆栈。
+* 分配访问树 Allocation Call Tree
+  * 显示一棵请求树或者方法、类、包或对已选择类有带注释的分配信息的J2EE组件。
+* 分配热点 Allocation Hot Spots
+  * 显示一个列表，包括方法、类、包或则和分配已选类的J2EE组件。你可以标注当前值并且显示差异值。对于每个热点都可以显示它的跟踪记录数。
+* 类追踪器 Class Tracker
+  * 类跟踪视图可以包含任意数量的图表，显示选定的类和包的实例与时间。
+
+![image-20240410113155415](D:\IdeaProjects\learn\jvm\image\chapter22\image-20240410113155415.png)
+
+#### 22.2.3.4 堆遍历 heap walker
+
+* 类 Classes
+
+  * 显示所有类和他们的实例，可以右击具体的类“Used Selected Instance”实现进一步跟踪
+
+* 分配 Allocations
+
+  * 为所有记录对象显示分配树和分配热点
+
+* 索引 References
+
+  * 为单个对象和“显示到垃圾回收根目录的路径”提供索引图的显示功能。还能提供合并输入视图和输出视图的功能
+
+* 时间 Time
+
+  * 显示一个对已记录对象的解决时间和柱状图
+
+* 检查 Inspections
+
+  * 显示一个数量的操作，将分析当前对象集在某种条件下的子集，实质是一个筛选的过程。
+
+* 图表 Graph
+
+  * 你需要在references视图和biggest视图手动添加对象到图表，它可以显示对象的传入和传出引用，能方便的找到垃圾收集器根源。
+
+  在工具栏点“Go To Start”可以使用堆内存重新计数，也就是回到初始状态。
+
+![image-20240410121815568](D:\IdeaProjects\learn\jvm\image\chapter22\image-20240410121815568.png)
+
+#### 22.2.3.5 CPU视图 cpu views
+
+![image-20240410122046145](D:\IdeaProjects\learn\jvm\image\chapter22\image-20240410122046145.png)
+
+#### 22.2.3.6 线程视图 threads
+
+​	JProfiler通过对线程历史的监控判断其运行状态，并监控是否有线程阻塞产生，还能将一个线程所管理的方法以树状形式呈现，对线程剖析。
+
+* 线程历史 Thread History
+
+  * 显示一个与线程活动和线程状态在一起的活动时间表。
+
+* 线程监控 Thread Monitor
+
+  * 显示一个列表，包含所有的活动线程以及它们目前的活动状况。
+
+* 线程转储 Thread Dumps
+
+  * 显示所有线程的堆栈跟踪
+
+  线程分析主要关注三个方便
+
+  * web容器的线程最大数
+  * 线程阻塞
+  * 线程死锁
+
+![image-20240410122725087](D:\IdeaProjects\learn\jvm\image\chapter22\image-20240410122725087.png)
+
+#### 22.2.3.7 监视器&锁 Monitors&locks
+
+​	所有线程持有锁的情况以及锁的信息
+
+​	观察JVM的内部线程并查看状态：
+
+* 死锁探测图表 Current Loking Graph：显示JVM中的当前死锁图表。
+* 目前使用的检测器 Current Monitors：显示目前使用的检测器并且包括它们的关联线程。
+* 锁定历史图表 Locking Hostory Graph：显示记录在JVM中的锁定历史。
+* 历史检测记录 Monitor History：显示重大的等待时间和阻塞事件的历史记录。
+* 监控器使用统计 Monitor Usage Statistics：显示分组检测，显示和检测类的统计监测数据。
+
+![image-20240410123330668](D:\IdeaProjects\learn\jvm\image\chapter22\image-20240410123330668.png)
+
+### 22.2.4 案例分析
 
 ## 22.6 Arthas
 
