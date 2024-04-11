@@ -841,15 +841,148 @@ SELECT * FROM INSTANCEOF java.util.Vecotr
 
 ### 22.2.4 案例分析
 
+```java
+public class JProfilerTest {
+    public static void main(String[] args) {
+        while (true){
+            ArrayList list = new ArrayList();
+            for (int i = 0; i < 500; i++) {
+                Data data = new Data();
+                list.add(data);
+            }
+            try {
+                TimeUnit.MILLISECONDS.sleep(500);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+}
+class Data{
+    private int size = 10;
+    private byte[] buffer = new byte[1024 * 1024];//1mb
+    private String info = "hello,atguigu";
+}
+```
+
+![image-20240411085356034](D:\IdeaProjects\learn\jvm\image\chapter22\image-20240411085356034.png)
+
+![image-20240411085330582](D:\IdeaProjects\learn\jvm\image\chapter22\image-20240411085330582.png)
+
+案例2
+
+```java
+public class MemoryLeak {
+
+    public static void main(String[] args) {
+        while (true) {
+            ArrayList beanList = new ArrayList();
+            for (int i = 0; i < 500; i++) {
+                Bean data = new Bean();
+                data.list.add(new byte[1024 * 10]);//10kb
+                beanList.add(data);
+            }
+            try {
+                TimeUnit.MILLISECONDS.sleep(500);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+}
+
+class Bean {
+    int size = 10;
+    String info = "hello,atguigu";
+//     ArrayList list = new ArrayList();
+    static ArrayList list = new ArrayList();
+}
+```
+
+内存一直在往上增加
+
+![image-20240411090300100](D:\IdeaProjects\learn\jvm\image\chapter22\image-20240411090300100.png)
+
+类一直在往上增加
+
+![image-20240411090131039](D:\IdeaProjects\learn\jvm\image\chapter22\image-20240411090131039.png)
+
 ## 22.6 Arthas
 
-22.2.1 基本概述
+### 22.2.1 基本概述
 
-22.2.2 启动
+​	jvisualvm和JProfiler都是图形化界面，知名度较高，但是必须在服务端项目进程中配置相关的监控参数。然后工具通过远程连接到目录进程，服务器往往有网络隔离，可能连不上。
 
-22.2.3 三种链接方式
+​	Arthas可以直接在服务器上运行。
 
-22.2.4 主要作用
+* 概述
+  * Arthas是Alibaba开源的Java诊断工具，深受开发者喜爱。在线排查问题，无需重启，动态跟踪Java代码，实施监控JVM状态。
+  * Arthas支持JDK 6+，支持Linux/Mac/Windows，采用命令行交互模式，同时提供丰富的Tab自动补全功能，进一步方便进行问题的定位和诊断。
+  * 当你遇到一下类似问题而束手无策时，Arthas可以帮助你解决
+    * 这个类从哪个jar包加载的？为什么会报各种类相关的Exception？
+    * 我改的代码为什么没有执行到？难道到我没commit？分支搞错了？
+    * 遇到问题无法在线debug，难道只能通过加日志再重新发布吗？
+    * 线上遇到某个用户的数据处理有问题，但线上同样无法debug，线下无法重现！
+    * 是否有一个全局视角来查看系统的运行状况？
+    * 有什么办法可以监控到JVM的实时运行状态？
+    * 怎么快速定位应用的热点，生成火焰图？
+* 基于那些工具开发而来
+  * greys-anatomy：Arthas代码基于Greys二次开发而来，非常感谢Greys之前所有的工作，以及Greys原作者对Arthas提出的建议和意见！
+  * termd：Arthas的命令行实现基于termd开发，是一款优秀的命令行程序开发框架，感谢termd提供了优秀的框架。
+  * crash：Arthas的文本渲染功能基于crash中的文本渲染功能开发，可以从这里看到源码，感谢crash在这方面所作的优秀工作。
+  * cli：Arthas的命令行界面基于vert.x提供的cli库进行开发，感谢vert.x在这方面做出的优秀工作。
+  * compiler：Arthas里的内存编译器代码来源
+  * Apache Commons Net ：Arthas里的Telnet Client代码来源
+  * JavaAgent：运行在main方法之前的拦截器，它内定的方法名叫premain，也就是说先执行premain方法然后再执行main方法。
+  * ASM：一个通用的Java字节码操作和分析框架。它可以用于修改现有的类或直接以二进制形式动态生成类。ASM提供了一些常见的字节码转换和分析算法。可以用它们构建定制的复杂转换和代码分析工具。ASM提供了与其他JAVA字节码框架类似的功能，但时主要关注性能，因为它被设计和实现得尽可能小和快，所以非常适合在动态系统中使用（当然也可以以静态方式使用，例如在编译器中）
+* 官方使用文档
+  * https://arthas.aliyun.com/zh-cn/
+
+![image-20240411121859116](D:\IdeaProjects\learn\jvm\image\chapter22\image-20240411121859116.png)
+
+### 22.2.2 安装与使用
+
+#### 22.2.2.1 安装
+
+* 方式一：直接在Linxu上通过命令下载
+  * github下载：wget https://alibaba.github.io/arthas/arthas-boot.jar
+  * gitee下载：wget https://arthas.gitee.io/arthas-boot.jar
+* 方式二：浏览器下载后，将arthas-boot.jar上传到服务器。
+* 卸载：删除下面文件 
+  * rm -rf ~/.arthas 
+  * rm -rf  ~/logs/arthas
+* windows平台直接删除user home 下面的.arthas和logs/arthas目录
+
+#### 22.2.2.2 工程目录
+
+* arthas-agent：基于JavaAgent技术的代理
+* bin：一些启动脚本
+* arthas-boot：Java版本的意见安装启动脚本
+* arthas-client：telnet client代码
+* arthas-common：一些共用的工具类和枚举类
+* arthas-core：核心库，各种arthas命令的交互和实现
+* arthas-demo：示例代码
+* arthas-memorycompiler：内存编译代码，Frok from https://github.com/skalogs/SkaETL/master/compiler
+* arthas-packaging：maven打包相关的
+* arthas-site：arthas站点
+* arthas-spy：编织到目录类中的各个切面
+* static：静态资源
+* arthas-testcase：测试
+
+#### 22.2.2.3 启动
+
+#### 22.2.2.4 查看进程
+
+#### 22.2.2.5 查看日志
+
+#### 22.2.2.6 参考帮助
+
+#### 22.2.2.7 web console
+
+#### 22.2.2.8 退出
+
+### 22.2.3 相关诊断指令
 
 ## 22.7 Java Mission Control
 
@@ -863,7 +996,7 @@ SELECT * FROM INSTANCEOF java.util.Vecotr
 
 ## 22.8 trace
 
-22.2.1 基本概述
+22.2.1 基本概述l
 
 22.2.2 启动
 
