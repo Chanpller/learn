@@ -954,6 +954,8 @@ class Bean {
   * rm -rf  ~/logs/arthas
 * windows平台直接删除user home 下面的.arthas和logs/arthas目录
 
+获取到arthas-boot.jar后，需要启动jar -jar arthas-boot.jar，选择进程，进行下载依赖，然后就可以启动了
+
 #### 22.2.2.2 工程目录
 
 * arthas-agent：基于JavaAgent技术的代理
@@ -972,25 +974,599 @@ class Bean {
 
 #### 22.2.2.3 启动
 
+​	Arthas 只是一个java程序，所以可以直接用java -jar运行。
+
+​	执行成功后，arthas提供了一种命令方式的交互方式，arthas会检测当前服务器上运行的Java进程，并将进程列表展示出来，用户输入对应的编号（1、2、3、4...）进行选择，然后回车。
+
+​	比如方式1：java -jar arthas-boot.jar 
+
+```shell
+# 选择进程（输入[]内编号（不是PID）回车）
+C:\Users\cp\Downloads>java -jar arthas-boot.jar
+[INFO] JAVA_HOME: D:\Program Files\Java\jdk1.8.0_51\jre
+[INFO] arthas-boot version: 3.7.2
+[INFO] Found existing java process, please choose one and input the serial number of the process, eg : 1. Then hit ENTER.
+* [1]: 17540 org.jetbrains.idea.maven.server.RemoteMavenServer36
+  [2]: 25496
+#输入1或2选择
+```
+
+​	方式2：运行时选择Java进程PID   java -jar arthas-boot.jar [PID]
+
 #### 22.2.2.4 查看进程
+
+java -jar arthas-boot.jar
 
 #### 22.2.2.5 查看日志
 
+cat ~/logs/arthas/arthas.log
+
 #### 22.2.2.6 参考帮助
+
+java -jar arthas-boot.jar -h
 
 #### 22.2.2.7 web console
 
+​	除了在命令行查看外，Arthas目前还支持Web Console。在成功启动连接进程之后就已经自动启动，可以直接访问http://127.0.0.1:8563/访问，页面上的操作模式和控制台完全一样。
+
 #### 22.2.2.8 退出
+
+最后一行[arthas@7457]$. 说明打开进入了监控客户端，在这里就可以执行相关命令进行查看了。
+
+* 使用quit\exit：退出当前客户端
+* 使用stop\shutdown：关闭arthas服务端，并退出所有客户端。
 
 ### 22.2.3 相关诊断指令
 
+#### 22.2.3.1 基础指令
+
+* help：查看命令帮助信息
+* cat：打印文件内容，和linux里的cat命令类似
+* echo：打印参数，和linux里的echo命令类似
+* grep：匹配查找，和linux里的grep命令类似
+* tee：赋值标准输入到标准输出和指定的文件，和linux里的tee命令类似
+* pwd：返回当前的工作目录，和linux里的pwd命令类似
+* cls：清空当前屏幕区域
+* session：查看当前会话的信息
+* reset：重置增强类，将被Arthas增强过的类全部还原，Arthas服务端关闭时会重置所有增强过的类
+* version：输出当前目标Java进程所加载的Arthas版本号
+* history：打印命令历史
+* quit：退出当前Arthas客户端，其他Arthas客户端不受影响
+* stop：关闭Arthas服务端，所有Arthas客户端全部退出
+* keymap：Arthas快捷键列表及自定义快捷键
+
+#### 22.2.3.2 jvm相关
+
+* dashboard
+  * 当前系统实施数据面板
+
+```shell
+[arthas@6068]$ dashboard
+ID   NAME                          GROUP          PRIORITY  STATE    %CPU      DELTA_TIM TIME      INTERRUPT DAEMON
+-1   C1 CompilerThread2            -              -1        -        0.0       0.000     0:0.390   false     true
+-1   C2 CompilerThread1            -              -1        -        0.0       0.000     0:0.234   false     true
+1    main                          main           5         TIMED_WA 0.0       0.000     0:0.187   false     false
+-1   C2 CompilerThread0            -              -1        -        0.0       0.000     0:0.187   false     true
+21   arthas-NettyHttpTelnetBootstr system         5         RUNNABLE 0.0       0.000     0:0.062   false     true
+-1   VM Thread                     -              -1        -        0.0       0.000     0:0.031   false     true
+5    Attach Listener               system         5         RUNNABLE 0.0       0.000     0:0.015   false     true
+12   arthas-timer                  system         5         WAITING  0.0       0.000     0:0.015   false     true
+15   arthas-NettyHttpTelnetBootstr system         5         RUNNABLE 0.0       0.000     0:0.015   false     true
+17   arthas-NettyWebsocketTtyBoots system         5         RUNNABLE 0.0       0.000     0:0.015   false     true
+6    Monitor Ctrl-Break            main           5         RUNNABLE 0.0       0.000     0:0.015   false     true
+Memory                    used    total    max     usage    GC
+heap                      30M     319M     5435M   0.56%    gc.ps_scavenge.count          32
+ps_eden_space             2M      53M      2017M   0.14%    gc.ps_scavenge.time(ms)       87
+ps_survivor_space         4M      10M      10M     49.06%   gc.ps_marksweep.count         0
+ps_old_gen                22M     256M     4076M   0.56%    gc.ps_marksweep.time(ms)      0
+nonheap                   25M     25M      -1      97.71%
+code_cache                4M      4M       240M    1.91%
+metaspace                 18M     18M      -1      97.59%
+compressed_class_space    2M      2M       1024M   0.22%
+Runtime
+os.name                                                     Windows 8.1
+os.version                                                  6.3
+java.version                                                1.8.0_51
+java.home                                                   D:\Program Files\Java\jdk1.8.0_51\jre
+systemload.average                                          -1.00
+processors                                                  4
+timestamp/uptime                                            Fri Apr 12 08:15:23 CST 2024/237s
+```
+
+* thread
+  * 查看当前JVM的线程堆栈信息（可以定时，打印多少条thread相关信息数量）
+
+```shell
+[arthas@6068]$ thread
+Threads Total: 24, NEW: 0, RUNNABLE: 8, BLOCKED: 0, WAITING: 3, TIMED_WAITING: 3, TERMINATED: 0, Internal threads: 10
+ID   NAME                          GROUP          PRIORITY  STATE    %CPU      DELTA_TIM TIME      INTERRUPT DAEMON
+2    Reference Handler             system         10        WAITING  0.0       0.000     0:0.000   false     true
+3    Finalizer                     system         8         WAITING  0.0       0.000     0:0.000   false     true
+4    Signal Dispatcher             system         9         RUNNABLE 0.0       0.000     0:0.000   false     true
+5    Attach Listener               system         5         RUNNABLE 0.0       0.000     0:0.015   false     true
+12   arthas-timer                  system         5         WAITING  0.0       0.000     0:0.015   false     true
+15   arthas-NettyHttpTelnetBootstr system         5         RUNNABLE 0.0       0.000     0:0.015   false     true
+16   arthas-NettyWebsocketTtyBoots system         5         RUNNABLE 0.0       0.000     0:0.000   false     true
+17   arthas-NettyWebsocketTtyBoots system         5         RUNNABLE 0.0       0.000     0:0.015   false     true
+18   arthas-shell-server           system         5         TIMED_WA 0.0       0.000     0:0.000   false     true
+19   arthas-session-manager        system         5         TIMED_WA 0.0       0.000     0:0.000   false     true
+21   arthas-NettyHttpTelnetBootstr system         5         RUNNABLE 0.0       0.000     0:0.109   false     true
+22   arthas-command-execute        system         5         RUNNABLE 0.0       0.000     0:0.000   false     true
+1    main                          main           5         TIMED_WA 0.0       0.000     0:0.187   false     false
+6    Monitor Ctrl-Break            main           5         RUNNABLE 0.0       0.000     0:0.015   false     true
+-1   GC task thread#1 (ParallelGC) -              -1        -        0.0       0.000     0:0.000   false     true
+-1   VM Thread                     -              -1        -        0.0       0.000     0:0.031   false     true
+-1   GC task thread#2 (ParallelGC) -              -1        -        0.0       0.000     0:0.000   false     true
+-1   GC task thread#3 (ParallelGC) -              -1        -        0.0       0.000     0:0.000   false     true
+-1   C1 CompilerThread2            -              -1        -        0.0       0.000     0:0.468   false     true
+-1   VM Periodic Task Thread       -              -1        -        0.0       0.000     0:0.000   false     true
+-1   GC task thread#0 (ParallelGC) -              -1        -        0.0       0.000     0:0.000   false     true
+-1   C2 CompilerThread0            -              -1        -        0.0       0.000     0:0.218   false     true
+-1   Service Thread                -              -1        -        0.0       0.000     0:0.000   false     true
+-1   C2 CompilerThread1            -              -1        -        0.0       0.000     0:0.281   false     true
+```
+
+* jvm
+  * 查看当前jvm的信息
+
+```shell
+[arthas@6068]$ jvm
+ RUNTIME
+-----------------------------------------------------------------------------------------------------------------------
+ MACHINE-NAME                      6068@DESKTOP-0ELPV16
+ JVM-START-TIME                    2024-04-12 08:11:26
+ MANAGEMENT-SPEC-VERSION           1.2
+ SPEC-NAME                         Java Virtual Machine Specification
+ SPEC-VENDOR                       Oracle Corporation
+ SPEC-VERSION                      1.8
+ VM-NAME                           Java HotSpot(TM) 64-Bit Server VM
+ VM-VENDOR                         Oracle Corporation
+ VM-VERSION                        25.51-b03
+ INPUT-ARGUMENTS                   -javaagent:D:\Program Files\JetBrains\IntelliJ IDEA 2021.2.1\lib\idea_rt.jar=6173:D
+                                   :\Program Files\JetBrains\IntelliJ IDEA 2021.2.1\bin
+                                   -Dfile.encoding=UTF-8
+ CLASS-PATH                        D:\Program Files\Java\jdk1.8.0_51\jre\lib\charsets.jar;D:\Program Files\Java\jdk1.8
+                                   .0_51\jre\lib\deploy.jar;D:\Program Files\Java\jdk1.8.0_51\jre\lib\ext\access-bridg
+                                   e-64.jar;D:\Program Files\Java\jdk1.8.0_51\jre\lib\ext\cldrdata.jar;D:\Program File
+                                   s\Java\jdk1.8.0_51\jre\lib\ext\dnsns.jar;D:\Program Files\Java\jdk1.8.0_51\jre\lib\
+                                   ext\jaccess.jar;D:\Program Files\Java\jdk1.8.0_51\jre\lib\ext\jfxrt.jar;D:\Program
+                                   Files\Java\jdk1.8.0_51\jre\lib\ext\localedata.jar;D:\Program Files\Java\jdk1.8.0_51
+                                   \jre\lib\ext\nashorn.jar;D:\Program Files\Java\jdk1.8.0_51\jre\lib\ext\sunec.jar;D:
+                                   \Program Files\Java\jdk1.8.0_51\jre\lib\ext\sunjce_provider.jar;D:\Program Files\Ja
+                                   va\jdk1.8.0_51\jre\lib\ext\sunmscapi.jar;D:\Program Files\Java\jdk1.8.0_51\jre\lib\
+                                   ext\sunpkcs11.jar;D:\Program Files\Java\jdk1.8.0_51\jre\lib\ext\zipfs.jar;D:\Progra
+                                   m Files\Java\jdk1.8.0_51\jre\lib\javaws.jar;D:\Program Files\Java\jdk1.8.0_51\jre\l
+                                   ib\jce.jar;D:\Program Files\Java\jdk1.8.0_51\jre\lib\jfr.jar;D:\Program Files\Java\
+                                   jdk1.8.0_51\jre\lib\jfxswt.jar;D:\Program Files\Java\jdk1.8.0_51\jre\lib\jsse.jar;D
+                                   :\Program Files\Java\jdk1.8.0_51\jre\lib\management-agent.jar;D:\Program Files\Java
+                                   \jdk1.8.0_51\jre\lib\plugin.jar;D:\Program Files\Java\jdk1.8.0_51\jre\lib
+                                   esources.jar;D:\Program Files\Java\jdk1.8.0_51\jre\lib
+```
+
+
+
+* 其他
+
+  * sysprop：查看和修改JVM的系统属性
+  * sysenv：查看JVM的环境变量
+  * vmoption：查看和修改JVM里诊断相关的option
+  * perfcounter：查看当前JVM的Perf Counter信息
+  * logger：查看和修改logger
+  * getstatic：查看类的静态属性
+  * ognl：执行ognl表达式
+  * mbean：查看Mbean的信息
+  * headdump：dump java heap，类似jmap命令的heap dump功能
+
+  ```
+  heapdump d:/oomtest.hprof
+  heapdum -h 帮助命令
+  ```
+
+  
+
+#### 22.2.3.3 class/classloader相关
+
+* sc
+
+  * “Search-Class” 的简写，这个命令能搜索出所有已经加载到 JVM 中的 Class 信息，这个命令支持的参数有 `[d]`、`[E]`、`[f]` 和 `[x:]`。
+
+  * 查看JVM一加载的类信息：https://arthas.aliyun.com/doc/sc
+
+  * 常用参数
+
+    |              参数名称 | 参数说明                                                     |
+    | --------------------: | :----------------------------------------------------------- |
+    |       *class-pattern* | 类名表达式匹配                                               |
+    |      *method-pattern* | 方法名表达式匹配                                             |
+    |                   [d] | 输出当前类的详细信息，包括这个类所加载的原始文件来源、类的声明、加载的 ClassLoader 等详细信息。 如果一个类被多个 ClassLoader 所加载，则会出现多次 |
+    |                   [E] | 开启正则表达式匹配，默认为通配符匹配                         |
+    |                   [f] | 输出当前类的成员变量信息（需要配合参数-d 一起使用）          |
+    |                  [x:] | 指定输出静态变量时属性的遍历深度，默认为 0，即直接使用 `toString` 输出 |
+    |                `[c:]` | 指定 class 的 ClassLoader 的 hashcode                        |
+    | `[classLoaderClass:]` | 指定执行表达式的 ClassLoader 的 class name                   |
+    |                `[n:]` | 具有详细信息的匹配类的最大数量（默认为 100）                 |
+    |          `[cs <arg>]` | 指定 class 的 ClassLoader#toString() 返回值。长格式`[classLoaderStr <arg>]` |
+
+  * class-pattern 支持全限定名，如 com.taobao.test.AAA，也支持 com/taobao/test/AAA 这样的格式，这样，我们从异常堆栈里面把类名拷贝过来的时候，不需要在手动把`/`替换为`.`啦。
+
+  * sc 默认开启了子类匹配功能，也就是说所有当前类的子类也会被搜索出来，想要精确的匹配，请打开`options disable-sub-class true`开关
+
+  * ```shell
+    [arthas@6068]$ sc  chapter22.jprofiler.*
+    chapter22.jprofiler.Bean
+    chapter22.jprofiler.MemoryLeak
+    Affect(row-cnt:2) cost in 3 ms.
+    
+    [arthas@6068]$ sc -d chapter22.jprofiler.Bean
+     class-info        chapter22.jprofiler.Bean
+     code-source       /D:/IdeaProjects/learn/jvm/project/target/classes/
+     name              chapter22.jprofiler.Bean
+     isInterface       false
+     isAnnotation      false
+     isEnum            false
+     isAnonymousClass  false
+     isArray           false
+     isLocalClass      false
+     isMemberClass     false
+     isPrimitive       false
+     isSynthetic       false
+     simple-name       Bean
+     modifier
+     annotation
+     interfaces
+     super-class       +-java.lang.Object
+     class-loader      +-sun.misc.Launcher$AppClassLoader@14dad5dc
+                         +-sun.misc.Launcher$ExtClassLoader@6fc4f6d4
+     classLoaderHash   14dad5dc
+    
+    ```
+
+    
+
+* sm
+
+  * “Search-Method” 的简写，这个命令能搜索出所有已经加载了 Class 信息的方法信息。
+
+  |              参数名称 | 参数说明                                     |
+  | --------------------: | :------------------------------------------- |
+  |       *class-pattern* | 类名表达式匹配                               |
+  |      *method-pattern* | 方法名表达式匹配                             |
+  |                   [d] | 展示每个方法的详细信息                       |
+  |                   [E] | 开启正则表达式匹配，默认为通配符匹配         |
+  |                `[c:]` | 指定 class 的 ClassLoader 的 hashcode        |
+  | `[classLoaderClass:]` | 指定执行表达式的 ClassLoader 的 class name   |
+  |                `[n:]` | 具有详细信息的匹配类的最大数量（默认为 100） |
+
+  ```shell
+  [arthas@6068]$ sm chapter22.jprofiler.MemoryLeak
+  chapter22.jprofiler.MemoryLeak <init>()V
+  chapter22.jprofiler.MemoryLeak main([Ljava/lang/String;)V
+  Affect(row-cnt:2) cost in 2 ms.
+  ```
+
+* jad
+
+  * `jad` 命令将 JVM 中实际运行的 class 的 byte code 反编译成 java 代码，便于你理解业务逻辑；如需批量下载指定包的目录的 class 字节码可以参考 [dump](https://arthas.aliyun.com/doc/dump.html)。
+
+  * 在 Arthas Console 上，反编译出来的源码是带语法高亮的，阅读更方便
+
+  * 当然，反编译出来的 java 代码可能会存在语法错误，但不影响你进行阅读理解
+
+  * 参数
+
+    |              参数名称 | 参数说明                                   |
+    | --------------------: | :----------------------------------------- |
+    |       *class-pattern* | 类名表达式匹配                             |
+    |                `[c:]` | 类所属 ClassLoader 的 hashcode             |
+    | `[classLoaderClass:]` | 指定执行表达式的 ClassLoader 的 class name |
+    |                   [E] | 开启正则表达式匹配，默认为通配符匹配       |
+
+  ```java
+  [arthas@6068]$ jad chapter22.jprofiler.MemoryLeak
+  
+  ClassLoader:
+  +-sun.misc.Launcher$AppClassLoader@14dad5dc
+    +-sun.misc.Launcher$ExtClassLoader@6fc4f6d4
+  
+  Location:
+  /D:/IdeaProjects/learn/jvm/project/target/classes/
+  
+         /*
+          * Decompiled with CFR.
+          *
+          * Could not load the following classes:
+          *  chapter22.jprofiler.Bean
+          */
+         package chapter22.jprofiler;
+  
+         import chapter22.jprofiler.Bean;
+         import java.util.ArrayList;
+         import java.util.concurrent.TimeUnit;
+  
+         public class MemoryLeak {
+             public static void main(String[] args) {
+                 while (true) {
+                     ArrayList<Bean> beanList = new ArrayList<Bean>();
+  /*17*/             for (int i = 0; i < 500; ++i) {
+                         Bean data = new Bean();
+  /*19*/                 data.list.add(new byte[10240]);
+  /*20*/                 beanList.add(data);
+                     }
+                     try {
+  /*23*/                 TimeUnit.MILLISECONDS.sleep(500L);
+  /*26*/                 continue;
+                     }
+                     catch (InterruptedException e) {
+  /*25*/                 e.printStackTrace();
+                         continue;
+                     }
+                     break;
+                 }
+             }
+         }
+  ```
+
+* mc、redefine
+
+  * mc：Memory Compiler/内存编译器，编译`.java`文件生成`.class`。
+
+    ```
+    mc /tmp/Test.java
+    ```
+
+  * redefine：加载外部的`.class`文件，redefine jvm 已加载的类。推荐使用 [retransform](https://arthas.aliyun.com/doc/retransform.html) 命令
+
+    ```
+     redefine /tmp/Test.class
+     redefine -c 327a647b /tmp/Test.class /tmp/Test\$Inner.class
+     redefine --classLoaderClass sun.misc.Launcher$AppClassLoader /tmp/Test.class /tmp/Test\$Inner.class
+    ```
+
+* classloader
+
+  * `classloader` 命令将 JVM 中所有的 classloader 的信息统计出来，并可以展示继承树，urls 等。
+
+  * 可以让指定的 classloader 去 getResources，打印出所有查找到的 resources 的 url。对于`ResourceNotFoundException`比较有用。
+
+  * 参数说明
+
+    |              参数名称 | 参数说明                                   |
+    | --------------------: | :----------------------------------------- |
+    |                   [l] | 按类加载实例进行统计                       |
+    |                   [t] | 打印所有 ClassLoader 的继承树              |
+    |                   [a] | 列出所有 ClassLoader 加载的类，请谨慎使用  |
+    |                `[c:]` | ClassLoader 的 hashcode                    |
+    | `[classLoaderClass:]` | 指定执行表达式的 ClassLoader 的 class name |
+    |             `[c: r:]` | 用 ClassLoader 去查找 resource             |
+    |          `[c: load:]` | 用 ClassLoader 去加载指定的类              |
+
+    ```shell
+    $ classloader -t
+    +-BootstrapClassLoader
+    +-sun.misc.Launcher$ExtClassLoader@66350f69
+      +-com.taobao.arthas.agent.ArthasClassloader@68b31f0a
+      +-sun.misc.Launcher$AppClassLoader@3d4eac69
+    Affect(row-cnt:4) cost in 3 ms.
+    ```
+
+#### 22.2.3.4 monitor/watch/trace相关
+
+* monitor
+
+  * 方法执行监控
+  * 对匹配 `class-pattern`／`method-pattern`／`condition-express`的类、方法的调用进行监控。
+  * `monitor` 命令是一个非实时返回命令。
+  * 参数
+
+  |            参数名称 | 参数说明                                                     |
+  | ------------------: | :----------------------------------------------------------- |
+  |     *class-pattern* | 类名表达式匹配                                               |
+  |    *method-pattern* | 方法名表达式匹配                                             |
+  | *condition-express* | 条件表达式                                                   |
+  |                 [E] | 开启正则表达式匹配，默认为通配符匹配                         |
+  |              `[c:]` | 统计周期，默认值为 120 秒                                    |
+  |                 [b] | 在**方法调用之前**计算 condition-express                     |
+  |         `[m <arg>]` | 指定 Class 最大匹配数量，默认值为 50。长格式为`[maxMatch <arg>]` |
+  * 监控的维度说明
+
+|    监控项 | 说明                       |
+| --------: | :------------------------- |
+| timestamp | 时间戳                     |
+|     class | Java 类                    |
+|    method | 方法（构造方法、普通方法） |
+|     total | 调用次数                   |
+|   success | 成功次数                   |
+|      fail | 失败次数                   |
+|        rt | 平均 RT                    |
+| fail-rate | 失败率                     |
+
+```shell
+[arthas@6068]$ monitor chapter22.jprofiler.MemoryLeak main
+Press Q or Ctrl+C to abort.
+Affect(class count: 1 , method count: 1) cost in 89 ms, listenerId: 1
+```
+
+* watch
+
+  * 方法执行数据观测
+
+  * 让你能方便的观察到指定函数的调用情况。能观察到的范围为：`返回值`、`抛出异常`、`入参`，通过编写 OGNL 表达式进行对应变量的查看。
+
+  * 参数说明
+
+    |            参数名称 | 参数说明                                                     |
+    | ------------------: | :----------------------------------------------------------- |
+    |     *class-pattern* | 类名表达式匹配                                               |
+    |    *method-pattern* | 函数名表达式匹配                                             |
+    |           *express* | 观察表达式，默认值：`{params, target, returnObj}`            |
+    | *condition-express* | 条件表达式                                                   |
+    |                 [b] | 在**函数调用之前**观察                                       |
+    |                 [e] | 在**函数异常之后**观察                                       |
+    |                 [s] | 在**函数返回之后**观察                                       |
+    |                 [f] | 在**函数结束之后**(正常返回和异常返回)观察                   |
+    |                 [E] | 开启正则表达式匹配，默认为通配符匹配                         |
+    |                [x:] | 指定输出结果的属性遍历深度，默认为 1，最大值是 4             |
+    |         `[m <arg>]` | 指定 Class 最大匹配数量，默认值为 50。长格式为`[maxMatch <arg>]`。 |
+
+    ```shell
+    [arthas@26360]$ watch chapter22.jprofiler.Bean <init>
+    Press Q or Ctrl+C to abort.
+    Affect(class count: 1 , method count: 1) cost in 24 ms, listenerId: 6
+    method=chapter22.jprofiler.Bean.<init> location=AtExit
+    ts=2024-04-12 12:21:28; [cost=0.1426ms] result=@ArrayList[
+        @Object[][isEmpty=true;size=0],
+        @Bean[chapter22.jprofiler.Bean@246b179d],
+        null,
+    ]
+    method=chapter22.jprofiler.Bean.<init> location=AtExit
+    ts=2024-04-12 12:21:28; [cost=0.0066ms] result=@ArrayList[
+        @Object[][isEmpty=true;size=0],
+        @Bean[chapter22.jprofiler.Bean@7a07c5b4],
+        null,
+    ]
+    ```
+
+    
+
+* trace
+
+  * 方法内部调用路径，并输出方法路径上每个节点耗时
+
+  * `trace` 命令能主动搜索 `class-pattern`／`method-pattern` 对应的方法调用路径，渲染和统计整个调用链路上的所有性能开销和追踪调用链路。
+
+  * ## 参数说明
+
+    |            参数名称 | 参数说明                                                     |
+    | ------------------: | :----------------------------------------------------------- |
+    |     *class-pattern* | 类名表达式匹配                                               |
+    |    *method-pattern* | 方法名表达式匹配                                             |
+    | *condition-express* | 条件表达式                                                   |
+    |                 [E] | 开启正则表达式匹配，默认为通配符匹配                         |
+    |              `[n:]` | 命令执行次数                                                 |
+    |             `#cost` | 方法执行耗时                                                 |
+    |         `[m <arg>]` | 指定 Class 最大匹配数量，默认值为 50。长格式为`[maxMatch <arg>]`。 |
+
+    ```shell
+    [arthas@26360]$ trace -n 5 chapter22.jprofiler.Bean <init>
+    Press Q or Ctrl+C to abort.
+    Affect(class count: 1 , method count: 1) cost in 14 ms, listenerId: 5
+    `---ts=2024-04-12 12:20:38;thread_name=main;id=1;is_daemon=false;priority=5;TCCL=sun.misc.Launcher$AppClassLoader@14dad5dc
+        `---[0.600001ms] chapter22.jprofiler.Bean:<init>()
+    
+    `---ts=2024-04-12 12:20:38;thread_name=main;id=1;is_daemon=false;priority=5;TCCL=sun.misc.Launcher$AppClassLoader@14dad5dc
+        `---[0.0079ms] chapter22.jprofiler.Bean:<init>()
+    
+    `---ts=2024-04-12 12:20:38;thread_name=main;id=1;is_daemon=false;priority=5;TCCL=sun.misc.Launcher$AppClassLoader@14dad5dc
+        `---[0.009701ms] chapter22.jprofiler.Bean:<init>()
+    
+    `---ts=2024-04-12 12:20:38;thread_name=main;id=1;is_daemon=false;priority=5;TCCL=sun.misc.Launcher$AppClassLoader@14dad5dc
+        `---[0.009099ms] chapter22.jprofiler.Bean:<init>()
+    
+    `---ts=2024-04-12 12:20:38;thread_name=main;id=1;is_daemon=false;priority=5;TCCL=sun.misc.Launcher$AppClassLoader@14dad5dc
+        `---[0.035801ms] chapter22.jprofiler.Bean:<init>()
+    
+    ```
+
+    
+
+* stack
+
+  * 输出当前方法被调用的调用路径
+
+  * 很多时候我们都知道一个方法被执行，但这个方法被执行的路径非常多，或者你根本就不知道这个方法是从那里被执行了，此时你需要的是 stack 命令。
+
+  * 参数
+
+    |            参数名称 | 参数说明                                                     |
+    | ------------------: | :----------------------------------------------------------- |
+    |     *class-pattern* | 类名表达式匹配                                               |
+    |    *method-pattern* | 方法名表达式匹配                                             |
+    | *condition-express* | 条件表达式                                                   |
+    |                 [E] | 开启正则表达式匹配，默认为通配符匹配                         |
+    |              `[n:]` | 执行次数限制                                                 |
+    |         `[m <arg>]` | 指定 Class 最大匹配数量，默认值为 50。长格式为`[maxMatch <arg>]`。 |
+
+    ```
+    [arthas@26360]$ stack -n 1 chapter22.jprofiler.Bean <init>
+    ts=2024-04-12 12:24:14;thread_name=main;id=1;is_daemon=false;priority=5;TCCL=sun.misc.Launcher$AppClassLoader@14dad5dc
+        @chapter22.jprofiler.Bean.<init>()
+            at chapter22.jprofiler.MemoryLeak.main(null:-1)
+    ```
+
+* tt
+
+  * 方法执行数据的时空隧道，记录指定方法每次调用的入参和返回信息，并能对这些不同的时间下调用进行观测
+
+  * `watch` 虽然很方便和灵活，但需要提前想清楚观察表达式的拼写，这对排查问题而言要求太高，因为很多时候我们并不清楚问题出自于何方，只能靠蛛丝马迹进行猜测。
+
+  * 这个时候如果能记录下当时方法调用的所有入参和返回值、抛出的异常会对整个问题的思考与判断非常有帮助。
+
+  * 于是乎，TimeTunnel 命令就诞生了。
+
+  * tt 命令的实现是：把函数的入参/返回值等，保存到一个`Map<Integer, TimeFragment>`里，默认的大小是 100。
+
+  * tt 相关功能在使用完之后，需要手动释放内存，否则长时间可能导致OOM。退出 arthas 不会自动清除 tt 的缓存 map
+
+  * 命令参数解析
+
+    - `-t`
+
+      tt 命令有很多个主参数，`-t` 就是其中之一。这个参数的表明希望记录下类 `*Test` 的 `print` 方法的每次执行情况。
+
+    - `-n 3`
+
+      当你执行一个调用量不高的方法时可能你还能有足够的时间用 `CTRL+C` 中断 tt 命令记录的过程，但如果遇到调用量非常大的方法，瞬间就能将你的 JVM 内存撑爆。
+
+      此时你可以通过 `-n` 参数指定你需要记录的次数，当达到记录次数时 Arthas 会主动中断 tt 命令的记录过程，避免人工操作无法停止的情况。
+
+    - `-m 1`
+
+      通过 `-m` 参数指定 Class 匹配的最大数量，防止匹配到的 Class 数量太多导致 JVM 挂起，默认值是 50。
+
+    ```shell
+    [arthas@26360]$ tt -t -n 3 chapter22.jprofiler.Bean <init>
+    Press Q or Ctrl+C to abort.
+    Affect(class count: 1 , method count: 1) cost in 13 ms, listenerId: 10
+     INDEX  TIMESTAMP          COST(ms  IS-RE  IS-EXP  OBJECT        CLASS                      METHOD
+                               )        T
+    -----------------------------------------------------------------------------------------------------------------------
+     1100   2024-04-12 12:27:  0.188    true   false   0x3fb4f649    Bean                       <init>
+            50
+     1101   2024-04-12 12:27:  0.0134   true   false   0x33833882    Bean                       <init>
+            50
+     1102   2024-04-12 12:27:  0.0143   true   false   0x200a570f    Bean                       <init>
+            50
+    Command execution times exceed limit: 3, so command will exit. You can set it with -n option.
+    ```
+
+    
+
+#### 22.2.3.5 其他
+
+* profiler/火焰图
+
+  * `profiler` 命令支持生成应用热点的火焰图。本质上是通过不断的采样，然后把收集到的采样结果生成火焰图。
+
+  * ```shell
+    #启动
+    profiler start
+    ```
+
+  * ![image-20240412123032049](D:\IdeaProjects\learn\jvm\image\chapter22\image-20240412123032049.png)
+
+  * ![image-20240412123100409](D:\IdeaProjects\learn\jvm\image\chapter22\image-20240412123100409.png)
+
+* options
+
+  * 全局开关
+
 ## 22.7 Java Mission Control
 
-22.2.1 基本概述
+22.2.1 历史
 
 22.2.2 启动
 
-22.2.3 三种链接方式
+22.2.3 噶苏
 
 22.2.4 主要作用
 
