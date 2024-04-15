@@ -1562,13 +1562,75 @@ Affect(class count: 1 , method count: 1) cost in 89 ms, listenerId: 1
 
 ## 22.7 Java Mission Control
 
-22.2.1 历史
+### 22.7.1 历史
 
-22.2.2 启动
+​	在oracle收购Sun之前，Oracle的JRockit虚拟机提供了一款叫做JRockit Mission Control的虚拟机诊断工具。
 
-22.2.3 噶苏
+​	在Oracle收购Sun之后，Oracle公司同时拥有了Sun Hotspot和JRockit的优秀特性移植到Hotspot上。其中一个重要的改进就是在Sun的JDK中加入了JRockit的支持。
 
-22.2.4 主要作用
+​	在Oracle JDK 7u40之后，Mission Control这段工具已经绑定在Oracle JDK中发布。
+
+​	自Java 11开始，本节介绍的JFR已经开源。但在之前的Java版本，JFR属于Commercial Freature，需要通过Java虚拟机参数-XX:UnlockCommercialFeatures开启。
+
+​	可以查看JDK的Mission Control项目：https://github.com/JDKMissionControl/jmc
+
+### 22.7.2 启动
+
+​	Mission Control 语句JAVA_HOME/bin/jmc.exe，直接双击打开。
+
+![image-20240415193529634](D:\ideaprojects\learn\jvm\image\chapter22\image-20240415193529634.png)
+
+### 22.7.3 概述
+
+​	Java Mission Control（简称JMC），JAVA官方提供的性能强劲的工具。是一个用于对Java应用程序进行管理、监视、概要分析和故障排除的工具套件。
+
+​	它包含一个GUI客户端，以及众多用来收集Java虚拟机性能的插件，如JMX Console(能够访问用来存放虚拟机各个子系统运行数据的MXBeans)，以及虚拟机内置的高效profilling工具Java Flight Recorder(JFR)
+
+​	JMC的另一个优点就是：采用取样，而不是传统的代码植入技术，对应用性能的影响非常非常小，完全可以开着JMC来做压测（唯一影响可能就是Full gc多了）
+
+### 22.7.4 功能：实时监控JVM运行时的状态
+
+​	如果时远程服务，使用前要开JMX。
+
+-Dcom.sun.management.jmxremote.port=${YOUR PORT}
+
+-Dcom.sun.management.jmxremote
+
+-Dcom.sun.management.jmxremote.authenticate=false
+
+-Djava.rmi.server.hostname=${YOUR HOST/IP}
+
+文件-->连接-->创建新连接，填入上面JMX参数的host和port。
+
+![image-20240415194929110](D:\ideaprojects\learn\jvm\image\chapter22\image-20240415194929110.png)
+
+可以设置告警
+
+![image-20240415194958508](D:\ideaprojects\learn\jvm\image\chapter22\image-20240415194958508.png)
+
+### 22.7.5 Java Flight Recorder
+
+![image-20240415195109380](D:\ideaprojects\learn\jvm\image\chapter22\image-20240415195109380.png)
+
+* 事件
+  * 当启动时，JFR将记录运行过程中发生一系列事件。其中包括Java层面的时间，如线程事件、锁事件，以及Java虚拟机内部的事件，如新建对象、垃圾回收和即时编译事件。
+  * 按照发生时机以及持续时间来划分，JFR的事件共有四种类型，它们分别为以下四种。
+    * 瞬时事件（Instant Event），用于关心的是它们发生与否，例如异常、线程启动事件。
+    * 持续事件（Duration Event），用户关心的是它们的持续事件，例如垃圾回收事件。
+    * 计时事件（Timed Event），是时长超出指定阈值的持续事件。
+    * 取样事件（Sample Event），是周期性取样的事件。
+  * 取样事件的其中一个常见例子便是方法取样（Method Sampling），即每隔一段时间统计各个线程的栈轨迹。如果在这些抽样取得的栈轨迹中存在一个反复出现的方法，那么我们可以推测该方法是热点方法。
+* 启动方式
+  * 方式一：使用-XX:StartFlightRecoding=参数
+  * 方式二：使用jcmd的JFR.*子命令
+  * 方式三：JMC的JFR插件
+* Java Flight Recoder取样分析
+  * 要采用取样，必须先添加参数，否则启动飞行记录仪会报错。
+    * -XX:+UnlockCommercialFeatures
+    * -XX:+FlightRecorder
+  * 取样时间默认1分钟，可自行按需调整，时间设置选profiling，然后设置取样profile那些信息，比如：
+    * 加上对象数量的统计：Java Virtual Machone->GC->Detailed->ObjectCount/Object Count after GC
+    * 方法调用采样的间隔从10ms改为1ms：Java Virtual Machone->Profiling->Method Profiling Sample/Method Sampling Information
 
 ## 22.8 trace
 
