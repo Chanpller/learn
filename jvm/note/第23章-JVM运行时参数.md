@@ -147,7 +147,7 @@ C:\Users\cp>java -X
 
 ### 23.2.2 IDEA
 
-![image-20240417122848855](D:\IdeaProjects\learn\jvm\image\chapter23\image-20240417122848855.png)
+![image-20240417122848855](../image/chapter23/image-20240417122848855.png)
 
 ### 23.2.3 运行jar包
 
@@ -242,16 +242,214 @@ C:\Users\cp>jinfo -flag HeapDumpAfterFullGC 27528
  *   其中，Eden默认占新生代的8/10 : 160m ,Survivor0，Survivor1各占新生代的1/10 ： 20m
 ```
 
-![image-20240417153958676](D:\IdeaProjects\learn\jvm\image\chapter23\image-20240417153958676.png)
+![image-20240417153958676](../image/chapter23/image-20240417153958676.png)
 
 ### 23.3.3 OutofMemory相关的选项
 
+* -XX:+HeapDumpOnOutOfMemoryError 表示内存出现OOM的时候，把Heap转存（Dump）到文件以便后续分析
 
+* -XX:+HeapDumpBeforeFullGC 表示在出现FullGc之前，生成Heap转储文件
+
+* -XX:HeapDumpPath=<path> 指定Heap转储文件的存储路径
+
+* -XX:OnOutOfMemoryError 指定一个可行性程序或者脚本的路径，当发生OOM的时候，去执行这个脚本。
+
+  * 对于OnOutOfMemoryError的运维处理，以部署在Linux系统/opt/Server目录下的Server.jar为例
+
+    * 在run.sh启动脚本中添加jvm参数：-XX:OnOutOfMemoryError=/opt/Server/restart.sh
+
+    * restart.sh 脚本
+
+      * linux环境
+
+      ```shell
+      #!/bin/bash
+      pid=$(ps -ef|grep Server.jar|awk '{if($8=="java"){print $2}}')
+      kill -9 $pid
+      cd /opt/Server/;sh run.sh
+      ```
+
+      * Windows环境
+
+      ```shell
+      echo off
+      wmic process where Name='java.exe' delete
+      cd D:\Server
+      start run.bat
+      ```
+
+```shell
+ * -XX:+HeapDumpOnOutOfMemoryError
+ * -XX:+HeapDumpBeforeFullGC
+ * -XX:HeapDumpPath=d:\heapdumpinstance.hprof
+```
 
 ### 23.3.4 垃圾回收器相关选项
 
+![image-20240417194748323](../image/chapter23/image-20240417194748323.png)
+
+![image-20240417194808211](../image/chapter23/image-20240417194808211.png)
+
+* 查看默认垃圾回收器：
+  * -XX:+PrintCommandLineFlags 查看命令行相关参数（包含使用的垃圾收集器）
+  * 使用命令行指令：jinfo -flag 相关垃圾回收期参数 进程ID
+  
+* Serial回收器
+  * Serial回收器作为HotSpot中Client模式下的默认新生代垃圾回收器。Serial Old是运行在Client模式下默认的老年代的垃圾回收器。
+  * -XX:+UseSerialGC
+  * 指定年轻代和老年代都使用串行收集器，等价于新生代用Serial GC，老年代用Serial Old GC。可以获得最高的单线程收集效率
+  
+* ParNew回收器
+  * -XX:+UseParNewGC 手动指定使用ParNew收集器执行内存回收任务。它表示年轻代使用并行收集器，不影响老年代。
+  * -XX:ParallelGCThreads=N 限制线程数量，默认开启和CPU数据相同的线程数。
+  
+* Parallel回收器
+  * -XX:+UseParallelGC 手动指定年轻代使用Parallel并行收集器执行内存回收任务
+  * -XX:+UseParallelOldGC 手动指定老年代都是使用并行回收收集器
+    * 分别适用于新生代和老年代。默认JDK8是开启的。
+    * 上面两个参数，默认开启一个，另一个也会被开启。互相激活。
+  * -XX:ParallelGCThreads 设置年轻代并行收集器的线程数。一般地，最好与CPU数量相等，以免过多的线程数影响垃圾收集性能。
+    * 默认情况下，当CPU数量小于8个，ParallelGCThreads的值等于CPU数量
+    * 当CPU数量大于8个，ParallelGCThreads的值等于3+[5*CPU_Count/8]
+  * -XX:MaxGCPauseMillis 设置垃圾收集器最大停顿时间（STW的时间）。单位是毫秒
+    * 为了尽可能地把停顿时间控制在MaxGCPauseMillis以内，收集器在工作时会调整Java堆大小或者其他一些参数。
+    * 对于用户来将，停顿时间越短体验越好。但是在服务器端，我们注重高并发，整体的吞吐量。所以服务器适合Parallel，进行控制。
+    * 该参数使用需谨慎。
+  * -XX:GCTimeRatio 垃圾收集时间占总时间比例（=1/(N+1)），用于衡量吞吐量的大小。
+    * 取值范围（0，100），默认值99，也就是垃圾回收时间不超过1%。
+    * 与前一个-XX:MaxGCPauseMillis参数有一定矛盾性。暂停时间越长，Radio参数就容易超过设定的比例。
+  * -XX:+UseAdaptiveSizePolicy 设置Parallel Scavenge收集器具有自适应调节策略。
+    * 在这种模式下，年轻代的大小、Eden和Surivor的比例、晋升老年代的对象年龄等参数被自动调整，已达到在堆大小、吞吐量和停顿时间的平衡点。
+    * 在手动调优比较困难的场合，可以直接使用这种自适应的方式，仅指定虚拟机的最大堆、目标的吞吐量（GCTimeRatio）和停顿时间（MaxGCPauseMills），让虚拟机自己完成调优工作。
+  
+* CMS回收器
+  * -XX:+UseConcMarkSweepGC 手动指定使用CMS收集器执行内存回收任务
+    * 开启该参数后会自动将-XX:+UseParNewGC打开。即：ParNew(Young区用)+CMS(Old区用)+Serial Old的组合。
+  * -XX:CMSInitiatingOccupanyFraction 设置堆内存使用率的阈值，一旦达到该阈值，便开始进行回收
+    * JDK5及以前版本的默认值为68，即当老年代的空间使用率达到68%时，会执行一次CMS回收，JDK6及以上版本默认值为92%
+    * 如果内存增长缓慢，则可以设置一个稍大的值，大的阈值可以有效降低CMS的触发频率，减少老年代回收的次数可以较为明显地改善应用程序性能。反之，如果应用程序内存使用率增长很快，则应该降低这个阈值，以避免频繁触发老年代串行收集器。因此通过该选项便可以有效降低Full GC的执行次数。
+  * -XX:+UseCMSCompactAtFullCollection 用于指定执行完Full GC后对内存空间进行压缩整理，以此避免内存碎片的产生。不过由于内存压缩整理过程无法并发执行，所带来的问题就是停顿时间变得更长了。
+  * -XX:CMSFullGCsBeforeCompaction 设置在执行多少次Full GC后对内存空间进行压缩整理
+  * -XX:ParallelCMSThreads 设置CMS的线程数量
+    * CMS 默认启动的线程数时（ParallelGCThreads+3）/4，ParallelGCThreads是年轻代并行收集器的线程数。当CPU资源比较紧张时，受到CMS收集器线程的影响，应用程序的性能在垃圾回收阶段可能会非常糟糕。
+  
+  补充参数：另外，CMS收集器还有如下常用参数：
+  
+  * -XX:ConcGCThreads 设置并发垃圾收集的线程数，默认该值是基于ParallelGCThreads计算出来的；
+  * -XX:+UseCMSInitiatingOccupancyOnly 是否动态可调，用这个参数可以使CMS一直按CMSInitiatingOccupancyFraction设定的值启动
+  * -XX:+CMSScavengeBeforeRemark 强制hotspot虚拟机在cms remark阶段之前做一次minor gc,用于提高remark阶段的速度；
+  * -XX:+CMSClassUnloadingEnable 如果有的话，启用回收Perm区（JDK8之前）
+  * -XX:+CMSParallelInitialEnabled 用于开启CMS initial-mark阶段采用多线程的方式进行标记，用于提高标记速度，在Java8开始已经默认开启；
+  * -XX:+CMSParal1elRemarkEnabled 用户开启CMS remark阶段采用多线程的方式进行重新标记，默认开启；
+  * -XX:+ExplicitGCInvokesConcurrent、-XX:+ExplicitGCInvokesConcurrentAndUnloadsClasses 这两个参数用户指定hotspot虚拟在执行System.gc()时使用CMS周期；
+  * -XX:+CMSPrecleaningEnabled 指定CMS是否需要进行Pre cleaning这个阶段
+  
+  特别说明
+  
+  * JDK9新特性：CMS被标记为Deprecate了（JEP291)
+    * 如果对JDK 9及以上版本的HotSpot虚拟机使用参数-XX:+UseConcMarkSweepGC来开启CMS收集器的话，用户会收到一个警告信息，提示CMS未来将会被废弃。
+  * JDK14新特性：删除CMS垃圾回收器（JEP363)
+    * 移除了CMS垃圾收集器，如果在JDK14中使用-XX:+UseConcMarkSweepGC的话，JVM不会报错，只是给出一个warning信息，但是不会exit。JVM会自动回退以默认GC方式启动JVM
+  * OpenJDK 54-Bit Server VM warning: Ignoring option UseConcMarkSweepGC;
+    support was removed in 14.0 and the VM will continue execution using the default collector.
+  
+* G1回收器
+
+  * -XX:MaxGCPauseMillis 设置期望达到的最大GC停顿时间指标（JVM会尽力实现，但不保证达到）。默认值是200ms
+  * -XX:ParallelGCThread 设置STW时GC线程数的值。最多设置为8
+  * -XX:ConcGCThreads 设置并发标记的线程数。将n设置为并行垃圾回收线程数（ParallelGCThreads)的1/4左右。
+  * -XX:InitiatingHeapOccupancyPercent 设置触发并发GC周期的Java堆占用率阈值。超过此值，就触发GC。默认值是45。
+  * -XX:G1NewSizePercent、-XX:G1MaxNewSizePercent 新生代占用整个堆内存的最小百分比（默认5%)、最大百分比（默认60%)
+  * -XX:G1ReservePercent=10 保留内存区域，防止 to space(Survivor中的to区）溢出
+
+  Mixed GC调优参数
+
+  注意：G1收集器主要涉及到Mixed GC，Mixed GC会回收young 区和部分old区。
+
+  G1关于Mixed GC调优常用参数：
+
+  * -XX:InitiatingHeapOccupancyPercent 设置堆占用率的百分比（0到100)达到这个数值的时候触发global concurrent marking(全局并发标记），默认为45%。值为0表示间断进行全局并发标记。
+  * -XX:G1MixedGCLiveThresholdPercent 设置Old区的region被回收时候的对象占比，默认占用率为85%。只有Old区的region中存活的对象占用达到了这个百分比，才会Mixed GC中被回收。
+  * -XX:G1HeapWastePercent 在global concurrent marking(全局并发标记）结束之后，可以知道所有的区有多少空空间要被回收，在每次young GC之后和再次发生Mixed GC之前，会检查垃圾占比是否达到此参数，只有达到了，下次才会发生Mixed GC。
+  * -XX:G1MixedGCCountTarget 一次global concurrent marking(全局并发标记）之后，最多执行Mixed GC的次数，默认是8。
+  * -XX:G1OldCSetRegionThresholdPercent 设置Mixed GC收集周期中要收集的Old region数的上限。默认值是Java堆的10%
+
+* 怎么选择垃圾回收器
+
+  * 优先调整堆的大小让JVM自适应完成。
+
+  * 如果内存小于100M,使用串行收集器
+
+  * 如果是单核、单机程序，并且没有停顿时间的要求，串行收集器
+
+  * 如果是多CPU、需要高吞吐量、允许停顿时间超过1秒，选择并行或者JVM自己选择
+
+  * 如果是多CPU、追求低停顿时间，需快速响应（比如延迟不能超过1秒，如互联网应用），使用并发收集器。官方推荐G1,性能高。现在互联网的项目，基本都是使用G1
+
+  * 特别说明：
+
+    1.没有最好的收集器，更没有万能的收集；
+
+    2.调优永远是针对特定场景、特定需求，不存在一劳永逸的收集器
+
 ### 23.3.5 GC日志相关选项
+
+* 常用参数
+  * -verbose:gc 输出gc日志信息，默认输出到标准输出。可以独立使用
+  * -XX:+PrintGC 等同于-verbose:gc，表示打开简化的GC日志。可以独立使用
+  * -XX:+PrintGCDetails 在发生垃圾回收时打印内存回收详细的日志，并在进程退出时输出当前内存各区域分配情况。可以独立使用
+  * -XX:+PrintGCTimeStamps 输出GC发生时的时间戳。不可以独立使用，需要配合-XX:+PrintGCDetails
+  * -XX:+PrintGCDateStamps 输出GC发生时的时间戳（以日期的形式，如2013-05-04T21:53:59.234+0800)。不可以独立使用，需要配合-XX:+PrintGCDetails
+  * -XX:+PrintHeapAtGC 每一次GC前和GC后，都打印堆信息。可以独立使用
+  * -Xloggc:<file> 把GC日志写入到一个文件中去，而不是打印到标准输出中
+* 其他参数
 
 ### 23.3.6 其他参数
 
+* -XX:+DisableExplicitGC 禁止hotspot执行System.gc()，默认禁用
+* -XX:ReservedCodeCacheSize=<n>[g|m|k]、-XX:InitialCodeCacheSize=<n>[g|m|k]指定代码缓存的大小
+* -XX:+UseCodeCacheFlushing 使用该参数让jvm放弃一些被编译的代码，避免代码缓存被占满时JVM切换到interpreted-only的情况
+* -XX:+DoEscapeAnalysis 开启逃逸分析
+* -XX:+UseBiasedLocking 开启偏向锁
+* -XX:+UseLargePages 开启使用大页面
+* -XX:+UseTLAB 使用TLAB,默认打开
+* -XX:+PrintTLAB 打印TLAB的使用情况
+* -XX:TLABSize 设置TLAB大小
+
 ## 23.4 通过Java代码获取JVM参数
+
+​	Java提供了java.lang.management包用于监视和管理Java虚拟机和Java运行时中的其他组件，它允许本地和远程监控和管理运行的Java虚拟机。其中ManagementFactory这个类还是挺常用的。另外还有Runtime类也可以获取一些内存、CPU核数等相关的数据。
+
+​	通过这些api可以监控我们的应用服务器的堆内存使用情况，设置一些阈值进行报警等处理。
+
+```java
+package chapter23;
+
+import java.lang.management.ManagementFactory;
+import java.lang.management.MemoryMXBean;
+import java.lang.management.MemoryUsage;
+
+/**
+ *
+ * 监控我们的应用服务器的堆内存使用情况，设置一些阈值进行报警等处理
+ */
+public class MemoryMonitor {
+    public static void main(String[] args) {
+        MemoryMXBean memorymbean = ManagementFactory.getMemoryMXBean();
+        MemoryUsage usage = memorymbean.getHeapMemoryUsage();
+        System.out.println("INIT HEAP: " + usage.getInit() / 1024 / 1024 + "m");
+        System.out.println("MAX HEAP: " + usage.getMax() / 1024 / 1024 + "m");
+        System.out.println("USE HEAP: " + usage.getUsed() / 1024 / 1024 + "m");
+        System.out.println("\nFull Information:");
+        System.out.println("Heap Memory Usage: " + memorymbean.getHeapMemoryUsage());
+        System.out.println("Non-Heap Memory Usage: " + memorymbean.getNonHeapMemoryUsage());
+
+        System.out.println("=======================通过java来获取相关系统状态============================ ");
+        System.out.println("当前堆内存大小totalMemory " + (int) Runtime.getRuntime().totalMemory() / 1024 / 1024 + "m");// 当前堆内存大小
+        System.out.println("空闲堆内存大小freeMemory " + (int) Runtime.getRuntime().freeMemory() / 1024 / 1024 + "m");// 空闲堆内存大小
+        System.out.println("最大可用总堆内存maxMemory " + Runtime.getRuntime().maxMemory() / 1024 / 1024 + "m");// 最大可用总堆内存大小
+
+    }
+}
+```
+

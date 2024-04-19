@@ -7,9 +7,6 @@ import java.lang.management.MemoryUsage;
 /**
  *
  * 监控我们的应用服务器的堆内存使用情况，设置一些阈值进行报警等处理
- *
- * @author shkstart
- * @create 15:23
  */
 public class MemoryMonitor {
     public static void main(String[] args) {
