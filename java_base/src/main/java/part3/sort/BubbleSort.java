@@ -1,6 +1,7 @@
 package part3.sort;
 
-import source.part3.array.sort.stabilization.DataWrap;
+
+import part3.array.sort.stabilization.DataWrap;
 
 import java.util.Arrays;
 
