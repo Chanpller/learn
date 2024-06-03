@@ -170,11 +170,31 @@
 
 ### 2.3.2 CompletableFuture和CompletionStage源码分别介绍
 
+* 类框架说明
+
 ![image-20240531121511098](D:\IdeaProjects\learn\juc\image\image-20240531121511098.png)
 
+```java
+public class CompletableFuture<T> implements Future<T>, CompletionStage<T> {}
+```
 
+* 接口CompletionStage
+  * CompletionStage代表异步计算过程中的某一个阶段，一个阶段完成后可能会出发另一个阶段。
+  * 一个阶段的计算执行可能是一个Function，Consumer或者Ruanable。比如：stage.thenApply(x->square(x)).thenAccept(X->System.out.print(x)).thenRun(()->System.out.printlin())
+  * 一个阶段的执行可能是被单个阶段的完出发，也可能是由多个阶段一起触发。
+  * 代表异步计算过程中的某一个阶段，一个阶段完成后可能会触发另外一个阶段，有些类似Linux系统的管道分隔符传参数。
+  * 通过CompletionStage接口定义了更多的方法供CompletableFuture操作实现。
+
+* 类CompletableFuture
+  * 在Java8中，CompletableFuture提供了非常强大的Future的扩展功能，看可以帮助我们简化异步编程的复杂性，并且提供了函数式编程的能力，可以通过回调的方式处理计算结果，也提供了转换和组合CompletableFuture的方法。
+  * 它可能代表一个明确完成的Future，也有可能代表一个完成阶段（CompletionStage），它支持在计算完成后触发一些函数或执行某些动作。
+  * 它实现了Future和CompletionStage接口。
 
 ### 2.3.3 核心的四个静态方法，来创建一个异步任务
+
+* runAsync无返回值
+* suppluAsync有返回值
+* 
 
 ## 2.4 案例分析
 
