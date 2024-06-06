@@ -192,9 +192,124 @@ public class CompletableFuture<T> implements Future<T>, CompletionStage<T> {}
 
 ### 2.3.3 核心的四个静态方法，来创建一个异步任务
 
+#### 2.3.3.1 四个静态方法
+
 * runAsync无返回值
-* suppluAsync有返回值
-* 
+  * public static CompletableFuture<Void> runAsync(Runnable runnable)
+  * public static CompletableFuture<Void> runAsync(Runnable runnable,Executor executor)
+* supplyAsync有返回值
+  * public static <U> CompletableFuture<U> supplyAsync(Supplier<U> supplier)
+  * public static <U> CompletableFuture<U> supplyAsync(Supplier<U> supplier,Executor executor)
+
+2.3.3.2 静态方法参数说明
+
+* 上述Executor executor参数说明
+
+  * 没有指定Executor的方法，直接使用默认的ForkJoinPool.commonPool()作为它的线程池执行异步代码
+  * 如果指定线程池，则使用我们自定义的或者特别指定的线程池执行异步代码
+
+* Code（代码）
+
+  ```java
+  public class CompletableFutureBuildDemo
+  {
+      public static void main(String[] args) throws ExecutionException, InterruptedException
+      {
+  //        ExecutorService threadPool = Executors.newFixedThreadPool(3);
+  
+          //没有返回值,没有传入线程池，默认线程池时ForkJoinPool.commonPool，通过线程名字可以看出
+          CompletableFuture<Void> completableFuture = CompletableFuture.runAsync(() -> {
+              System.out.println(Thread.currentThread().getName());
+              //暂停几秒钟线程
+              try { TimeUnit.SECONDS.sleep(1); } catch (InterruptedException e) { e.printStackTrace(); }
+          });
+  
+  //        传入自定义线程池
+  //        CompletableFuture<Void> completableFuture = CompletableFuture.runAsync(() -> {
+  //            System.out.println(Thread.currentThread().getName());
+  //            //暂停几秒钟线程
+  //            try { TimeUnit.SECONDS.sleep(1); } catch (InterruptedException e) { e.printStackTrace(); }
+  //        },threadPool);
+  
+          System.out.println(completableFuture.get());
+  //
+          //有返回值
+          CompletableFuture<String> completableFuture2 = CompletableFuture.supplyAsync(() -> {
+              System.out.println(Thread.currentThread().getName());
+              //暂停几秒钟线程
+              try { TimeUnit.SECONDS.sleep(1); } catch (InterruptedException e) { e.printStackTrace(); }
+              return "hello supplyAsync";
+          });
+  
+          //传入自定义线程池
+  /*        CompletableFuture<String> completableFuture2 = CompletableFuture.supplyAsync(() -> {
+              System.out.println(Thread.currentThread().getName());
+              //暂停几秒钟线程
+              try { TimeUnit.SECONDS.sleep(1); } catch (InterruptedException e) { e.printStackTrace(); }
+              return "hello supplyAsync";
+          },threadPool);*/
+  
+          System.out.println(completableFuture2.get());
+  
+  //        threadPool.shutdown();
+      }
+  }
+  ```
+
+* Code(代码)之通用演示，减少阻塞和轮询
+
+  * 从Java8开始引入了CompletableFuture，它时Future的功能增强版，减少阻塞和轮询。可以传入回调对象，当异步任务完成或者发生异常时，自动调用回调对象的回调方法。
+  * 为什么默认线程池关闭，自定义线程池需要自己关闭。
+    * CompletableFuture默认的线程池是守护线程，一但主程序退出，它就结束
+    * 自定义线程是用户线程，不会主动结束，需要我们手动结束。
+
+  ```java
+   public static void main(String[] args) throws ExecutionException, InterruptedException
+      {
+  
+          ExecutorService threadPool = Executors.newFixedThreadPool(3);
+  
+          try
+          {
+              CompletableFuture.supplyAsync(() -> {
+                  System.out.println(Thread.currentThread().getName() + "----come in");
+                  int result = ThreadLocalRandom.current().nextInt(10);
+                  try { TimeUnit.SECONDS.sleep(1); } catch (InterruptedException e) { e.printStackTrace(); }
+                  System.out.println("-----1秒钟后出结果：" + result);
+                  if(result > 2)
+                  {
+                      int i=10/0;
+                  }
+                  return result;
+              }).whenComplete((v,e) -> {
+                  if (e == null) {
+                      System.out.println("-----计算完成，更新系统UpdateValue："+v);
+                  }
+              }).exceptionally(e -> {
+                  e.printStackTrace();
+                  System.out.println("异常情况："+e.getCause()+"\t"+e.getMessage());
+                  return null;
+              });
+  
+              System.out.println(Thread.currentThread().getName()+"线程先去忙其它任务");
+          }catch (Exception e){
+              e.printStackTrace();
+          }finally {
+  //            threadPool.shutdown();
+          }
+  
+  
+          //主线程不要立刻结束，否则CompletableFuture默认使用的线程池会立刻关闭:暂停3秒钟线程
+          //try { TimeUnit.SECONDS.sleep(3); } catch (InterruptedException e) { e.printStackTrace(); }
+  
+      }
+  ```
+
+* CompletableFuture特点
+
+  * 异步任务结束时，会自动回调某个对象的方法
+  * 主线程设置好回调后，不再关心异步任务的执行，异步任务之间可以顺序执行
+  * 异步任务出错时，会自动回调某个对象的方法
 
 ## 2.4 案例分析
 
