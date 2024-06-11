@@ -311,6 +311,542 @@ public class CompletableFuture<T> implements Future<T>, CompletionStage<T> {}
   * 主线程设置好回调后，不再关心异步任务的执行，异步任务之间可以顺序执行
   * 异步任务出错时，会自动回调某个对象的方法
 
-## 2.4 案例分析
+## 2.4 案例分析(从电商网站的比价需求说开)
+
+* 函数式编程已经主流
+
+  * 大厂面试题
+
+    * 你怎么理解Java多线程的？怎么处理并发？线程池有哪几个核心参数？
+    * Java加锁有哪几种锁？
+    * 简单说说lock？
+    * hashmap的实现原理？hash冲突怎么解决？为什么使用红黑树？
+    * spring里面都使用了哪些设计模式？循环依赖怎么解决？
+    * 项目中哪个地方用了countdownlanch，怎么使用的？
+    * JVM项目了解过吗？说说都有什么？栈里面都放什么东西？
+    * 都用redis来做什么？aof和rab都什么做持久化缓存的？
+    * mysql的锁机制？mysql的索引是怎么实现的？
+    * spring实现事务的几种方式？
+    * zookeeper怎么实现分布式锁？
+    * java函数式编程用过吗？
+    * 算法：求链表倒数第K个元素？
+
+  * Lambda表达式+Stream流式调用+Chain链式调用+Java8函数式编程
+
+    * Runnable
+
+      * 无参数，无返回值
+
+      ```java
+      @FunctionalInterface
+      public interface Runnable {
+          public abstract void run();
+      }
+      ```
+
+    * Function
+
+      * 接受一个参数，并且有返回值
+
+      ```java
+      public interface Function<T, R> {
+          R apply(T t);
+      }
+      ```
+
+    * Consumer
+
+      * 接受一个参数，没有返回值
+
+      ```java
+      @FunctionalInterface
+      public interface Consumer<T> {
+          void accept(T t);
+      }
+      ```
+
+    * BiConsumer
+
+      * 接受两个参数，没有返回值，Bi英文单词词根，代表两个的意思
+
+      ```java
+      @FunctionalInterface
+      public interface BiConsumer<T, U> {
+          void accept(T t, U u);
+      }
+      ```
+
+    * Supplier
+
+      * 没有参数，但是有返回值
+
+      ```java
+      @FunctionalInterface
+      public interface Supplier<T> {
+          T get();
+      }
+      ```
+
+    * 小总结
+
+      | 函数式接口名 | 方法名称 | 参数 | 返回值 |
+      | ------------ | -------- | ---- | ------ |
+      | Runnable     | run      | 0    | 无     |
+      | Function     | apply    | 1    | 有     |
+      | Consumer     | accept   | 1    | 无     |
+      | Supplier     | get      | 0    | 有     |
+      | BiConsumer   | accept   | 2    | 无     |
+
+* 先说说join和get对比
+
+  * 基本上没区别，get获取时会抛出检查型异常，jion不会。
+
+  ```java
+  public class CompletableFutureJionAndGetDemo {
+  //    public static void main(String[] args) {
+  //        CompletableFuture<String> completableFuture = CompletableFuture.supplyAsync(()->{
+  //            return "Hello Word";
+  //        });
+  //        System.out.println(completableFuture.join());
+  //    }
+      public static void main(String[] args) throws ExecutionException, InterruptedException {
+          CompletableFuture<String> completableFuture = CompletableFuture.supplyAsync(()->{
+              return "Hello Word";
+          });
+          System.out.println(completableFuture.get());
+      }
+  }
+  ```
+
+* 说说你过去工作中的项目亮点
+
+* 大厂业务需求说明
+
+  ```
+   * 案例说明：电商比价需求，模拟如下情况：
+   *
+   * 1需求：
+   *  1.1 同一款产品，同时搜索出同款产品在各大电商平台的售价;
+   *  1.2 同一款产品，同时搜索出本产品在同一个电商平台下，各个入驻卖家售价是多少
+   *
+   * 2输出：出来结果希望是同款产品的在不同地方的价格清单列表，返回一个List<String>
+   * 《mysql》 in jd price is 88.05
+   * 《mysql》 in dangdang price is 86.11
+   * 《mysql》 in taobao price is 90.43
+   
+   * 3 解决方案，比对同一个商品在各个平台上的架构，要求获得一个清单列表
+   * 1 step by step ，按部就班，查看京东查淘宝，查看淘宝查天猫
+   * 2 all in ,万箭齐发，一口气多线程异步任务同时查询。
+   
+   * 4 技术要求
+   *   4.1 函数式编程
+   *   4.2 链式编程
+   *   4.3 Stream流式计算
+  ```
+
+* 一波流Java8函数式编程带走-比价案例实战Case
+
+  ```java
+  package chapter2;
+  import lombok.Getter;
+  import java.util.Arrays;
+  import java.util.List;
+  import java.util.concurrent.CompletableFuture;
+  import java.util.concurrent.ThreadLocalRandom;
+  import java.util.concurrent.TimeUnit;
+  import java.util.stream.Collectors;
+  
+  public class CompletableFutureMallDemo
+  {
+      static List<NetMall> list = Arrays.asList(
+              new NetMall("jd"),
+              new NetMall("dangdang"),
+              new NetMall("taobao"),
+              new NetMall("pdd"),
+              new NetMall("tmall")
+      );
+      /**
+       * step by step 一家家搜查
+       * List<NetMall> ----->map------> List<String>
+       * @param list
+       * @param productName
+       * @return
+       */
+      public static List<String> getPrice(List<NetMall> list,String productName)
+      {
+          //《mysql》 in taobao price is 90.43
+          return list
+                  .stream()//list 转化为流
+                  .map(netMall ->
+                          String.format(productName + " in %s price is %.2f",
+                                  netMall.getNetMallName(),
+                                  netMall.calcPrice(productName)))//map映射,传入netMall，返回String.format字符串
+                  .collect(Collectors.toList());//最后手机为List
+      }
+  
+      /**
+       * List<NetMall> ----->List<CompletableFuture<String>>------> List<String>
+       * @param list
+       * @param productName
+       * @return
+       */
+      public static List<String> getPriceByCompletableFuture(List<NetMall> list,String productName)
+      {
+          //先将netMall映射为异步任务CompletableFuture<String>
+          //收集为List<CompletableFuture<String>>
+          //再将List<CompletableFuture<String>>映射为String
+          //再收集为List<String>
+          return list.stream().map(netMall ->
+                  CompletableFuture.supplyAsync(() -> String.format(productName + " in %s price is %.2f",
+                  netMall.getNetMallName(),
+                  netMall.calcPrice(productName))))
+                  .collect(Collectors.toList())
+                  .stream()
+                  .map(s -> s.join())
+                  .collect(Collectors.toList());
+      }
+  
+  
+      public static void main(String[] args)
+      {
+          long startTime = System.currentTimeMillis();
+          List<String> list1 = getPrice(list, "mysql");
+          for (String element : list1) {
+              System.out.println(element);
+          }
+          long endTime = System.currentTimeMillis();
+          System.out.println("----costTime: "+(endTime - startTime) +" 毫秒");
+  
+          System.out.println("--------------------");
+  
+          long startTime2 = System.currentTimeMillis();
+          List<String> list2 = getPriceByCompletableFuture(list, "mysql");
+          for (String element : list2) {
+              System.out.println(element);
+          }
+          long endTime2 = System.currentTimeMillis();
+          System.out.println("----costTime: "+(endTime2 - startTime2) +" 毫秒");
+      }
+  }
+  
+  class NetMall
+  {
+      @Getter
+      private String netMallName;
+  
+      public NetMall(String netMallName)
+      {
+          this.netMallName = netMallName;
+      }
+  
+      public double calcPrice(String productName)
+      {
+          try { TimeUnit.SECONDS.sleep(1); } catch (InterruptedException e) { e.printStackTrace(); }
+  
+          return ThreadLocalRandom.current().nextDouble() * 2 + productName.charAt(0);
+      }
+  }
+  ```
+
+  ```
+  输出结果
+  mysql in jd price is 109.98
+  mysql in dangdang price is 109.62
+  mysql in taobao price is 110.08
+  mysql in pdd price is 109.02
+  mysql in tmall price is 110.87
+  ----costTime: 5092 毫秒
+  --------------------
+  mysql in jd price is 109.83
+  mysql in dangdang price is 109.35
+  mysql in taobao price is 110.51
+  mysql in pdd price is 110.06
+  mysql in tmall price is 109.83
+  ----costTime: 1013 毫秒
+  ```
+
+  
 
 ## 2.5 CompletableFuture常用方法
+
+### 2.5.1 获取结果和触发计算
+
+* 获取结果
+
+  * public T get() 
+    * 一直等待获取，阻塞
+  * public T get(long timeout,TimeUnit unit) 超
+    * 超过时间没获取到，就报错了
+  * public T join()
+    * 与get()一致，知识爆出异常的问题
+  * public T getNow(T valueIfAbsent)
+    * 没有计算完成的情况下，给我一个替代
+    * 立即获取结果不阻塞，计算完，返回计算值，没计算完，返回valueIfAbsent值
+
+* 主动触发计算
+
+  * public boolean complete(T value) 
+    * 打断get或join方法并将返回值设置为value值，通过get或jion方法获取的值为value。
+
+  ```java
+  package chapter2;
+  
+  import java.util.concurrent.CompletableFuture;
+  import java.util.concurrent.ExecutionException;
+  import java.util.concurrent.TimeUnit;
+  import java.util.concurrent.TimeoutException;
+  
+  public class CompletableFutureAPIDemo
+  {
+      public static void main(String[] args) throws ExecutionException, InterruptedException
+      {
+          group1();
+      }
+  
+      /**
+       * 获得结果和触发计算
+       * @throws InterruptedException
+       * @throws ExecutionException
+       */
+      private static void group1() throws InterruptedException, ExecutionException
+      {
+          CompletableFuture<String> completableFuture = CompletableFuture.supplyAsync(() -> {
+              //暂停几秒钟线程
+              try {
+                  TimeUnit.SECONDS.sleep(1);
+              } catch (InterruptedException e) {
+                  e.printStackTrace();
+              }
+              return "abc";
+          });
+  
+          //System.out.println(completableFuture.get());
+          //System.out.println(completableFuture.get(2L,TimeUnit.SECONDS));
+          //System.out.println(completableFuture.join());
+  
+  
+          //System.out.println(completableFuture.getNow("xxx"));
+  
+          //暂停几秒钟线程
+          //try { TimeUnit.SECONDS.sleep(2); } catch (InterruptedException e) { e.printStackTrace(); }
+          System.out.println(completableFuture.complete("completeValue")+"\t"+completableFuture.join());//单一拿结果为ture  completeValue
+      }
+  }
+  
+  ```
+
+### 2.5.2 对计算结果进行处理
+
+* thenApply
+
+  * 计算结果存在依赖关系，这两个线程串行化
+
+  * 参数时Function，传递一个参数
+
+  * 异常相关
+
+    * 由于存在依赖关系(当前步错，不走下一步)，当前步骤有异常的话就叫停
+
+  * code
+
+    ```java
+    package chapter2;
+    import java.util.concurrent.CompletableFuture;
+    import java.util.concurrent.ExecutorService;
+    import java.util.concurrent.Executors;
+    import java.util.concurrent.TimeUnit;
+    
+    public class CompletableFutureAPI2Demo
+    {
+        public static void main(String[] args)
+        {
+            ExecutorService threadPool = Executors.newFixedThreadPool(3);
+    
+            CompletableFuture.supplyAsync(() ->{
+                //暂停几秒钟线程
+                try { TimeUnit.SECONDS.sleep(1); } catch (InterruptedException e) { e.printStackTrace(); }
+                System.out.println("111");
+                return 1;
+            },threadPool).thenApply((f) -> {
+                int i=10/0;
+                System.out.println("222");
+                return f + 2;
+            }).thenApply((f) -> {
+                System.out.println("333");
+                return f + 3;
+            }).whenComplete((v,e) -> {
+                if (e == null) {
+                    System.out.println("----计算结果： "+v);
+                }
+            }).exceptionally(e -> {
+                e.printStackTrace();
+                System.out.println(e.getMessage());
+                return null;
+            });
+            System.out.println(Thread.currentThread().getName()+"----主线程先去忙其它任务");
+            threadPool.shutdown();
+        }
+    }
+    ```
+
+    ```java
+    输出结果，到达第二步时，已经结束。
+    
+    main----主线程先去忙其它任务
+    111
+    java.lang.ArithmeticException: / by zero
+    java.util.concurrent.CompletionException: java.lang.ArithmeticException: / by zero
+    	at java.util.concurrent.CompletableFuture.encodeThrowable(CompletableFuture.java:273)
+    	at java.util.concurrent.CompletableFuture.completeThrowable(CompletableFuture.java:280)
+    	at java.util.concurrent.CompletableFuture.uniApply(CompletableFuture.java:604)
+    	at java.util.concurrent.CompletableFuture$UniApply.tryFire(CompletableFuture.java:577)
+    	at java.util.concurrent.CompletableFuture.postComplete(CompletableFuture.java:474)
+    	at java.util.concurrent.CompletableFuture$AsyncSupply.run(CompletableFuture.java:1595)
+    	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+    	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+    	at java.lang.Thread.run(Thread.java:745)
+    Caused by: java.lang.ArithmeticException: / by zero
+    	at chapter2.CompletableFutureAPI2Demo.lambda$main$1(CompletableFutureAPI2Demo.java:55)
+    	at java.util.concurrent.CompletableFuture.uniApply(CompletableFuture.java:602)
+    	... 6 more
+    ```
+
+    
+
+* handle
+
+  * 计算结果存在依赖关系，这两个线程串行化
+
+  * 参数时BiFunction，传递两个的参数
+
+  * 异常相关
+
+    * 有异常也可以往下一步走，根据带的异常参数可以进行处理。
+
+  * code
+
+    ```java
+    package chapter2;
+    import java.util.concurrent.CompletableFuture;
+    import java.util.concurrent.ExecutorService;
+    import java.util.concurrent.Executors;
+    import java.util.concurrent.TimeUnit;
+    public class CompletableFutureAPI2Demo
+    {
+        public static void main(String[] args)
+        {
+            ExecutorService threadPool = Executors.newFixedThreadPool(3);
+    
+            CompletableFuture.supplyAsync(() ->{
+                //暂停几秒钟线程
+                try { TimeUnit.SECONDS.sleep(1); } catch (InterruptedException e) { e.printStackTrace(); }
+                System.out.println("111");
+                return 1;
+            },threadPool).handle((f,e) -> {
+                int i=10/0;
+                System.out.println("222");
+                return f + 2;
+            }).handle((f,e) -> {
+                System.out.println("333");
+                return f + 3;
+            }).whenComplete((v,e) -> {
+                if (e == null) {
+                    System.out.println("----计算结果： "+v);
+                }
+            }).exceptionally(e -> {
+                e.printStackTrace();
+                System.out.println(e.getMessage());
+                return null;
+            });
+    
+            System.out.println(Thread.currentThread().getName()+"----主线程先去忙其它任务");
+    
+            threadPool.shutdown();
+        }
+    }
+    ```
+
+    ```
+    输出结果，可以完全执行
+    
+    main----主线程先去忙其它任务
+    111
+    333
+    java.lang.NullPointerException
+    java.util.concurrent.CompletionException: java.lang.NullPointerException
+    	at java.util.concurrent.CompletableFuture.encodeThrowable(CompletableFuture.java:273)
+    	at java.util.concurrent.CompletableFuture.completeThrowable(CompletableFuture.java:280)
+    	at java.util.concurrent.CompletableFuture.uniHandle(CompletableFuture.java:824)
+    	at java.util.concurrent.CompletableFuture$UniHandle.tryFire(CompletableFuture.java:797)
+    	at java.util.concurrent.CompletableFuture.postComplete(CompletableFuture.java:474)
+    	at java.util.concurrent.CompletableFuture$AsyncSupply.run(CompletableFuture.java:1595)
+    	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+    	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+    	at java.lang.Thread.run(Thread.java:745)
+    Caused by: java.lang.NullPointerException
+    	at chapter2.CompletableFutureAPI2Demo.lambda$main$2(CompletableFutureAPI2Demo.java:25)
+    	at java.util.concurrent.CompletableFuture.uniHandle(CompletableFuture.java:822)
+    	... 6 more
+    ```
+
+* 总结
+
+  * exceptionally相当于try/catch
+  * whenComplet和handle相当于try/finally
+
+### 2.5.3 对计算结果进行消费
+
+* 接受任务的处理结果，并消费处理，无返回结果。
+
+* thenAccept
+
+* 对比补充
+
+  * Code之任务之间的顺序执行
+
+    * thenRun
+      * thenRun(Runnable runnable) 
+      * 任务A执行完执行B，并且B不需要A的结果
+    * thenAccept
+      * thenAccept(Consumer consumer ) 
+      * 任务A执行完执行B，B需要A的结果，但是B无返回值
+    * thenApply
+      * thenApply(Function function) 
+      * 任务A执行完执行B，B需要A的结果，同时任务B有返回值
+    * code
+
+    ```java
+    public class CompletableFutureAPI3Demo
+    {
+        public static void main(String[] args)
+        {
+            System.out.println(CompletableFuture.supplyAsync(() -> "resultA").thenRun(() -> {}).join());
+            System.out.println(CompletableFuture.supplyAsync(() -> "resultA").thenAccept(r -> System.out.println(r)).join());
+            System.out.println(CompletableFuture.supplyAsync(() -> "resultA").thenApply(r -> r + "resultB").join());
+    
+        }
+    }
+    ```
+
+    ```
+    输出结果
+    
+    null
+    resultA
+    null
+    resultAresultB
+    ```
+
+    
+
+* CompletableFuture和线程池说明
+
+  * 以thenRun和thenRunAsync为例，有什么区别
+  * code
+  * 小总结
+  * 源码分析
+
+### 2.5.4 对计算速度进行选用
+
+### 2.5.5 对计算结果进行合并
+
