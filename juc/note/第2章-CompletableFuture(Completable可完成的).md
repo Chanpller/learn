@@ -6,7 +6,7 @@
 * 比如主线程让一个子线程去执行热为奴，子线程可能比较耗时，启动子线程开始执行任务后，主线程就去做其他事情了，忙其他事情或者先执行完，过了一会采取获取子任务的执行结果或变更的任务状态。
 * 定义了5个方法
 
-![image-20240528213218899](D:\ideaprojects\learn\juc\image\image-20240528213218899.png)
+![image-20240528213218899](../image/image-20240528213218899.png)
 
 * 一句话Future接口可以为主线程开一个分支任务，专门为主线程处理耗时和费力的复杂业务。
 
@@ -55,11 +55,11 @@
 * 需要同时满足：多线程/有返回/异步任务三个特点，
 * 
 
-![image-20240528214754313](D:\ideaprojects\learn\juc\image\image-20240528214754313.png)
+![image-20240528214754313](../image/image-20240528214754313.png)
 
-![image-20240528215103326](D:\ideaprojects\learn\juc\image\image-20240528215103326.png)
+![image-20240528215103326](../image/image-20240528215103326.png)
 
-![image-20240529080139786](D:\IdeaProjects\learn\juc\image\image-20240529080139786.png)
+![image-20240529080139786](../image/image-20240529080139786.png)
 
 * 创建一个线程通过new Thread，但是Thread的构造器，只能传Runnable，如何传Callable具有返回值的呢。
 * RunnableFuture<v>，同时继承了Runnable, Future<V>。
@@ -172,7 +172,7 @@
 
 * 类框架说明
 
-![image-20240531121511098](D:\IdeaProjects\learn\juc\image\image-20240531121511098.png)
+![image-20240531121511098](../image/image-20240531121511098.png)
 
 ```java
 public class CompletableFuture<T> implements Future<T>, CompletionStage<T> {}
@@ -792,7 +792,7 @@ public class CompletableFuture<T> implements Future<T>, CompletionStage<T> {}
 * 总结
 
   * exceptionally相当于try/catch
-  * whenComplet和handle相当于try/finally
+  * whenComplete和handle相当于try/finally
 
 ### 2.5.3 对计算结果进行消费
 
@@ -841,12 +841,241 @@ public class CompletableFuture<T> implements Future<T>, CompletionStage<T> {}
 
 * CompletableFuture和线程池说明
 
-  * 以thenRun和thenRunAsync为例，有什么区别
+  * 以thenRun和thenRunAsync为例，有什么区别？
+
+    * thenRun和thenRunAsync执行的线程池不一样，thenRunAsync使用的默认的ForkJoinPool，而thenRun根据情况不同使用不同的线程池。
+
   * code
+
+    ```java
+    package chapter2;
+    
+    import java.util.concurrent.*;
+    
+    public class CompletableFutureWithThreadPoolDemo
+    {
+        public static void main(String[] args)
+        {
+            ExecutorService threadPool = Executors.newFixedThreadPool(5);
+    
+            try
+            {
+                CompletableFuture<Void> completableFuture = CompletableFuture.supplyAsync(() -> {
+                    try { TimeUnit.MILLISECONDS.sleep(20); } catch (InterruptedException e) { e.printStackTrace(); }
+                    System.out.println("1号任务" + "\t" + Thread.currentThread().getName());
+                    return "abcd";
+                },threadPool).thenRunAsync(() -> {
+                    try { TimeUnit.MILLISECONDS.sleep(20); } catch (InterruptedException e) { e.printStackTrace(); }
+                    System.out.println("2号任务" + "\t" + Thread.currentThread().getName());
+                }).thenRun(() -> {
+                    try { TimeUnit.MILLISECONDS.sleep(10); } catch (InterruptedException e) { e.printStackTrace(); }
+                    System.out.println("3号任务" + "\t" + Thread.currentThread().getName());
+                }).thenRun(() -> {
+                    try { TimeUnit.MILLISECONDS.sleep(10); } catch (InterruptedException e) { e.printStackTrace(); }
+                    System.out.println("4号任务" + "\t" + Thread.currentThread().getName());
+                });
+                System.out.println(completableFuture.get(2L, TimeUnit.SECONDS));
+            }catch (Exception e){
+                e.printStackTrace();
+            }finally {
+                threadPool.shutdown();
+            }
+        }
+    }
+    
+    ```
+
+    ```
+    输出结果
+    
+    1号任务	pool-1-thread-1
+    2号任务	pool-1-thread-1
+    3号任务	pool-1-thread-1
+    4号任务	pool-1-thread-1
+    null
+    ```
+
   * 小总结
+
+    * 没传入自定义线程池，都用默认线程池ForkJoinPool;
+    * 传入了自定义线程池，如果你执行第一个任务的时候，传入了一个自定义线程池，调用thenRun方法执行第二个任务时，与第一个任务时共用一个线程池。只要调用了thenRunAsync执行，第一个任务使用的是你自己传入的线程，第二个任务使用的是ForkJoinPool线程池。
+    * 也有可能处理太快，系统优化切换原则，直接使用main线程处理。
+    * thenAccept和thenAcceptAsync，thenApply和thenApplyAsync等，它们之间的区别也是一样的。
+
   * 源码分析
+
+    ```java
+    //系统的cpu的核数   
+    private static final boolean useCommonPool =
+            (ForkJoinPool.getCommonPoolParallelism() > 1);
+    
+        /**
+         * Default executor -- ForkJoinPool.commonPool() unless it cannot
+         * support parallelism.
+         */
+    //正常核数都是大于1的，所以默认是ForkJoinPool.commonPool()
+        private static final Executor asyncPool = useCommonPool ?
+            ForkJoinPool.commonPool() : new ThreadPerTaskExecutor();
+    
+        public CompletableFuture<Void> thenRun(Runnable action) {
+            return uniRunStage(null, action);
+        }
+    
+    //调用thenRunAsync会重新赋值线程池。正常核数都是大于1的，所以默认线程池是ForkJoinPool.commonPool()
+        public CompletableFuture<Void> thenRunAsync(Runnable action) {
+            return uniRunStage(asyncPool, action);
+        }
+    ```
 
 ### 2.5.4 对计算速度进行选用
 
+* 谁快用谁
+
+* applyToEither
+
+* code
+
+  ```java
+  package chapter2;
+  
+  import java.util.concurrent.CompletableFuture;
+  import java.util.concurrent.TimeUnit;
+  public class CompletableFutureFastDemo
+  {
+      public static void main(String[] args)
+      {
+          CompletableFuture<String> playA = CompletableFuture.supplyAsync(() -> {
+              System.out.println("A come in");
+              try { TimeUnit.SECONDS.sleep(3); } catch (InterruptedException e) { e.printStackTrace(); }
+              return "playA";
+          });
+  
+          CompletableFuture<String> playB = CompletableFuture.supplyAsync(() -> {
+              System.out.println("B come in");
+              try { TimeUnit.SECONDS.sleep(1); } catch (InterruptedException e) { e.printStackTrace(); }
+              return "playB";
+          });
+          CompletableFuture<String> result = playA.applyToEither(playB, f -> {
+              return f + " is winer";
+          });
+  
+          System.out.println(Thread.currentThread().getName()+"\t"+"-----: "+result.join());
+      }
+  }
+  ```
+
+  ```
+  输出结果
+  
+  A come in
+  B come in
+  main	-----: playB is winer
+  ```
+
 ### 2.5.5 对计算结果进行合并
 
+* 两个CompletionStage任务都完成后，最终能把两个任务的结果一起交给thenCombine来处理
+
+* 先完成的先等着，等待其他分支任务
+
+* thenCombine
+
+  * code标准版，好理解先拆分
+
+    ```java
+    package chapter2;
+    import java.util.concurrent.CompletableFuture;
+    import java.util.concurrent.TimeUnit;
+    public class CompletableFutureCombineDemo
+    {
+        public static void main(String[] args)
+        {
+            CompletableFuture<Integer> completableFuture1 = CompletableFuture.supplyAsync(() -> {
+                System.out.println(Thread.currentThread().getName() + "\t ---启动");
+                //暂停几秒钟线程
+                try {
+                    TimeUnit.SECONDS.sleep(1);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                return 10;
+            });
+            CompletableFuture<Integer> completableFuture2 = CompletableFuture.supplyAsync(() -> {
+                System.out.println(Thread.currentThread().getName() + "\t ---启动");
+                //暂停几秒钟线程
+                try {
+                    TimeUnit.SECONDS.sleep(2);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                return 20;
+            });
+            CompletableFuture<Integer> result = completableFuture1.thenCombine(completableFuture2, (x, y) -> {
+                System.out.println("-----开始两个结果合并");
+                System.out.println("x="+x);
+                System.out.println("y="+y);
+                return x + y;
+            });
+            System.out.println(result.join());
+        }
+    }
+    
+    ```
+
+    ```
+    输出结果
+    
+    ForkJoinPool.commonPool-worker-1	 ---启动
+    ForkJoinPool.commonPool-worker-2	 ---启动
+    -----开始两个结果合并
+    x=10
+    y=20
+    30
+    ```
+
+  * code表达式
+
+    ```java
+    public static void biaodashiban()
+        {
+            CompletableFuture<Integer> completableFuture1 = CompletableFuture.supplyAsync(() -> {
+                System.out.println(Thread.currentThread().getName() + "\t ---启动");
+                //暂停几秒钟线程
+                try {
+                    TimeUnit.SECONDS.sleep(1);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                return 10;
+            }).thenCombine( CompletableFuture.supplyAsync(() -> {
+                System.out.println(Thread.currentThread().getName() + "\t ---启动");
+                //暂停几秒钟线程
+                try {
+                    TimeUnit.SECONDS.sleep(2);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                return 20;
+            }), (x, y) -> {
+                System.out.println("-----开始两个结果合并");
+                System.out.println("x="+x);
+                System.out.println("y="+y);
+                return x + y;
+            });
+    
+            System.out.println(completableFuture1.join());
+        }
+    ```
+
+    ```
+    输出结果
+    
+    ForkJoinPool.commonPool-worker-1	 ---启动
+    ForkJoinPool.commonPool-worker-2	 ---启动
+    -----开始两个结果合并
+    x=10
+    y=20
+    30
+    ```
+
+    
