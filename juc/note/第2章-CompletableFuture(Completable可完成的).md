@@ -2,7 +2,7 @@
 
 ## 2.1 Future接口理论知识复习
 
-* Future接口(FutureTask实现类)定义了操作***异步任务执行一些方法***，比如获取异步任务的执行结果、取消任务的执行、判断任务是否被取消、判断任务执行是否完毕等。
+* Future(英文翻译将要发生的)接口(FutureTask实现类)定义了操作***异步任务执行一些方法***，比如获取异步任务的执行结果、取消任务的执行、判断任务是否被取消、判断任务执行是否完毕等。
 * 比如主线程让一个子线程去执行热为奴，子线程可能比较耗时，启动子线程开始执行任务后，主线程就去做其他事情了，忙其他事情或者先执行完，过了一会采取获取子任务的执行结果或变更的任务状态。
 * 定义了5个方法
 
@@ -50,7 +50,50 @@
   
   ```
 
-### 2.2.2 本源的Future接口相关框架
+### 2.2.2 FutureTask
+
+* FutureTask提供了对Future的基本实现，可以调用方法去开始和取消一个计算，可以查询计算是否完成并且获取计算结果。只有当计算完成时才能获取到计算结果，一旦计算完成，计算将不能被重启或者被取消，除非调用runAndReset方法
+
+* API
+
+  * FutureTask(Callable<V> callable) 构造器传入一个Callable接口实现类
+
+  * FutureTask(Runnable runnable, V result) 构造器传入一个runnable接口实现类和返回数据类型
+
+  * boolean isCancelled() 线程是否被取消
+
+  * boolean isDone() 线程任务是否完成，源码显示，只要不是新建状态都返回的ture
+
+    ```
+    public boolean isDone() {
+            return state != NEW;
+        }
+    ```
+
+  * boolean cancel(boolean mayInterruptIfRunning) 尝试取消当前任务的执行。如果任务已经取消、已经完成或者其他原因不能取消，尝试将失败。如果任务还没有启动就调用了cancel(true)，任务将永远不会被执行。如果任务已经启动，参数mayInterruptIfRunning将决定任务是否应该中断执行该任务的线程，以尝试中断该任务。**运行中的线程还是无法被中断，只是通知线程是否可以中断了。cancel（true）调用了Thread的Interrupt方法，Interrupt只能停掉线程中sleep、wait、join的线程。因为Future中的awaitDone方法唤醒线程时，会判断Thread.interrupted()状态。**调用cancel后，state修改了，isDone就是ture。
+
+  * V get() throws InterruptedException, ExecutionException 阻塞获取线程返回值，如果线程被中断或取消会抛出异常
+
+  * V get(long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException 阻塞获取线程返回值，如果线程被中断或取消或获取超时会抛出异常
+
+* FutureTask可以处于以下三种执行状态：
+  1、未启动：在FutureTask.run()还没执行之前，FutureTask处于未启动状态。当创建一个FutureTask对象，并且run()方法未执行之前，FutureTask处于未启动状态。
+  2、已启动：FutureTask对象的run方法启动并执行的过程中，FutureTask处于已启动状态。
+  3、已完成：FutureTask正常执行结束，或者FutureTask执行被取消(FutureTask对象cancel方法)，或者FutureTask对象run方法执行抛出异常而导致中断而结束，FutureTask都处于已完成状态。
+
+* 当FutureTask处于未启动或者已启动的状态时，调用FutureTask对象的get方法会将导致调用线程阻塞。
+
+* 当FutureTask处于已完成的状态时，调用FutureTask的get方法会立即返回调用结果或者抛出异常。
+
+* 当FutureTask处于未启动状态时，调用FutureTask对象的cancel方法将导致线程永远不会被执行；
+
+* 当FutureTask处于已启动状态时，调用FutureTask对象cancel(true)方法将以中断标志位执行此任务的线程的方式来试图停止此任务;
+
+* 当FutureTask处于已启动状态时，调用FutureTask对象cancel(false)方法将不会对正在进行的任务产生任何影响；
+
+* 当FutureTask处于已完成状态时，调用FutureTask对象cancel方法将返回false；
+
+### 2.2.3 Future接口相关框架
 
 * 需要同时满足：多线程/有返回/异步任务三个特点，
 * 
@@ -92,7 +135,7 @@
     }
 ```
 
-### 2.2.3 Future编码实战和优缺点分析
+### 2.2.4 Future编码实战和优缺点分析
 
 * 优点
 
@@ -140,7 +183,7 @@
   
   * Future对于结果的获取不是很友好，只能通过阻塞或轮询的方式得到任务的结果。
 
-### 2.2.4 想完成一些复杂的任务
+### 2.2.5 想完成一些复杂的任务
 
 对于简单的业务场景使用Future完全OK，但如果要处理下面的复杂任务就力不从心了。
 
