@@ -151,7 +151,8 @@ public class HelloWorldTest {
 ##### ②方式二：根据类型获取
 
 ```java
-        User userByClass = applicationContext.getBean(User.class);
+//必须唯一       
+User userByClass = applicationContext.getBean(User.class);
         System.out.println(userByClass);
         userByClass.add();
 ```
@@ -316,7 +317,7 @@ spring-di.xml
 
 > 注意：
 >
-> constructor-arg标签还有两个属性可以进一步描述构造器参数：
+> constructor-arg标签还有两个属性可以进一步描述构造器参数，两者不可混用：
 >
 > - index属性：指定参数所在位置的索引（从0开始）
 > - name属性：指定参数名
