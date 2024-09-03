@@ -56,7 +56,7 @@
       }
   ```
 
-  
+
 
 * 大厂面试题中断机制考点
 
@@ -250,32 +250,32 @@
   t1	 中断标志位：true 程序停止
   ```
 
-  
 
-  * 当前线程的中断标识为true，是不是线程立刻停止？
 
-    * 不会，只是标记了中断标识为true。
+* 当前线程的中断标识为true，是不是线程立刻停止？
 
-    * sleep方法抛出InterruptedException异常后，中断标识被清空置为false，所以我们需要在异常中再调用一次interrupt()方法。
+  * 不会，只是标记了中断标识为true。
 
-      ```java
-      * @throws  InterruptedException
-           *          if any thread has interrupted the current thread. The
-           *          <i>interrupted status</i> of the current thread is
-           *          cleared when this exception is thrown.
-           */
-          public static native void sleep(long millis) throws InterruptedException;
-      ```
+  * sleep方法抛出InterruptedException异常后，中断标识被清空置为false，所以我们需要在异常中再调用一次interrupt()方法。
 
-  * 静态方法Thread.interrupted()和实例isInterrupted()，谈谈你的理解
+    ```java
+    * @throws  InterruptedException
+         *          if any thread has interrupted the current thread. The
+         *          <i>interrupted status</i> of the current thread is
+         *          cleared when this exception is thrown.
+         */
+        public static native void sleep(long millis) throws InterruptedException;
+    ```
 
-    * 静态方法Thread.interrupted()
-      * 判断当前线程是否被中断，并清除当前中断状态。做两件事。
-      * 连续两次调用结果可能不一样
-    * 都会返回中断状态，两者对比
-      * 两个底层调用都是同一个方法，isInterrupted（boolean ClearInterrupted），并且放回当前结果
-      * interrupted()传入的是true，会清除中断状态
-      * isInterrupted传入的是false，不会清除中断状态
+* 静态方法Thread.interrupted()和实例isInterrupted()，谈谈你的理解
+
+  * 静态方法Thread.interrupted()
+    * 判断当前线程是否被中断，并清除当前中断状态。做两件事。
+    * 连续两次调用结果可能不一样
+  * 都会返回中断状态，两者对比
+    * 两个底层调用都是同一个方法，isInterrupted（boolean ClearInterrupted），并且放回当前结果
+    * interrupted()传入的是true，会清除中断状态
+    * isInterrupted传入的是false，不会清除中断状态
 
 * 总结
 

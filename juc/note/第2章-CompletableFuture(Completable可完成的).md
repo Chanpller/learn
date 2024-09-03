@@ -2,8 +2,8 @@
 
 ## 2.1 Future接口理论知识复习
 
-* Future(英文翻译将要发生的)接口(FutureTask实现类)定义了操作***异步任务执行一些方法***，比如获取异步任务的执行结果、取消任务的执行、判断任务是否被取消、判断任务执行是否完毕等。
-* 比如主线程让一个子线程去执行热为奴，子线程可能比较耗时，启动子线程开始执行任务后，主线程就去做其他事情了，忙其他事情或者先执行完，过了一会采取获取子任务的执行结果或变更的任务状态。
+* Future(英文翻译将要发生的)接口(FutureTask实现类)定义了操作**异步任务执行一些方法**，比如获取异步任务的执行结果、取消任务的执行、判断任务是否被取消、判断任务执行是否完毕等。
+* 比如主线程让一个子线程去执行任务，子线程可能比较耗时，启动子线程开始执行任务后，主线程就去做其他事情了，忙其他事情或者先执行完，过了一会才去获取子任务的执行结果或变更的任务状态。
 * 定义了5个方法
 
 ![image-20240528213218899](../image/image-20240528213218899.png)
@@ -36,7 +36,7 @@
   
       @Override
       public void run() {
-          
+  
       }
   class MyThread implements Callable<String>
   {
@@ -47,30 +47,29 @@
           return "hello Callable";
       }
   }
-  
   ```
 
 ### 2.2.2 FutureTask
 
-* FutureTask提供了对Future的基本实现，可以调用方法去开始和取消一个计算，可以查询计算是否完成并且获取计算结果。只有当计算完成时才能获取到计算结果，一旦计算完成，计算将不能被重启或者被取消，除非调用runAndReset方法
+* FutureTask提供了对Future的基本实现，可以调用方法去开始和取消一个计算，可以查询计算是否完成并且获取计算结果。只有当计算完成时才能获取到计算结果，一旦计算完成，计算将不能被重启或者被取消，除非调用runAndReset方法(重新执行，是protected修饰的方法)
 
 * API
 
-  * FutureTask(Callable<V> callable) 构造器传入一个Callable接口实现类
+  * FutureTask(Callable`<V>` callable) 构造器传入一个Callable接口实现类
 
   * FutureTask(Runnable runnable, V result) 构造器传入一个runnable接口实现类和返回数据类型
 
   * boolean isCancelled() 线程是否被取消
 
-  * boolean isDone() 线程任务是否完成，源码显示，只要不是新建状态都返回的ture
+  * boolean isDone() 线程任务是否完成。源码显示，只要不是新建状态都返回的ture
 
-    ```
+    ```java
     public boolean isDone() {
             return state != NEW;
         }
     ```
 
-  * boolean cancel(boolean mayInterruptIfRunning) 尝试取消当前任务的执行。如果任务已经取消、已经完成或者其他原因不能取消，尝试将失败。如果任务还没有启动就调用了cancel(true)，任务将永远不会被执行。如果任务已经启动，参数mayInterruptIfRunning将决定任务是否应该中断执行该任务的线程，以尝试中断该任务。**运行中的线程还是无法被中断，只是通知线程是否可以中断了。cancel（true）调用了Thread的Interrupt方法，Interrupt只能停掉线程中sleep、wait、join的线程。因为Future中的awaitDone方法唤醒线程时，会判断Thread.interrupted()状态。**调用cancel后，state修改了，isDone就是ture。
+  * boolean cancel(boolean mayInterruptIfRunning) 尝试取消当前任务的执行。如果任务已经取消、已经完成或者其他原因不能取消，尝试将失败。如果任务还没有启动就调用了cancel(true)，任务将永远不会被执行。如果任务已经启动，参数mayInterruptIfRunning将决定任务是否应该中断执行该任务的线程，以尝试中断该任务。运行中的线程还是无法被中断，只是通知线程是否可以中断了。cancel（true）调用了Thread的Interrupt方法，Interrupt只能停掉线程中sleep、wait、join的线程。因为Future中的awaitDone方法唤醒线程时，会判断Thread.interrupted()状态。调用cancel后，state修改了，isDone就是ture。
 
   * V get() throws InterruptedException, ExecutionException 阻塞获取线程返回值，如果线程被中断或取消会抛出异常
 
@@ -95,8 +94,7 @@
 
 ### 2.2.3 Future接口相关框架
 
-* 需要同时满足：多线程/有返回/异步任务三个特点，
-* 
+* 需要同时满足：多线程/有返回/异步任务三个特点
 
 ![image-20240528214754313](../image/image-20240528214754313.png)
 
@@ -105,8 +103,8 @@
 ![image-20240529080139786](../image/image-20240529080139786.png)
 
 * 创建一个线程通过new Thread，但是Thread的构造器，只能传Runnable，如何传Callable具有返回值的呢。
-* RunnableFuture<v>，同时继承了Runnable, Future<V>。
-* FutureTask则是RunnableFuture<V>的实现。
+* RunnableFuture`<v>`，同时继承了Runnable, Future`<V>`。
+* FutureTask则是RunnableFuture`<V>`的实现。
 * FutureTask通过构造器传入Callable，实现具有返回值的线程。
 
 ```java
@@ -177,10 +175,12 @@
     ```
 
 * 缺点
+
   * get()阻塞：一旦调用get()方法求结果，如果计算没有完成容易导致程序阻塞。
   * isDone()轮询：轮询的方式会耗费无谓的CPU资源，而且不见得能及时地得到计算结果。如果想要一部获取结果，通常都会以轮询的方式去获取结果，尽量不要阻塞。
+
 * 结论
-  
+
   * Future对于结果的获取不是很友好，只能通过阻塞或轮询的方式得到任务的结果。
 
 ### 2.2.5 想完成一些复杂的任务
@@ -222,6 +222,7 @@ public class CompletableFuture<T> implements Future<T>, CompletionStage<T> {}
 ```
 
 * 接口CompletionStage
+
   * CompletionStage代表异步计算过程中的某一个阶段，一个阶段完成后可能会出发另一个阶段。
   * 一个阶段的计算执行可能是一个Function，Consumer或者Ruanable。比如：stage.thenApply(x->square(x)).thenAccept(X->System.out.print(x)).thenRun(()->System.out.printlin())
   * 一个阶段的执行可能是被单个阶段的完出发，也可能是由多个阶段一起触发。
@@ -229,6 +230,7 @@ public class CompletableFuture<T> implements Future<T>, CompletionStage<T> {}
   * 通过CompletionStage接口定义了更多的方法供CompletableFuture操作实现。
 
 * 类CompletableFuture
+
   * 在Java8中，CompletableFuture提供了非常强大的Future的扩展功能，看可以帮助我们简化异步编程的复杂性，并且提供了函数式编程的能力，可以通过回调的方式处理计算结果，也提供了转换和组合CompletableFuture的方法。
   * 它可能代表一个明确完成的Future，也有可能代表一个完成阶段（CompletionStage），它支持在计算完成后触发一些函数或执行某些动作。
   * 它实现了Future和CompletionStage接口。
@@ -238,17 +240,17 @@ public class CompletableFuture<T> implements Future<T>, CompletionStage<T> {}
 #### 2.3.3.1 四个静态方法
 
 * runAsync无返回值
-  * public static CompletableFuture<Void> runAsync(Runnable runnable)
-  * public static CompletableFuture<Void> runAsync(Runnable runnable,Executor executor)
+  * public static CompletableFuture`<Void>` runAsync(Runnable runnable)
+  * public static CompletableFuture`<Void>` runAsync(Runnable runnable,Executor executor)
 * supplyAsync有返回值
-  * public static <U> CompletableFuture<U> supplyAsync(Supplier<U> supplier)
-  * public static <U> CompletableFuture<U> supplyAsync(Supplier<U> supplier,Executor executor)
+  * public static `<U>` CompletableFuture`<U>` supplyAsync(Supplier`<U>` supplier)
+  * public static `<U>` CompletableFuture`<U>` supplyAsync(Supplier`<U>` supplier,Executor executor)
 
-2.3.3.2 静态方法参数说明
+#### 2.3.3.2 静态方法参数说明
 
 * 上述Executor executor参数说明
 
-  * 没有指定Executor的方法，直接使用默认的ForkJoinPool.commonPool()作为它的线程池执行异步代码
+  * 没有指定Executor的方法，直接使用默认的ForkJoinPool.commonPool()作为它的线程池执行异步代码，该线程池是daemon守护线程，如果没有用户线程，会直接退出。
   * 如果指定线程池，则使用我们自定义的或者特别指定的线程池执行异步代码
 
 * Code（代码）
@@ -301,10 +303,11 @@ public class CompletableFuture<T> implements Future<T>, CompletionStage<T> {}
 
 * Code(代码)之通用演示，减少阻塞和轮询
 
-  * 从Java8开始引入了CompletableFuture，它时Future的功能增强版，减少阻塞和轮询。可以传入回调对象，当异步任务完成或者发生异常时，自动调用回调对象的回调方法。
+  * 从Java8开始引入了CompletableFuture，它是Future的功能增强版，减少阻塞和轮询。可以传入回调对象，当异步任务完成或者发生异常时，自动调用回调对象的回调方法。
   * 为什么默认线程池关闭，自定义线程池需要自己关闭。
     * CompletableFuture默认的线程池是守护线程，一但主程序退出，它就结束
     * 自定义线程是用户线程，不会主动结束，需要我们手动结束。
+    * **测试这个功能不能用Junit，Junit传入自定义线程如果执行时如果执行时有sleep，也会退出，具有原因是：test方法运行在主线程中，外层函数执行完test等操作后执行System.exit来退出虚拟机，这个时候thread可能还没执行完，就被销毁了。**
 
   ```java
    public static void main(String[] args) throws ExecutionException, InterruptedException
@@ -340,126 +343,116 @@ public class CompletableFuture<T> implements Future<T>, CompletionStage<T> {}
           }finally {
   //            threadPool.shutdown();
           }
+      //主线程不要立刻结束，否则CompletableFuture默认使用的线程池会立刻关闭:暂停3秒钟线程
+        //try { TimeUnit.SECONDS.sleep(3); } catch (InterruptedException e) { e.printStackTrace(); }
   
-  
-          //主线程不要立刻结束，否则CompletableFuture默认使用的线程池会立刻关闭:暂停3秒钟线程
-          //try { TimeUnit.SECONDS.sleep(3); } catch (InterruptedException e) { e.printStackTrace(); }
-  
-      }
+    }
   ```
 
 * CompletableFuture特点
 
   * 异步任务结束时，会自动回调某个对象的方法
+
   * 主线程设置好回调后，不再关心异步任务的执行，异步任务之间可以顺序执行
+
   * 异步任务出错时，会自动回调某个对象的方法
 
 ## 2.4 案例分析(从电商网站的比价需求说开)
 
 * 函数式编程已经主流
 
-  * 大厂面试题
+* 大厂面试题
 
-    * 你怎么理解Java多线程的？怎么处理并发？线程池有哪几个核心参数？
-    * Java加锁有哪几种锁？
-    * 简单说说lock？
-    * hashmap的实现原理？hash冲突怎么解决？为什么使用红黑树？
-    * spring里面都使用了哪些设计模式？循环依赖怎么解决？
-    * 项目中哪个地方用了countdownlanch，怎么使用的？
-    * JVM项目了解过吗？说说都有什么？栈里面都放什么东西？
-    * 都用redis来做什么？aof和rab都什么做持久化缓存的？
-    * mysql的锁机制？mysql的索引是怎么实现的？
-    * spring实现事务的几种方式？
-    * zookeeper怎么实现分布式锁？
-    * java函数式编程用过吗？
-    * 算法：求链表倒数第K个元素？
+  * 你怎么理解Java多线程的？怎么处理并发？线程池有哪几个核心参数？
+  * Java加锁有哪几种锁？
+  * 简单说说lock？
+  * hashmap的实现原理？hash冲突怎么解决？为什么使用红黑树？
+  * spring里面都使用了哪些设计模式？循环依赖怎么解决？
+  * 项目中哪个地方用了countdownlanch，怎么使用的？
+  * JVM项目了解过吗？说说都有什么？栈里面都放什么东西？
+  * 都用redis来做什么？aof和rab都什么做持久化缓存的？
+  * mysql的锁机制？mysql的索引是怎么实现的？
+  * spring实现事务的几种方式？
+  * zookeeper怎么实现分布式锁？
+  * java函数式编程用过吗？
+  * 算法：求链表倒数第K个元素？
 
-  * Lambda表达式+Stream流式调用+Chain链式调用+Java8函数式编程
+* Lambda表达式+Stream流式调用+Chain链式调用+Java8函数式编程
 
-    * Runnable
+  * Runnable无参数，无返回值
 
-      * 无参数，无返回值
+    ```java
+    @FunctionalInterface
+    public interface Runnable {
+        public abstract void run();
+    }
+    ```
 
-      ```java
-      @FunctionalInterface
-      public interface Runnable {
-          public abstract void run();
-      }
-      ```
+  * Function接受一个参数，并且有返回值
 
-    * Function
+    ```java
+    public interface Function<T, R> {
+        R apply(T t);
+    }
+    ```
 
-      * 接受一个参数，并且有返回值
+  * Consumer(消费者)接受一个参数，没有返回值
 
-      ```java
-      public interface Function<T, R> {
-          R apply(T t);
-      }
-      ```
+    ```java
+    @FunctionalInterface
+    public interface Consumer<T> {
+        void accept(T t);
+    }
+    ```
 
-    * Consumer
+  * BiConsumer(消费两个)接受两个参数，没有返回值，Bi英文单词词根，代表两个的意思
 
-      * 接受一个参数，没有返回值
+    ```java
+    @FunctionalInterface
+    public interface BiConsumer<T, U> {
+        void accept(T t, U u);
+    }
+    ```
 
-      ```java
-      @FunctionalInterface
-      public interface Consumer<T> {
-          void accept(T t);
-      }
-      ```
+  * Supplier(供应者)没有参数，但是有返回值
 
-    * BiConsumer
+    ```java
+    @FunctionalInterface
+    public interface Supplier<T> {
+        T get();
+    }
+    ```
 
-      * 接受两个参数，没有返回值，Bi英文单词词根，代表两个的意思
+  * 小总结
 
-      ```java
-      @FunctionalInterface
-      public interface BiConsumer<T, U> {
-          void accept(T t, U u);
-      }
-      ```
-
-    * Supplier
-
-      * 没有参数，但是有返回值
-
-      ```java
-      @FunctionalInterface
-      public interface Supplier<T> {
-          T get();
-      }
-      ```
-
-    * 小总结
-
-      | 函数式接口名 | 方法名称 | 参数 | 返回值 |
-      | ------------ | -------- | ---- | ------ |
-      | Runnable     | run      | 0    | 无     |
-      | Function     | apply    | 1    | 有     |
-      | Consumer     | accept   | 1    | 无     |
-      | Supplier     | get      | 0    | 有     |
-      | BiConsumer   | accept   | 2    | 无     |
+    | 函数式接口名     | 方法名称   | 参数  | 返回值 |
+        | ---------- | ------ | --- | --- |
+    | Runnable   | run    | 0   | 无   |
+    | Function   | apply  | 1   | 有   |
+    | Consumer   | accept | 1   | 无   |
+    | Supplier   | get    | 0   | 有   |
+    | BiConsumer | accept | 2   | 无   |
 
 * 先说说join和get对比
 
-  * 基本上没区别，get获取时会抛出检查型异常，jion不会。
+* 基本上没区别，get获取时会抛出检查型异常，jion不会。
 
-  ```java
-  public class CompletableFutureJionAndGetDemo {
-  //    public static void main(String[] args) {
-  //        CompletableFuture<String> completableFuture = CompletableFuture.supplyAsync(()->{
-  //            return "Hello Word";
-  //        });
-  //        System.out.println(completableFuture.join());
-  //    }
-      public static void main(String[] args) throws ExecutionException, InterruptedException {
-          CompletableFuture<String> completableFuture = CompletableFuture.supplyAsync(()->{
-              return "Hello Word";
-          });
-          System.out.println(completableFuture.get());
-      }
-  }
-  ```
+```java
+public class CompletableFutureJionAndGetDemo {
+//    public static void main(String[] args) {
+//        CompletableFuture<String> completableFuture = CompletableFuture.supplyAsync(()->{
+//            return "Hello Word";
+//        });
+//        System.out.println(completableFuture.join());
+//    }
+    public static void main(String[] args) throws ExecutionException, InterruptedException {
+        CompletableFuture<String> completableFuture = CompletableFuture.supplyAsync(()->{
+            return "Hello Word";
+        });
+        System.out.println(completableFuture.get());
+    }
+}
+```
 
 * 说说你过去工作中的项目亮点
 
@@ -476,11 +469,11 @@ public class CompletableFuture<T> implements Future<T>, CompletionStage<T> {}
    * 《mysql》 in jd price is 88.05
    * 《mysql》 in dangdang price is 86.11
    * 《mysql》 in taobao price is 90.43
-   
+  
    * 3 解决方案，比对同一个商品在各个平台上的架构，要求获得一个清单列表
    * 1 step by step ，按部就班，查看京东查淘宝，查看淘宝查天猫
    * 2 all in ,万箭齐发，一口气多线程异步任务同时查询。
-   
+  
    * 4 技术要求
    *   4.1 函数式编程
    *   4.2 链式编程
@@ -490,8 +483,8 @@ public class CompletableFuture<T> implements Future<T>, CompletionStage<T> {}
 * 一波流Java8函数式编程带走-比价案例实战Case
 
   ```java
-  package chapter2;
-  import lombok.Getter;
+  package chapter2.mycode;
+  
   import java.util.Arrays;
   import java.util.List;
   import java.util.concurrent.CompletableFuture;
@@ -499,57 +492,14 @@ public class CompletableFuture<T> implements Future<T>, CompletionStage<T> {}
   import java.util.concurrent.TimeUnit;
   import java.util.stream.Collectors;
   
-  public class CompletableFutureMallDemo
-  {
-      static List<NetMall> list = Arrays.asList(
-              new NetMall("jd"),
-              new NetMall("dangdang"),
-              new NetMall("taobao"),
-              new NetMall("pdd"),
-              new NetMall("tmall")
+  public class CompletableFutureMallDemo {
+      static List<chapter2.mycode.NetMall> list = Arrays.asList(
+              new chapter2.mycode.NetMall("jd"),
+              new chapter2.mycode.NetMall("dangdang"),
+              new chapter2.mycode.NetMall("taobao"),
+              new chapter2.mycode.NetMall("pdd"),
+              new chapter2.mycode.NetMall("tmall")
       );
-      /**
-       * step by step 一家家搜查
-       * List<NetMall> ----->map------> List<String>
-       * @param list
-       * @param productName
-       * @return
-       */
-      public static List<String> getPrice(List<NetMall> list,String productName)
-      {
-          //《mysql》 in taobao price is 90.43
-          return list
-                  .stream()//list 转化为流
-                  .map(netMall ->
-                          String.format(productName + " in %s price is %.2f",
-                                  netMall.getNetMallName(),
-                                  netMall.calcPrice(productName)))//map映射,传入netMall，返回String.format字符串
-                  .collect(Collectors.toList());//最后手机为List
-      }
-  
-      /**
-       * List<NetMall> ----->List<CompletableFuture<String>>------> List<String>
-       * @param list
-       * @param productName
-       * @return
-       */
-      public static List<String> getPriceByCompletableFuture(List<NetMall> list,String productName)
-      {
-          //先将netMall映射为异步任务CompletableFuture<String>
-          //收集为List<CompletableFuture<String>>
-          //再将List<CompletableFuture<String>>映射为String
-          //再收集为List<String>
-          return list.stream().map(netMall ->
-                  CompletableFuture.supplyAsync(() -> String.format(productName + " in %s price is %.2f",
-                  netMall.getNetMallName(),
-                  netMall.calcPrice(productName))))
-                  .collect(Collectors.toList())
-                  .stream()
-                  .map(s -> s.join())
-                  .collect(Collectors.toList());
-      }
-  
-  
       public static void main(String[] args)
       {
           long startTime = System.currentTimeMillis();
@@ -559,9 +509,11 @@ public class CompletableFuture<T> implements Future<T>, CompletionStage<T> {}
           }
           long endTime = System.currentTimeMillis();
           System.out.println("----costTime: "+(endTime - startTime) +" 毫秒");
-  
+  ```
+
           System.out.println("--------------------");
-  
+    
+    
           long startTime2 = System.currentTimeMillis();
           List<String> list2 = getPriceByCompletableFuture(list, "mysql");
           for (String element : list2) {
@@ -570,45 +522,86 @@ public class CompletableFuture<T> implements Future<T>, CompletionStage<T> {}
           long endTime2 = System.currentTimeMillis();
           System.out.println("----costTime: "+(endTime2 - startTime2) +" 毫秒");
       }
+    
+      private static List<String> getPriceByCompletableFuture(List<NetMall> list, String productName) {
+          //先将netMall映射为异步任务CompletableFuture<String>
+          //收集为List<CompletableFuture<String>>
+          //再将List<CompletableFuture<String>>映射为String
+          //再收集为List<String>
+
+  //        return list.stream().map(
+  //                    netMall ->CompletableFuture.supplyAsync(()->String.format(productName + " in %s price is %.2f",netMall.getNetMallName(),netMall.calcPrice(productName)))
+  //                ).collect(Collectors.toList())
+  //                .stream().map(
+  //                        completableFuture->completableFuture.join()
+  //                ).collect(Collectors.toList());
+
+          List<CompletableFuture<String>> completableFutureList = list.stream().map(
+                  //先将 netMall获取数据 使用CompletableFuture.supplyAsync()有返回值的异步任务执行，获取到CompletableFuture的List集合
+                  netMall -> CompletableFuture.supplyAsync(() -> String.format(productName + " in %s price is %.2f", netMall.getNetMallName(), netMall.calcPrice(productName)))
+          ).collect(Collectors.toList());
+    
+          return completableFutureList.stream().map(
+                  //CompletableFuture的List集合 获取到执行结果，然后转化为List
+                  completableFuture->completableFuture.join()
+          ).collect(Collectors.toList());
+    
+      }
+    
+      private static List<String> getPrice(List<NetMall> list, String productName) {
+          return list.stream().map(
+                      //将每个netMall映射为String结果集
+                      netMall->String.format(productName + " in %s price is %.2f",netMall.getNetMallName(),netMall.calcPrice(productName))
+                  ).collect(Collectors.toList());//使用主线程循环获取结果到List中
+      }
+
   }
-  
+
   class NetMall
   {
-      @Getter
-      private String netMallName;
-  
+  private String netMallName;
+
       public NetMall(String netMallName)
       {
           this.netMallName = netMallName;
       }
-  
+    
       public double calcPrice(String productName)
       {
           try { TimeUnit.SECONDS.sleep(1); } catch (InterruptedException e) { e.printStackTrace(); }
-  
+    
           return ThreadLocalRandom.current().nextDouble() * 2 + productName.charAt(0);
       }
-  }
-  ```
+    
+      public String getNetMallName() {
+          return netMallName;
+      }
+    
+      public void setNetMallName(String netMallName) {
+          this.netMallName = netMallName;
+      }
 
-  ```
-  输出结果
-  mysql in jd price is 109.98
-  mysql in dangdang price is 109.62
-  mysql in taobao price is 110.08
-  mysql in pdd price is 109.02
-  mysql in tmall price is 110.87
-  ----costTime: 5092 毫秒
-  --------------------
-  mysql in jd price is 109.83
-  mysql in dangdang price is 109.35
-  mysql in taobao price is 110.51
-  mysql in pdd price is 110.06
-  mysql in tmall price is 109.83
-  ----costTime: 1013 毫秒
-  ```
+  }  }
 
-  
+```
+```shell
+输出结果
+mysql in jd price is 109.98
+mysql in dangdang price is 109.62
+mysql in taobao price is 110.08
+mysql in pdd price is 109.02
+mysql in tmall price is 110.87
+----costTime: 5092 毫秒
+
+---
+
+mysql in jd price is 109.83
+mysql in dangdang price is 109.35
+mysql in taobao price is 110.51
+mysql in pdd price is 110.06
+mysql in tmall price is 109.83
+----costTime: 1013 毫秒
+```
 
 ## 2.5 CompletableFuture常用方法
 
@@ -616,67 +609,74 @@ public class CompletableFuture<T> implements Future<T>, CompletionStage<T> {}
 
 * 获取结果
 
-  * public T get() 
+  * public T get() throws InterruptedException, ExecutionException
+
     * 一直等待获取，阻塞
-  * public T get(long timeout,TimeUnit unit) 超
+
+  * public T get(long timeout,TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException
+
     * 超过时间没获取到，就报错了
+
   * public T join()
-    * 与get()一致，知识爆出异常的问题
+
+    * 与get()一致，只是报出异常的不同，join不需要手动捕获异常
+
   * public T getNow(T valueIfAbsent)
-    * 没有计算完成的情况下，给我一个替代
+
+    * 没有计算完成的情况下，给我一个替代值
     * 立即获取结果不阻塞，计算完，返回计算值，没计算完，返回valueIfAbsent值
 
 * 主动触发计算
 
-  * public boolean complete(T value) 
+  * public boolean complete(T value)
+
     * 打断get或join方法并将返回值设置为value值，通过get或jion方法获取的值为value。
 
-  ```java
-  package chapter2;
-  
-  import java.util.concurrent.CompletableFuture;
-  import java.util.concurrent.ExecutionException;
-  import java.util.concurrent.TimeUnit;
-  import java.util.concurrent.TimeoutException;
-  
-  public class CompletableFutureAPIDemo
-  {
-      public static void main(String[] args) throws ExecutionException, InterruptedException
-      {
-          group1();
-      }
-  
-      /**
-       * 获得结果和触发计算
-       * @throws InterruptedException
-       * @throws ExecutionException
-       */
-      private static void group1() throws InterruptedException, ExecutionException
-      {
-          CompletableFuture<String> completableFuture = CompletableFuture.supplyAsync(() -> {
-              //暂停几秒钟线程
-              try {
-                  TimeUnit.SECONDS.sleep(1);
-              } catch (InterruptedException e) {
-                  e.printStackTrace();
-              }
-              return "abc";
-          });
-  
-          //System.out.println(completableFuture.get());
-          //System.out.println(completableFuture.get(2L,TimeUnit.SECONDS));
-          //System.out.println(completableFuture.join());
-  
-  
-          //System.out.println(completableFuture.getNow("xxx"));
-  
-          //暂停几秒钟线程
-          //try { TimeUnit.SECONDS.sleep(2); } catch (InterruptedException e) { e.printStackTrace(); }
-          System.out.println(completableFuture.complete("completeValue")+"\t"+completableFuture.join());//单一拿结果为ture  completeValue
-      }
-  }
-  
-  ```
+```java
+package chapter2;
+
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+
+public class CompletableFutureAPIDemo
+{
+    public static void main(String[] args) throws ExecutionException, InterruptedException
+    {
+        group1();
+    }
+
+    /**
+     * 获得结果和触发计算
+     * @throws InterruptedException
+     * @throws ExecutionException
+     */
+    private static void group1() throws InterruptedException, ExecutionException
+    {
+        CompletableFuture<String> completableFuture = CompletableFuture.supplyAsync(() -> {
+            //暂停几秒钟线程
+            try {
+                TimeUnit.SECONDS.sleep(1);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            return "abc";
+        });
+
+        //System.out.println(completableFuture.get());
+        //System.out.println(completableFuture.get(2L,TimeUnit.SECONDS));
+        //System.out.println(completableFuture.join());
+
+
+        //System.out.println(completableFuture.getNow("xxx"));
+
+        //暂停几秒钟线程
+        //try { TimeUnit.SECONDS.sleep(2); } catch (InterruptedException e) { e.printStackTrace(); }
+        System.out.println(completableFuture.complete("completeValue")+"\t"+completableFuture.join());//单一拿结果为ture  completeValue
+    }
+}
+```
 
 ### 2.5.2 对计算结果进行处理
 
@@ -684,7 +684,7 @@ public class CompletableFuture<T> implements Future<T>, CompletionStage<T> {}
 
   * 计算结果存在依赖关系，这两个线程串行化
 
-  * 参数时Function，传递一个参数
+  * 参数是Function，传递一个参数
 
   * 异常相关
 
@@ -739,22 +739,20 @@ public class CompletableFuture<T> implements Future<T>, CompletionStage<T> {}
     111
     java.lang.ArithmeticException: / by zero
     java.util.concurrent.CompletionException: java.lang.ArithmeticException: / by zero
-    	at java.util.concurrent.CompletableFuture.encodeThrowable(CompletableFuture.java:273)
-    	at java.util.concurrent.CompletableFuture.completeThrowable(CompletableFuture.java:280)
-    	at java.util.concurrent.CompletableFuture.uniApply(CompletableFuture.java:604)
-    	at java.util.concurrent.CompletableFuture$UniApply.tryFire(CompletableFuture.java:577)
-    	at java.util.concurrent.CompletableFuture.postComplete(CompletableFuture.java:474)
-    	at java.util.concurrent.CompletableFuture$AsyncSupply.run(CompletableFuture.java:1595)
-    	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
-    	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
-    	at java.lang.Thread.run(Thread.java:745)
+        at java.util.concurrent.CompletableFuture.encodeThrowable(CompletableFuture.java:273)
+        at java.util.concurrent.CompletableFuture.completeThrowable(CompletableFuture.java:280)
+        at java.util.concurrent.CompletableFuture.uniApply(CompletableFuture.java:604)
+        at java.util.concurrent.CompletableFuture$UniApply.tryFire(CompletableFuture.java:577)
+        at java.util.concurrent.CompletableFuture.postComplete(CompletableFuture.java:474)
+        at java.util.concurrent.CompletableFuture$AsyncSupply.run(CompletableFuture.java:1595)
+        at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+        at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+        at java.lang.Thread.run(Thread.java:745)
     Caused by: java.lang.ArithmeticException: / by zero
-    	at chapter2.CompletableFutureAPI2Demo.lambda$main$1(CompletableFutureAPI2Demo.java:55)
-    	at java.util.concurrent.CompletableFuture.uniApply(CompletableFuture.java:602)
-    	... 6 more
+        at chapter2.CompletableFutureAPI2Demo.lambda$main$1(CompletableFutureAPI2Demo.java:55)
+        at java.util.concurrent.CompletableFuture.uniApply(CompletableFuture.java:602)
+        ... 6 more
     ```
-
-    
 
 * handle
 
@@ -817,19 +815,19 @@ public class CompletableFuture<T> implements Future<T>, CompletionStage<T> {}
     333
     java.lang.NullPointerException
     java.util.concurrent.CompletionException: java.lang.NullPointerException
-    	at java.util.concurrent.CompletableFuture.encodeThrowable(CompletableFuture.java:273)
-    	at java.util.concurrent.CompletableFuture.completeThrowable(CompletableFuture.java:280)
-    	at java.util.concurrent.CompletableFuture.uniHandle(CompletableFuture.java:824)
-    	at java.util.concurrent.CompletableFuture$UniHandle.tryFire(CompletableFuture.java:797)
-    	at java.util.concurrent.CompletableFuture.postComplete(CompletableFuture.java:474)
-    	at java.util.concurrent.CompletableFuture$AsyncSupply.run(CompletableFuture.java:1595)
-    	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
-    	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
-    	at java.lang.Thread.run(Thread.java:745)
+        at java.util.concurrent.CompletableFuture.encodeThrowable(CompletableFuture.java:273)
+        at java.util.concurrent.CompletableFuture.completeThrowable(CompletableFuture.java:280)
+        at java.util.concurrent.CompletableFuture.uniHandle(CompletableFuture.java:824)
+        at java.util.concurrent.CompletableFuture$UniHandle.tryFire(CompletableFuture.java:797)
+        at java.util.concurrent.CompletableFuture.postComplete(CompletableFuture.java:474)
+        at java.util.concurrent.CompletableFuture$AsyncSupply.run(CompletableFuture.java:1595)
+        at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+        at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+        at java.lang.Thread.run(Thread.java:745)
     Caused by: java.lang.NullPointerException
-    	at chapter2.CompletableFutureAPI2Demo.lambda$main$2(CompletableFutureAPI2Demo.java:25)
-    	at java.util.concurrent.CompletableFuture.uniHandle(CompletableFuture.java:822)
-    	... 6 more
+        at chapter2.CompletableFutureAPI2Demo.lambda$main$2(CompletableFutureAPI2Demo.java:25)
+        at java.util.concurrent.CompletableFuture.uniHandle(CompletableFuture.java:822)
+        ... 6 more
     ```
 
 * 总结
@@ -848,13 +846,13 @@ public class CompletableFuture<T> implements Future<T>, CompletionStage<T> {}
   * Code之任务之间的顺序执行
 
     * thenRun
-      * thenRun(Runnable runnable) 
+      * thenRun(Runnable runnable)
       * 任务A执行完执行B，并且B不需要A的结果
     * thenAccept
-      * thenAccept(Consumer consumer ) 
+      * thenAccept(Consumer consumer )
       * 任务A执行完执行B，B需要A的结果，但是B无返回值
     * thenApply
-      * thenApply(Function function) 
+      * thenApply(Function function)
       * 任务A执行完执行B，B需要A的结果，同时任务B有返回值
     * code
 
@@ -879,8 +877,6 @@ public class CompletableFuture<T> implements Future<T>, CompletionStage<T> {}
     null
     resultAresultB
     ```
-
-    
 
 * CompletableFuture和线程池说明
 
@@ -925,16 +921,15 @@ public class CompletableFuture<T> implements Future<T>, CompletionStage<T> {}
             }
         }
     }
-    
     ```
 
     ```
     输出结果
     
-    1号任务	pool-1-thread-1
-    2号任务	pool-1-thread-1
-    3号任务	pool-1-thread-1
-    4号任务	pool-1-thread-1
+    1号任务    pool-1-thread-1
+    2号任务    ForkJoinPool.commonPool-worker-9
+    3号任务    ForkJoinPool.commonPool-worker-9
+    4号任务    ForkJoinPool.commonPool-worker-9
     null
     ```
 
@@ -1012,113 +1007,140 @@ public class CompletableFuture<T> implements Future<T>, CompletionStage<T> {}
   
   A come in
   B come in
-  main	-----: playB is winer
+  main    -----: playB is winer
   ```
 
 ### 2.5.5 对计算结果进行合并
 
-* 两个CompletionStage任务都完成后，最终能把两个任务的结果一起交给thenCombine来处理
-
-* 先完成的先等着，等待其他分支任务
+* 两个CompletionStage任务都完成后，最终能把两个任务的结果一起交给thenCombine来处理先完成的先等着，等待其他分支任务
 
 * thenCombine
 
-  * code标准版，好理解先拆分
+* code标准版，好理解先拆分
 
-    ```java
-    package chapter2;
-    import java.util.concurrent.CompletableFuture;
-    import java.util.concurrent.TimeUnit;
-    public class CompletableFutureCombineDemo
+```java
+package chapter2;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
+public class CompletableFutureCombineDemo
+{
+    public static void main(String[] args)
     {
-        public static void main(String[] args)
-        {
-            CompletableFuture<Integer> completableFuture1 = CompletableFuture.supplyAsync(() -> {
-                System.out.println(Thread.currentThread().getName() + "\t ---启动");
-                //暂停几秒钟线程
-                try {
-                    TimeUnit.SECONDS.sleep(1);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                return 10;
-            });
-            CompletableFuture<Integer> completableFuture2 = CompletableFuture.supplyAsync(() -> {
-                System.out.println(Thread.currentThread().getName() + "\t ---启动");
-                //暂停几秒钟线程
-                try {
-                    TimeUnit.SECONDS.sleep(2);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                return 20;
-            });
-            CompletableFuture<Integer> result = completableFuture1.thenCombine(completableFuture2, (x, y) -> {
-                System.out.println("-----开始两个结果合并");
-                System.out.println("x="+x);
-                System.out.println("y="+y);
-                return x + y;
-            });
-            System.out.println(result.join());
-        }
+        CompletableFuture<Integer> completableFuture1 = CompletableFuture.supplyAsync(() -> {
+            System.out.println(Thread.currentThread().getName() + "\t ---启动");
+            //暂停几秒钟线程
+            try {
+                TimeUnit.SECONDS.sleep(1);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            return 10;
+        });
+        CompletableFuture<Integer> completableFuture2 = CompletableFuture.supplyAsync(() -> {
+            System.out.println(Thread.currentThread().getName() + "\t ---启动");
+            //暂停几秒钟线程
+            try {
+                TimeUnit.SECONDS.sleep(2);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            return 20;
+        });
+        CompletableFuture<Integer> result = completableFuture1.thenCombine(completableFuture2, (x, y) -> {
+            System.out.println("-----开始两个结果合并");
+            System.out.println("x="+x);
+            System.out.println("y="+y);
+            return x + y;
+        });
+        System.out.println(result.join());
     }
-    
-    ```
+}
+```
 
-    ```
-    输出结果
-    
-    ForkJoinPool.commonPool-worker-1	 ---启动
-    ForkJoinPool.commonPool-worker-2	 ---启动
-    -----开始两个结果合并
-    x=10
-    y=20
-    30
-    ```
+```
+输出结果
 
-  * code表达式
+ForkJoinPool.commonPool-worker-1     ---启动
+ForkJoinPool.commonPool-worker-2     ---启动
+-----开始两个结果合并
+x=10
+y=20
+30
+```
 
-    ```java
-    public static void biaodashiban()
-        {
-            CompletableFuture<Integer> completableFuture1 = CompletableFuture.supplyAsync(() -> {
-                System.out.println(Thread.currentThread().getName() + "\t ---启动");
-                //暂停几秒钟线程
-                try {
-                    TimeUnit.SECONDS.sleep(1);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                return 10;
-            }).thenCombine( CompletableFuture.supplyAsync(() -> {
-                System.out.println(Thread.currentThread().getName() + "\t ---启动");
-                //暂停几秒钟线程
-                try {
-                    TimeUnit.SECONDS.sleep(2);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                return 20;
-            }), (x, y) -> {
-                System.out.println("-----开始两个结果合并");
-                System.out.println("x="+x);
-                System.out.println("y="+y);
-                return x + y;
-            });
-    
-            System.out.println(completableFuture1.join());
-        }
-    ```
+- code表达式
 
-    ```
-    输出结果
-    
-    ForkJoinPool.commonPool-worker-1	 ---启动
-    ForkJoinPool.commonPool-worker-2	 ---启动
-    -----开始两个结果合并
-    x=10
-    y=20
-    30
-    ```
+```java
+public static void biaodashiban()
+    {
+        CompletableFuture<Integer> completableFuture1 = CompletableFuture.supplyAsync(() -> {
+            System.out.println(Thread.currentThread().getName() + "\t ---启动");
+            //暂停几秒钟线程
+            try {
+                TimeUnit.SECONDS.sleep(1);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            return 10;
+        }).thenCombine( CompletableFuture.supplyAsync(() -> {
+            System.out.println(Thread.currentThread().getName() + "\t ---启动");
+            //暂停几秒钟线程
+            try {
+                TimeUnit.SECONDS.sleep(2);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            return 20;
+        }), (x, y) -> {
+            System.out.println("-----开始两个结果合并");
+            System.out.println("x="+x);
+            System.out.println("y="+y);
+            return x + y;
+        });
 
-    
+        System.out.println(completableFuture1.join());
+    }
+```
+
+```
+输出结果
+
+ForkJoinPool.commonPool-worker-1     ---启动
+ForkJoinPool.commonPool-worker-2     ---启动
+-----开始两个结果合并
+x=10
+y=20
+30
+```
+
+## 2.6 CompletableFuture的方法表格总结
+
+| 方法名                 | 方法类型     | 参数                                  | 返回值                     | 说明                                                       |
+| ------------------- | -------- | ----------------------------------- | ----------------------- | -------------------------------------------------------- |
+| runAsync            | static   | Runnable,Executor                   | CompletableFuture<Void> | 静态方法，构造一个无返回值的任务处理实例，可以自定义传入自己线程池，不传入自定义线程池使用的是默认的守护线程池  |
+| supplyAsync         | static   | Supplier,Executor                   | CompletableFuture<U>    | 静态方法，构造一个有返回值的任务处理实例，可以自定义传入自己线程池，不传入自定义线程池使用的是默认的守护线程池  |
+| thenApply           | instance | Function                            | CompletableFuture<U>    | 需要上一任务的执行结果，并返回新的结果，上一个任务异常后这个任务无法执行                     |
+| thenApplyAsync      | instance | Function,Executor                   | CompletableFuture<U>    | 与thenApply区别是可以自定义线程池                                    |
+| thenAccept          | instance | Consumer                            | CompletableFuture<Void> | 需要上一任务的执行结果，不返回新的结果，上一个任务异常后这个任务无法执行                     |
+| thenAcceptAsync     | instance | Function,Executor                   | CompletableFuture<Void> | 与thenAccept区别是可以自定义线程池                                   |
+| thenRun             | instance | Runnable                            | CompletableFuture<Void> | 需要上一任务的执行完成，再执行这个任务，上一个任务异常后这个任务无法执行                     |
+| thenRunAsync        | instance | Runnable,Executor                   | CompletableFuture<Void> | 与thenRun区别是可以自定义线程池                                      |
+| thenCombine         | instance | CompletionStage,BiFunction          | CompletableFuture<U>    | 需要两个任务进行合并，将计算结果返回，任务异常后这个任务无法执行                         |
+| thenCombineAsync    | instance | CompletionStage,BiFunction,Executor | CompletableFuture<U>    | 与thenCombine区别是可以自定义线程池                                  |
+| thenAcceptBoth      | instance | CompletionStage,BiConsumer          | CompletableFuture<Void> | 需要两个任务的执行结果，不返回新的结果，任务异常后这个任务无法执行                        |
+| thenAcceptBothAsync | instance | CompletionStage,BiConsumer,Executor | CompletableFuture<Void> | 与thenAcceptBoth区别是可以自定义线程池                               |
+| runAfterBoth        | instance | CompletionStage,Runnable            | CompletableFuture<Void> | 需要两个任务的执行完成，再执行这个任务，任务异常后这个任务无法执行                        |
+| runAfterBothAsync   | instance | CompletionStage,Runnable,Executor   | CompletableFuture<Void> | 与runAfterBoth区别是可以自定义线程池                                 |
+| applyToEither       | instance | CompletionStage,Function            | CompletableFuture<U>    | 依赖两个任务，谁快用谁的，并返回一个新的结果，任务异常后这个任务无法执行                     |
+| applyToEitherAsync  | instance | CompletionStage,Function,Executor   | CompletableFuture<U>    | 与applyToEither区别是可以自定义线程池                                |
+| acceptEither        | instance | CompletionStage,Consumer            | CompletableFuture<Void> | 依赖两个任务，谁快用谁的，不返回新的结果，任务异常后这个任务无法执行                       |
+| acceptEitherAsync   | instance | CompletionStage,Consumer,Executor   | CompletableFuture<Void> | 与acceptEither区别是可以自定义线程池                                 |
+| runAfterEither      | instance | CompletionStage,Runnable            | CompletableFuture<Void> | 依赖两个任务，只要有任务一个返回了就往下执行，任务异常后这个任务无法执行                     |
+| runAfterEitherAsync | instance | CompletionStage,Runnable,Executor   | CompletableFuture<Void> | 与runAfterEither区别是可以自定义线程池                               |
+| thenCompose         | instance | Function                            | CompletionStage<U>      | 将一个CompletableFuture与另一个CompletableFuture进行组合            |
+| thenComposeAsync    | instance | thenComposeAsync,Executor           | CompletionStage<U>      | 与thenCompose区别是可以自定义线程池                                  |
+| exceptionally       | instance | Function                            | CompletableFuture<U>    | CompletableFuture执行异常时会进入次方法，与其他方法组合使用try catch          |
+| handle              | instance | BiFunction                          | CompletableFuture<U>    | 依赖上个任务执行完成，上一个任务可能会产生异常，不会影响后续执行。并返回一个结果。                |
+| handleAsync         | instance | BiFunction,Executor                 | CompletableFuture<U>    | 与handle区别是可以自定义线程池                                       |
+| whenComplete        | instance | BiConsumer                          | CompletableFuture<U>    | CompletableFuture执行完成或异常时会进入此方法，与其他方法组合使用，相当于try finally |
+| whenCompleteAsync   | instance | BiConsumer,Executor                 | CompletableFuture<U>    | 与whenComplete区别是可以自定义线程池                                 |

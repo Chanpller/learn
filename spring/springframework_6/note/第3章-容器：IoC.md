@@ -450,7 +450,7 @@ public void setClazz(Clazz clazz) {
 }
 ```
 
-##### 方式一：引用外部bean
+##### 方式一：引用外部bean（ref引入）
 
 配置Clazz类型的bean：
 
@@ -490,7 +490,10 @@ public void setClazz(Clazz clazz) {
 >
 > 意思是不能把String类型转换成我们要的Clazz类型，说明我们使用value属性时，Spring只把这个属性看做一个普通的字符串，不会认为这是一个bean的id，更不会根据它去找到bean来赋值
 
-##### 方式二：内部bean
+##### 方式二：内部bean（property标签内部bean引入）
+
+* 内部注入的bean的id与外部标签的bean不冲突，可以同名
+* 内部注入的bean通过ApplicationContext获取不到
 
 ```xml
 <bean id="studentFour" class="com.atguigu.spring6.bean.Student">
@@ -509,7 +512,9 @@ public void setClazz(Clazz clazz) {
 </bean>
 ```
 
-##### 方式三：级联属性赋值
+##### 方式三：级联属性赋值（ref引入的实例，级联赋值）
+
+* 级联属性注入，需要先将级联的对象引入，如果先引入属性，则报BeanCreationException异常
 
 ```xml
 <bean id="studentFour" class="com.atguigu.spring6.bean.Student">
@@ -523,7 +528,7 @@ public void setClazz(Clazz clazz) {
 </bean>
 ```
 
-#### 3.2.7、实验六：为数组类型属性赋值
+#### 3.2.7、实验六：为数组类型属性赋值（array标签）
 
 **①修改Student类**
 
@@ -563,7 +568,7 @@ public void setHobbies(String[] hobbies) {
 
 #### 3.2.8、实验七：为集合类型属性赋值
 
-##### ①为List集合类型属性赋值
+##### ①为List集合类型属性赋值（list标签）
 
 在Clazz类中添加以下代码：
 
@@ -597,7 +602,7 @@ public void setStudents(List<Student> students) {
 
 > 若为Set集合类型属性赋值，只需要将其中的list标签改为set标签即可
 
-##### ②为Map集合类型属性赋值
+##### ②为Map集合类型属性赋值（map标签）
 
 创建教师类Teacher：
 
@@ -704,7 +709,7 @@ public void setTeacherMap(Map<String, Teacher> teacherMap) {
 </bean>
 ```
 
-##### ③引用集合类型的bean
+##### ③引用集合类型的bean(util:标签)
 
 ```xml
 <!--list集合类型的bean-->
@@ -764,9 +769,15 @@ public void setTeacherMap(Map<String, Teacher> teacherMap) {
 >     http://www.springframework.org/schema/beans/spring-beans.xsd">
 > ```
 
-#### 3.2.9、实验八：p命名空间
+#### 3.2.9、实验八：p命名空间（p:）
+
+* 使用p命名空间后不能再组合 级联赋值了
 
 引入p命名空间
+
+```
+加入:xmlns:p="http://www.springframework.org/schema/p
+```
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -787,7 +798,7 @@ public void setTeacherMap(Map<String, Teacher> teacherMap) {
     p:id="1006" p:name="小明" p:clazz-ref="clazzOne" p:teacherMap-ref="teacherMap"></bean>
 ```
 
-#### 3.2.10、实验九：引入外部属性文件
+#### 3.2.10、实验九：引入外部属性文件(context:)
 
 **①加入依赖**
 
@@ -862,7 +873,7 @@ public void testDataSource() throws SQLException {
 }
 ```
 
-#### 3.2.11、实验十：bean的作用域
+#### 3.2.11、实验十：bean的作用域(scope)
 
 **①概念**
 
@@ -968,7 +979,7 @@ public void testBeanScope(){
 }
 ```
 
-#### 3.2.12、实验十一：bean生命周期
+#### 3.2.12、实验十一：bean生命周期(lifecycle)
 
 **①具体的生命周期过程**
 
@@ -1127,6 +1138,8 @@ public class MyBeanProcessor implements BeanPostProcessor {
 FactoryBean是Spring提供的一种整合第三方框架的常用机制。和普通的bean不同，配置一个FactoryBean类型的bean，在获取bean的时候得到的并不是class属性中配置的这个类的对象，而是getObject()方法的返回值。通过这种机制，Spring可以帮我们把复杂组件创建的详细过程和繁琐细节都屏蔽起来，只把最简洁的使用界面展示给我们。
 
 将来我们整合Mybatis时，Spring就是通过FactoryBean机制来帮我们创建SqlSessionFactory对象的。
+
+是一个接口，注入时使用FactoryBean的实例，但获取到的实例是FactoryBean方法getObject()的对象，而不是FactoryBean对象。
 
 ```java
 /*
@@ -1314,6 +1327,10 @@ public void testUserFactoryBean(){
 ```
 
 #### 3.2.14、实验十三：基于xml自动装配
+
+* 需要借助set方法才可自动状态，如果没有set方法不能自动装备
+* byName bean的id必须与属性名对应，否则无法注入。
+* byType 要求对应的类bean只能有一个，否则报NoUniqueBeanDefinitionException异常
 
 > 自动装配：
 >
