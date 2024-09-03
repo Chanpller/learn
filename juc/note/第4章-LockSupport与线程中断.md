@@ -31,14 +31,23 @@
 
   * public void interrupt()
     * 实例方法，仅仅设置线程的中断状态为true，发起一个协商而不会立刻停止线程。
+    
     * 如果线程处于正常活动状态，调用interrupt()会将该线程的中断标志设置为ture，仅此而已。
-    * 如果线程处于被阻塞状态比如（sleep、wait、join等状态），在别的线程中调用当前线程对象的interrupt()方法，那么线程将立即退出被阻塞状态，并抛出一个interruptedException异常
+    
+    * 如果线程处于被阻塞状态比如（sleep、wait、join等状态），在别的线程中调用当前线程对象的interrupt()方法，那么线程将立即退出被阻塞状态，并抛出一个interruptedException异常。所以在调用sleep会抛出interruptedException异常，异常时需要重新调用interrupt()方法，来确保中断标志位是正常的。
+    
+      ![image-20240903224819222](D:\IdeaProjects\learn\juc\image\image-20240903224819222.png)
+    
+    ![image-20240903224945317](D:\IdeaProjects\learn\juc\image\image-20240903224945317.png)
+    
+      ![image-20240903225025571](D:\IdeaProjects\learn\juc\image\image-20240903225025571.png)
   * public static boolean interrupted()
     * 静态方法，Thread.interrupted()判断线程是否被中断并清除当前中断状态。次方法做两件事。1、返回当前线程的中断状态，测试当前线程是否已被中断。2、将当前线程的中断状态清零并重新设置为false，清楚线程的中断状态。
     * 此方法有点不好理解，如果连续两次调用此方法，则第二次调用将返回false，因为连续调用两次的结果可能不一样。
   * boolean isInterrupted()
+    
     * 实例方法，判断当前线程是否被中断（通过检查中断标志位）
-
+  
   ```java
   public void interrupt() {
           if (this != Thread.currentThread())
@@ -289,13 +298,13 @@ LockSupport是用来创建锁和其他同步类的基本线程阻塞原语，其
 
 ## 4.4 线程等待唤醒机制
 
-## 4.3.1 三种让线程等待和唤醒的方法
+### 4.3.1 三种让线程等待和唤醒的方法
 
 - 方式一：使用Object中的wait()方法让线程等待，使用Object中的notify()方法唤醒线程
 - 方式二：使用JUC包中的Condition的await()方法让线程等待，使用signal()方法唤醒线程
 - 方式三：LockSupport类可以阻塞当前线程以及唤醒指定被阻塞的线程
 
-## 4.3.2 Object类中的wait和notify方法实现线程等待和唤醒
+### 4.3.2 Object类中的wait和notify方法实现线程等待和唤醒
 
 - wait和notify方法必须要在同步代码块或者方法里面，且成对出现使用
   * wait方法和notify方法，两个都去掉同步代码块会报异常，IllegalMonitorStateException
@@ -343,7 +352,7 @@ public class LockSupportDemo {
 }
 ```
 
-## 4.3.3 Condition接口中的await和signal方法实现线程的等待和唤醒
+### 4.3.3 Condition接口中的await和signal方法实现线程的等待和唤醒
 
 - Condition中的线程等待和唤醒方法，需要先获取锁
 - 一定要先await后signal，不要反了
@@ -398,28 +407,26 @@ public class LockSupportDemo {
 }
 ```
 
-## 4.3.4 上述两个对象Object和Condition使用的限制条件
+### 4.3.4 上述两个对象Object和Condition使用的限制条件
 
 - 线程需要先获得并持有锁，必须在锁块（synchronized或lock）中
 - 必须要先等待后唤醒，线程才能够被唤醒
 
-## 4.3.5 LockSupport类中的park等待和unpark唤醒
+### 4.3.5 LockSupport类中的park等待和unpark唤醒
 
 - 是什么
 
-- - LockSupport 是用于创建锁和其他同步类的基本线程阻塞原语
+  - LockSupport 是用于创建锁和其他同步类的基本线程阻塞原语
   - LockSupport类使用了一种名为Permit（许可）的概念来做到阻塞和唤醒线程的功能，每个线程都有一个许可（Permit），许可证只能有一个，累加上限是1。
   - 但与Semaphore不同的是，许可的累加上限是1。
 
 - 主要方法
 
-- - 阻塞: Peimit许可证默认没有不能放行，所以一开始调用park()方法当前线程会阻塞，直到别的线程给当前线程发放peimit，park方法才会被唤醒。
+  - 阻塞: Peimit许可证默认没有不能放行，所以一开始调用park()方法当前线程会阻塞，直到别的线程给当前线程发放peimit，park方法才会被唤醒。
+  - park/park(Object blocker)-------阻塞当前线程/阻塞传入的具体线程
+  - 唤醒: 调用unpack(thread)方法后 就会将thread线程的许可证peimit发放，会自动唤醒park线程，即之前阻塞中的LockSupport.park()方法会立即返回。
 
-- - - park/park(Object blocker)-------阻塞当前线程/阻塞传入的具体线程
-
-- - 唤醒: 调用unpack(thread)方法后 就会将thread线程的许可证peimit发放，会自动唤醒park线程，即之前阻塞中的LockSupport.park()方法会立即返回。
-
-- - - unpark(Thread thread)------唤醒处于阻塞状态的指定线程
+    - unpark(Thread thread)------唤醒处于阻塞状态的指定线程
 
 LockSupport类中的park等待和unpark唤醒演示:
 
@@ -460,19 +467,19 @@ public class LockSupportDemo {
 
 - 重点说明（重要）
 
-- - LockSupport是用来创建锁和其他同步类的基本线程阻塞原语，所有的方法都是静态方法，可以让线程再任意位置阻塞，阻塞后也有对应的唤醒方法。归根结底，LockSupport时调用Unsafe中的native代码
+  - LockSupport是用来创建锁和其他同步类的基本线程阻塞原语，所有的方法都是静态方法，可以让线程在任意位置阻塞，阻塞后也有对应的唤醒方法。归根结底，LockSupport时调用Unsafe中的native代码
   - LockSupport提供park()和unpark()方法实现阻塞线程和解除线程阻塞的过程，LockSupport和每个使用它的线程都有一个许可（Peimit）关联，每个线程都有一个相关的permit，peimit最多只有一个，重复调用unpark也不会积累凭证。
   - 形象理解：线程阻塞需要消耗凭证（Permit），这个凭证最多只有一个
 
-- - - 当调用park时，如果有凭证，则会直接消耗掉这个凭证然后正常退出。如果没有凭证，则必须阻塞等待凭证可用；
-    - 而unpark则相仿，当调用unpark时，它会增加一个凭证，但凭证最多只能有1个，累加无效。
+    - 当调用park时，如果有凭证，则会直接消耗掉这个凭证然后正常退出。如果没有凭证，则必须阻塞等待凭证可用；
+    - 而unpark则相反，当调用unpark时，它会增加一个凭证，但凭证最多只能有1个，累加无效。
+  - park相当于消费一次凭证，如果有凭证直接消费，不会阻塞，调用几次就消费几次凭证，如果没有凭证就阻塞。unpark相当于发放凭证，但是连续调用也发放一次凭证。这个操作时间没有关系，不管是哪个先执行，它只看凭证。
 
 - 面试题
 
-- - 为什么LockSupport可以突破wait/notify的原有调用顺序？
+  - 为什么LockSupport可以突破wait/notify的原有调用顺序？
 
-- - - 因为unpark获得了一个凭证，之后再调用park方法，就可以名正言顺的凭证消费，故不会阻塞，先发放了凭证后续可以畅通无阻。
+    - 因为unpark获得了一个凭证，之后再调用park方法，就可以名正言顺的凭证消费，故不会阻塞，先发放了凭证后续可以畅通无阻。
 
-- - 为什么唤醒两次后阻塞两次，但最终结果还会阻塞线程？
-
-- - - 因为凭证的数量最多为1，连续调用两次unpark和调用一次unpark效果一样，只会增加一个凭证，而调用两次park却需要消费两个凭证，证不够，不能放行。
+  * 为什么唤醒两次后阻塞两次，但最终结果还会阻塞线程？
+    * 因为凭证的数量最多为1，连续调用两次unpark和调用一次unpark效果一样，只会增加一个凭证，而调用两次park却需要消费两个凭证，证不够，不能放行。
