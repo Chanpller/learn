@@ -6,9 +6,9 @@ Spring 通过 IoC 容器来管理所有 Java 对象的实例化和初始化，�
 
 IoC 容器是 Spring 框架中最重要的核心组件之一，它贯穿了 Spring 从诞生到成长的整个过程。
 
-### 3.1 IoC容器
+## 3.1 IoC容器
 
-#### 3.1.1 控制反转（IoC）
+### 3.1.1 控制反转（IoC）
 
 - 控制反转是一种思想。
 - 控制反转是为了降低程序耦合度，提高程序扩展力。
@@ -18,7 +18,7 @@ IoC 容器是 Spring 框架中最重要的核心组件之一，它贯穿了 Spri
 - 控制反转这种思想如何实现呢？
 - - DI（Dependency Injection）：依赖注入
 
-#### 3.1.2 依赖注入
+### 3.1.2 依赖注入
 
 DI（Dependency Injection）：依赖注入，依赖注入实现了控制反转的思想。
 
@@ -35,7 +35,7 @@ DI（Dependency Injection）：依赖注入，依赖注入实现了控制反转�
 
 **Bean管理说的是：Bean对象的创建，以及Bean对象中属性的赋值（或者叫做Bean对象之间关系的维护）。**
 
-#### 3.1.3 IoC容器在Spring的实现
+### 3.1.3 IoC容器在Spring的实现
 
 Spring 的 IoC 容器就是 IoC思想的一个落地的产品实现。IoC容器中管理的组件也叫做 bean。在创建 bean 之前，首先需要创建IoC 容器。Spring 提供了IoC 容器的两种实现方式：
 
@@ -60,9 +60,9 @@ BeanFactory 的子接口，提供了更多高级特性。面向 Spring 的使用
 | ConfigurableApplicationContext  | ApplicationContext 的子接口，包含一些扩展方法 refresh() 和 close() ，让 ApplicationContext 具有启动、关闭和刷新上下文的能力。 |
 | WebApplicationContext           | 专门为 Web 应用准备，基于 Web 环境创建 IOC 容器对象，并将对象引入存入 ServletContext 域中。 |
 
-### 3.2 基于XML管理Bean
+## 3.2 基于XML管理Bean
 
-#### 3.2.1 搭建子模块spring6-ioc-xml
+### 3.2.1 搭建子模块spring6-ioc-xml
 
 **①搭建模块**
 
@@ -142,13 +142,13 @@ public class HelloWorldTest {
 }
 ```
 
-#### 3.2.2 实验一：获取bean
+### 3.2.2 实验一：获取bean
 
-##### ①方式一：根据id获取
+#### ①方式一：根据id获取
 
 由于 id 属性指定了 bean 的唯一标识，所以根据 bean 标签的 id 属性可以精确获取到一个组件对象。上个实验中我们使用的就是这种方式。
 
-##### ②方式二：根据类型获取
+#### ②方式二：根据类型获取
 
 ```java
 //必须唯一       
@@ -157,7 +157,7 @@ User userByClass = applicationContext.getBean(User.class);
         userByClass.add();
 ```
 
-##### ③方式三：根据id和类型
+#### ③方式三：根据id和类型
 
 ```java
  //如果id不存在或者类型不一致会报异常
@@ -166,7 +166,7 @@ User userByIdAndClass =  applicationContext.getBean("user",User.class);
         userByIdAndClass.add();
 ```
 
-##### ④注意的地方
+#### ④注意的地方
 
 当根据类型获取bean时，要求IOC容器中指定类型的bean有且只能有一个
 
@@ -181,7 +181,7 @@ User userByIdAndClass =  applicationContext.getBean("user",User.class);
 
 > org.springframework.beans.factory.NoUniqueBeanDefinitionException: No qualifying bean of type ‘com.atguigu.spring6.bean.HelloWorld’ available: expected single matching bean but found 2: helloworldOne,helloworldTwo
 
-##### ⑤扩展知识
+#### ⑤扩展知识
 
 如果组件类实现了接口，根据接口类型可以获取 bean 吗？
 
@@ -197,7 +197,7 @@ User userByIdAndClass =  applicationContext.getBean("user",User.class);
 
 java中，instanceof运算符用于判断前面的对象是否是后面的类，或其子类、实现类的实例。如果是返回true，否则返回false。也就是说：用instanceof关键字做判断时， instanceof 操作符的左右操作必须有继承或实现关系
 
-#### 3.2.3 实验二：依赖注入之setter注入
+### 3.2.3 实验二：依赖注入之setter注入
 
 **①创建学生类Student**
 
@@ -289,7 +289,7 @@ public void testDIBySet(){
 }
 ```
 
-#### 3.2.4、实验三：依赖注入之构造器注入
+### 3.2.4 实验三：依赖注入之构造器注入
 
 **①在Student类中添加有参构造**
 
@@ -333,9 +333,9 @@ public void testDIByConstructor(){
 }
 ```
 
-#### 3.2.5、实验四：特殊值处理
+### 3.2.5 实验四：特殊值处理
 
-##### ①字面量赋值
+#### ①字面量赋值
 
 > 什么是字面量？
 >
@@ -350,7 +350,7 @@ public void testDIByConstructor(){
 <property name="name" value="张三"/>
 ```
 
-##### ②null值
+#### ②null值
 
 ```xml
 <property name="name">
@@ -367,7 +367,7 @@ public void testDIByConstructor(){
 >
 > 以上写法，为name所赋的值是字符串null
 
-##### ③xml实体
+#### ③xml实体
 
 ```xml
 <!-- 小于号在XML文档中用来定义标签的开始，不能随便使用 -->
@@ -375,7 +375,7 @@ public void testDIByConstructor(){
 <property name="expression" value="a &lt; b"/>
 ```
 
-##### ④CDATA节
+#### ④CDATA节
 
 ```xml
 <property name="expression">
@@ -387,7 +387,7 @@ public void testDIByConstructor(){
 </property>
 ```
 
-#### 3.2.6、实验五：为对象类型属性赋值
+### 3.2.6 实验五：为对象类型属性赋值
 
 **①创建班级类Clazz**
 
@@ -450,7 +450,7 @@ public void setClazz(Clazz clazz) {
 }
 ```
 
-##### 方式一：引用外部bean（ref引入）
+#### 方式一：引用外部bean（ref引入）
 
 配置Clazz类型的bean：
 
@@ -490,7 +490,7 @@ public void setClazz(Clazz clazz) {
 >
 > 意思是不能把String类型转换成我们要的Clazz类型，说明我们使用value属性时，Spring只把这个属性看做一个普通的字符串，不会认为这是一个bean的id，更不会根据它去找到bean来赋值
 
-##### 方式二：内部bean（property标签内部bean引入）
+#### 方式二：内部bean（property标签内部bean引入）
 
 * 内部注入的bean的id与外部标签的bean不冲突，可以同名
 * 内部注入的bean通过ApplicationContext获取不到
@@ -512,7 +512,7 @@ public void setClazz(Clazz clazz) {
 </bean>
 ```
 
-##### 方式三：级联属性赋值（ref引入的实例，级联赋值）
+#### 方式三：级联属性赋值（ref引入的实例，级联赋值）
 
 * 级联属性注入，需要先将级联的对象引入，如果先引入属性，则报BeanCreationException异常
 
@@ -528,7 +528,7 @@ public void setClazz(Clazz clazz) {
 </bean>
 ```
 
-#### 3.2.7、实验六：为数组类型属性赋值（array标签）
+### 3.2.7 实验六：为数组类型属性赋值（array标签）
 
 **①修改Student类**
 
@@ -566,9 +566,9 @@ public void setHobbies(String[] hobbies) {
 </bean>
 ```
 
-#### 3.2.8、实验七：为集合类型属性赋值
+### 3.2.8 实验七：为集合类型属性赋值
 
-##### ①为List集合类型属性赋值（list标签）
+#### ①为List集合类型属性赋值（list标签）
 
 在Clazz类中添加以下代码：
 
@@ -602,7 +602,7 @@ public void setStudents(List<Student> students) {
 
 > 若为Set集合类型属性赋值，只需要将其中的list标签改为set标签即可
 
-##### ②为Map集合类型属性赋值（map标签）
+#### ②为Map集合类型属性赋值（map标签）
 
 创建教师类Teacher：
 
@@ -709,7 +709,7 @@ public void setTeacherMap(Map<String, Teacher> teacherMap) {
 </bean>
 ```
 
-##### ③引用集合类型的bean(util:标签)
+#### ③引用集合类型的bean(util:标签)
 
 ```xml
 <!--list集合类型的bean-->
@@ -769,7 +769,7 @@ public void setTeacherMap(Map<String, Teacher> teacherMap) {
 >     http://www.springframework.org/schema/beans/spring-beans.xsd">
 > ```
 
-#### 3.2.9、实验八：p命名空间（p:）
+### 3.2.9 实验八：p命名空间（p:）
 
 * 使用p命名空间后不能再组合 级联赋值了
 
@@ -798,7 +798,7 @@ public void setTeacherMap(Map<String, Teacher> teacherMap) {
     p:id="1006" p:name="小明" p:clazz-ref="clazzOne" p:teacherMap-ref="teacherMap"></bean>
 ```
 
-#### 3.2.10、实验九：引入外部属性文件(context:)
+### 3.2.10 实验九：引入外部属性文件(context:)
 
 **①加入依赖**
 
@@ -873,7 +873,7 @@ public void testDataSource() throws SQLException {
 }
 ```
 
-#### 3.2.11、实验十：bean的作用域(scope)
+### 3.2.11 实验十：bean的作用域(scope)
 
 **①概念**
 
@@ -979,7 +979,7 @@ public void testBeanScope(){
 }
 ```
 
-#### 3.2.12、实验十一：bean生命周期(lifecycle)
+### 3.2.12 实验十一：bean生命周期(lifecycle)
 
 **①具体的生命周期过程**
 
@@ -1131,7 +1131,7 @@ public class MyBeanProcessor implements BeanPostProcessor {
 <bean id="myBeanProcessor" class="com.atguigu.spring6.process.MyBeanProcessor"/>
 ```
 
-#### 3.2.13、实验十二：FactoryBean
+### 3.2.13 实验十二：FactoryBean
 
 **①简介**
 
@@ -1326,7 +1326,7 @@ public void testUserFactoryBean(){
 }
 ```
 
-#### 3.2.14、实验十三：基于xml自动装配
+### 3.2.14 实验十三：基于xml自动装配
 
 * 需要借助set方法才可自动状态，如果没有set方法不能自动装备
 * byName bean的id必须与属性名对应，否则无法注入。
@@ -1458,7 +1458,7 @@ public void testAutoWireByXML(){
 }
 ```
 
-### 3.3、基于注解管理Bean（☆）
+## 3.3 基于注解管理Bean（☆）
 
 从 Java 5 开始，Java 增加了对注解（Annotation）的支持，它是代码中的一种特殊标记，可以在编译、类加载和运行时被读取，执行相应的处理。开发人员可以通过注解在不改变原有代码和逻辑的情况下，在源代码中嵌入补充信息。
 
@@ -1471,7 +1471,7 @@ Spring 通过注解实现自动装配的步骤如下：
 3. 使用注解定义 Bean
 4. 依赖注入
 
-#### 3.3.1、搭建子模块spring6-ioc-annotation
+### 3.3.1 搭建子模块spring6-ioc-annotation
 
 **①搭建模块**
 
@@ -1513,7 +1513,7 @@ Spring 通过注解实现自动装配的步骤如下：
 </dependencies>
 ```
 
-#### 3.3.2、开启组件扫描
+### 3.3.2 开启组件扫描
 
 Spring 默认不使用注解装配 Bean，因此我们需要在 Spring 的 XML 配置中，通过 [context:component-scan](context:component-scan) 元素开启 Spring Beans的自动扫描功能。开启此功能后，Spring 会自动从扫描指定的包（base-package 属性设置）及其子包下的所有类，如果类上使用了 @Component 注解，就将该类装配到容器中。
 
@@ -1572,7 +1572,7 @@ Spring 默认不使用注解装配 Bean，因此我们需要在 Spring 的 XML �
 </context:component-scan>
 ```
 
-#### 3.3.3、使用注解定义 Bean
+### 3.3.3 使用注解定义 Bean
 
 Spring 提供了以下多个注解，这些注解可以直接标注在 Java 类上，将它们定义成 Spring Bean。
 
@@ -1583,7 +1583,7 @@ Spring 提供了以下多个注解，这些注解可以直接标注在 Java 类�
 | @Service    | 该注解通常作用在业务层（Service 层），用于将业务层的类标识为 Spring 中的 Bean，其功能与 @Component 相同。 |
 | @Controller | 该注解通常作用在控制层（如SpringMVC 的 Controller），用于将控制层的类标识为 Spring 中的 Bean，其功能与 @Component 相同。 |
 
-#### 3.3.4、实验一：@Autowired注入
+### 3.3.4 实验一：@Autowired注入
 
 单独使用@Autowired注解，**默认根据类型装配**。【默认是byType】
 
@@ -1616,7 +1616,7 @@ public @interface Autowired {
   - 注解上
 - 第二处：该注解有一个required属性，默认值是true，表示在注入的时候要求被注入的Bean必须是存在的，如果不存在则报错。如果required属性设置为false，表示注入的Bean存在或者不存在都没关系，存在的话就注入，不存在的话，也不报错。
 
-##### ①场景一：属性注入
+#### ①场景一：属性注入
 
 创建UserDao接口
 
@@ -1739,7 +1739,7 @@ public class UserTest {
 
 以上构造方法和setter方法都没有提供，经过测试，仍然可以注入成功。
 
-##### ②场景二：set注入
+#### ②场景二：set注入
 
 修改UserServiceImpl类
 
@@ -1798,7 +1798,7 @@ public class UserController {
 
 测试：成功调用
 
-##### ③场景三：构造方法注入
+#### ③场景三：构造方法注入
 
 修改UserServiceImpl类
 
@@ -1857,7 +1857,7 @@ public class UserController {
 
 测试：成功调用
 
-##### ④场景四：形参上注入
+#### ④场景四：形参上注入
 
 修改UserServiceImpl类
 
@@ -1914,7 +1914,7 @@ public class UserController {
 
 测试：成功调用
 
-##### ⑤场景五：只有一个构造函数，无注解
+#### ⑤场景五：只有一个构造函数，无注解
 
 修改UserServiceImpl类
 
@@ -1951,7 +1951,7 @@ public class UserServiceImpl implements UserService {
 
 说明：有多个构造方法时呢？大家可以测试（再添加一个无参构造函数），测试报错
 
-##### ⑥场景六：@Autowired注解和@Qualifier注解联合
+#### ⑥场景六：@Autowired注解和@Qualifier注解联合
 
 添加dao层实现
 
@@ -2008,7 +2008,7 @@ public class UserServiceImpl implements UserService {
 - 当带参数的构造方法只有一个，@Autowired注解可以省略。（）
 - @Autowired注解默认根据类型注入。如果要根据名称注入的话，需要配合@Qualifier注解一起使用。
 
-#### 3.3.5、实验二：@Resource注入
+### 3.3.5 实验二：@Resource注入
 
 @Resource注解也可以完成属性注入。那它和@Autowired注解有什么区别？
 
@@ -2068,7 +2068,7 @@ public @interface Resource {
 }
 ```
 
-##### ①场景一：根据name注入
+#### ①场景一：根据name注入
 
 修改UserDaoImpl类
 
@@ -2116,7 +2116,7 @@ public class UserServiceImpl implements UserService {
 
 测试通过
 
-##### ②场景二：name未知注入
+#### ②场景二：name未知注入
 
 修改UserDaoImpl类
 
@@ -2166,7 +2166,7 @@ public class UserServiceImpl implements UserService {
 
 当@Resource注解使用时没有指定name的时候，还是根据name进行查找，这个name是属性名。
 
-##### ③场景三 其他情况
+#### ③场景三 其他情况
 
 修改UserServiceImpl类，userDao1属性名不存在
 
@@ -2204,7 +2204,7 @@ public class UserServiceImpl implements UserService {
 
 @Resource注解：默认byName注入，没有指定name时把属性名当做name，根据name找不到时，才会byType注入。byType注入时，某种类型的Bean只能有一个
 
-#### 3.3.6、Spring全注解开发
+### 3.3.6 Spring全注解开发
 
 全注解开发就是不再使用spring配置文件了，写一个配置类来代替配置文件。
 

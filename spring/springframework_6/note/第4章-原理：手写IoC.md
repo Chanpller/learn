@@ -171,7 +171,7 @@ public class TestCar {
 }
 ```
 
-### 4.2、实现Spring的IoC
+## 4.2 实现Spring的IoC
 
 我们知道，IoC（控制反转）和DI（依赖注入）是Spring里面核心的东西，那么，我们如何自己手写出这样的代码呢？下面我们就一步一步写出Spring框架最核心的部分。
 
