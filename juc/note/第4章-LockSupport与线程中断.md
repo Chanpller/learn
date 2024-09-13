@@ -36,11 +36,11 @@
     
     * 如果线程处于被阻塞状态比如（sleep、wait、join等状态），在别的线程中调用当前线程对象的interrupt()方法，那么线程将立即退出被阻塞状态，并抛出一个interruptedException异常。所以在调用sleep会抛出interruptedException异常，异常时需要重新调用interrupt()方法，来确保中断标志位是正常的。
     
-      ![image-20240903224819222](D:\IdeaProjects\learn\juc\image\image-20240903224819222.png)
+      ![image-20240903224819222](../image/image-20240903224819222.png)
     
-    ![image-20240903224945317](D:\IdeaProjects\learn\juc\image\image-20240903224945317.png)
+    ![image-20240903224945317](../image/image-20240903224945317.png)
     
-      ![image-20240903225025571](D:\IdeaProjects\learn\juc\image\image-20240903225025571.png)
+      ![image-20240903225025571](../image/image-20240903225025571.png)
   * public static boolean interrupted()
     * 静态方法，Thread.interrupted()判断线程是否被中断并清除当前中断状态。次方法做两件事。1、返回当前线程的中断状态，测试当前线程是否已被中断。2、将当前线程的中断状态清零并重新设置为false，清楚线程的中断状态。
     * 此方法有点不好理解，如果连续两次调用此方法，则第二次调用将返回false，因为连续调用两次的结果可能不一样。

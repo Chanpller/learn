@@ -41,7 +41,7 @@
 
 读屏障(Load Memory Barrier)：处理器在读屏障之后的读操作，都在读屏障之后执行。也就是说在Load屏障指令之后就能够保证后面的读取数据指令一定能够读取到最新的数据。
 
-![image-20240912231536171](D:\IdeaProjects\learn\juc\image\image-20240912231536171.png)
+![image-20240912231536171](../image/image-20240912231536171.png)
 
 因此重排序时，不允许把内存屏障之后的指令重排序到内存屏障之前。一句话：对一个volatile变量的写，先行发生于任意后续对这个volatile变量的读，也叫写后读。
 
@@ -111,11 +111,11 @@ jdk.internal.misc.Unsafe中有loadFence()、 storeFence()、fullFence()三个
 
 对应到jvm底层源码
 
-![image-20240912234228959](D:\IdeaProjects\learn\juc\image\image-20240912234228959.png)
+![image-20240912234228959](../image/image-20240912234228959.png)
 
-![image-20240912234301428](D:\IdeaProjects\learn\juc\image\image-20240912234301428.png)
+![image-20240912234301428](../image/image-20240912234301428.png)
 
-![image-20240912234319874](D:\IdeaProjects\learn\juc\image\image-20240912234319874.png)
+![image-20240912234319874](../image/image-20240912234319874.png)
 
 ### 6.2.4 困难内容
 
@@ -142,11 +142,11 @@ jdk.internal.misc.Unsafe中有loadFence()、 storeFence()、fullFence()三个
 
 - - 读屏障：在每个volatile读操作的**后面**插入一个LoadLoad屏障或者LoadStore屏障
 
-- - - ![img](https://cdn.nlark.com/yuque/0/2023/png/35653686/1681203343902-7e14ea6b-094f-4f89-838a-a8cd0fc48d94.png)
+- - - ![img](../image/1681203343902-7e14ea6b-094f-4f89-838a-a8cd0fc48d94.png)
 
 - - 写屏障：在每个volatile写操作的**前面**插入StoreStore屏障；在每个volatile写操作的**后面**插入StoreLoad屏障；
 
-- - - ![img](https://cdn.nlark.com/yuque/0/2023/png/35653686/1681203485651-b5a20886-997a-43cb-8a30-6f473a59d2f1.png)
+- - - ![img](../image/1681203485651-b5a20886-997a-43cb-8a30-6f473a59d2f1.png)
 
 ## 6.3 volatile特性
 
@@ -194,7 +194,7 @@ public class VolatileSeeDemo {
 
 * volatile变量的读写过程（了解即可）
 
-![image.png](D:\IdeaProjects\learn\juc\image\1681207881381-37c38d15-7c78-486c-9d10-4a4aaa6b4da4.png)
+![image.png](../image/1681207881381-37c38d15-7c78-486c-9d10-4a4aaa6b4da4.png)
 
 
 
@@ -232,15 +232,15 @@ volatile变量的符合操作不具有原子性，比如number++
   * 对于volatile变量，JVM只是保证从主内存加载到线程工作内存的值是最新的，也就是数据加载时是最新的，如果第二个线程在第一个线程读取旧值和写回新值期间读取i的域值，也就造成了线程安全问题。
   * 也就是i++操作时，字节码分3步，先从主内存加载i，然后i再+1，再写回主内存。如果在第二步时，主内存的值被更新了，对其他线程时可见的，那么第二步的操作就无效，会重新从主内存拉去最新值，然后再写回主内存中。
 
-![image.png](D:\IdeaProjects\learn\juc\image\1681275465892-ca223f7f-6078-409a-95fa-02613915ab71.png)
+![image.png](../image/1681275465892-ca223f7f-6078-409a-95fa-02613915ab71.png)
 
 ### 6.3.3 指令禁重排 
 
 案例说明
 
-![image-20240913002855061](D:\IdeaProjects\learn\juc\image\image-20240913002855061.png)
+![image-20240913002855061](../image/image-20240913002855061.png)
 
-![image-20240913002929779](D:\IdeaProjects\learn\juc\image\image-20240913002929779.png)
+![image-20240913002929779](../image/image-20240913002929779.png)
 
 * 在每一个volatile写操作前面插入一个StoreStore屏障--->StoreStore屏障可以保证在volatile写之前，其前面所有的普通写操作都已经刷新到主内存中。
 * 在每一个volatile写操作后面插入一个StoreLoad屏障--->StoreLoad屏障的作用是避免volatile写与后面可能有的volatile读/写操作重排序
@@ -249,11 +249,11 @@ volatile变量的符合操作不具有原子性，比如number++
 
 案例说明（volatile读写前或后加了屏障保证有序性）：
 
-![image.png](D:\IdeaProjects\learn\juc\image\1681277247911-78195672-ffaf-461c-844b-1b58d529c2ff.png)
+![image.png](../image/1681277247911-78195672-ffaf-461c-844b-1b58d529c2ff.png)
 
 
 
-![image.png](https://cdn.nlark.com/yuque/0/2023/png/35653686/1681277282086-36ef04bc-1c91-42a1-acf1-15faa2ef2837.png?x-oss-process=image%2Fformat%2Cwebp%2Fresize%2Cw_937%2Climit_0)
+![image.png](../image/1681277282086-36ef04bc-1c91-42a1-acf1-15faa2ef2837.png)
 
 ## 6.4 如何正确使用volatile 
 
@@ -263,23 +263,23 @@ volatile变量的符合操作不具有原子性，比如number++
 * 状态标志，判断业务是否结束
 * 作为一个布尔状态标志，用于指示发生了一个重要的一次性事件，例如完成初始化或任务结束
 
-![image.png](https://cdn.nlark.com/yuque/0/2023/png/35653686/1681277553116-c8cc74c4-47aa-4398-9262-8dc8b25d917a.png?x-oss-process=image%2Fformat%2Cwebp%2Fresize%2Cw_937%2Climit_0)
+![image.png](../image/1681277553116-c8cc74c4-47aa-4398-9262-8dc8b25d917a.png)
 
 * 开销较低的读，写锁策略
   * 当读远多于写，结合使用内部锁和volatile变量来减少同步的开销
   * 原理是：利用volatile保证读操作的可见性，利用synchronized保证符合操作的原子性
 
-![image.png](https://cdn.nlark.com/yuque/0/2023/png/35653686/1681277613302-5adef887-27ed-449c-bd88-0e4f4e6b56bf.png?x-oss-process=image%2Fformat%2Cwebp%2Fresize%2Cw_937%2Climit_0)
+![image.png](../image/1681277613302-5adef887-27ed-449c-bd88-0e4f4e6b56bf.png)
 
 * DCL双端锁的发布
   * 问题描述：首先设定一个加锁的单例模式场景
-  * ![](D:\IdeaProjects\learn\juc\image\1681277769628-287b69ba-cc2f-4a20-b193-d255570d5dfa.png)
+  * ![](../image/1681277769628-287b69ba-cc2f-4a20-b193-d255570d5dfa.png)
   * 在单线程环境下（或者说正常情况下），在“问题代码处”，会执行以下操作，保证能获取到已完成初始化的实例：
-  * ![image.png](D:\IdeaProjects\learn\juc\image\1681277858260-07127c5a-8bb5-4af3-a253-149085d4b849.png)
+  * ![image.png](../image/1681277858260-07127c5a-8bb5-4af3-a253-149085d4b849.png)
   * 隐患：在多线程环境下，在“问题代码处”，会执行以下操作，由于重排序导致2，3乱序，后果就是其他线程得到的是null而不是完成初始化的对象，其中第3步中实例化分多步执行（分配内存空间、初始化对象、将对象指向分配的内存空间），某些编译器为了性能原因，会将第二步和第三步重排序，这样某个线程肯能会获得一个未完全初始化的实例：
-  * ![image.png](D:\IdeaProjects\learn\juc\image\1681277949781-4b436fdd-4cac-43b9-9089-0dfa91f4d812.png)
+  * ![image.png](../image/1681277949781-4b436fdd-4cac-43b9-9089-0dfa91f4d812.png)
   * 多线程下的解决方案：加volatile修饰
-  * ![image.png](D:\IdeaProjects\learn\juc\image\1681278158734-fe21f869-71b1-4b80-a457-011b7b1832b0.png)
+  * ![image.png](../image/1681278158734-fe21f869-71b1-4b80-a457-011b7b1832b0.png)
 
 ## 6.5  本章最后的小总结 
 
@@ -295,15 +295,15 @@ volatile变量的符合操作不具有原子性，比如number++
 
 ### 6.5.3 volatile禁重排 
 
-![image.png](D:\IdeaProjects\learn\juc\image\1681278663255-cf8b4fec-7ef4-4fc5-a9b4-5e517b7a9a6e.png)
+![image.png](../image/1681278663255-cf8b4fec-7ef4-4fc5-a9b4-5e517b7a9a6e.png)
 
 
 
-![image.png](D:\IdeaProjects\learn\juc\image\1681278816338-75242ddd-9ac6-412d-9437-b5b62b147311.png)
+![image.png](../image/1681278816338-75242ddd-9ac6-412d-9437-b5b62b147311.png)
 
 ### 6.5.4 凭什么我们Java写了一个volatile关键字，系统底层加入内存屏障？两者的关系如何勾搭？ 
 
-![image.png](https://cdn.nlark.com/yuque/0/2023/png/35653686/1681278867074-b0a21e10-d868-4dd1-a7d2-536d2b2010a0.png?x-oss-process=image%2Fformat%2Cwebp%2Fresize%2Cw_937%2Climit_0)
+![image.png](../image/1681278867074-b0a21e10-d868-4dd1-a7d2-536d2b2010a0.png)
 
 ### 6.5.5 内存屏障是什么？ 
 
@@ -319,7 +319,7 @@ volatile变量的符合操作不具有原子性，比如number++
 
 ### 6.5.7 内存屏障四大指令 
 
-![image.png](D:\IdeaProjects\learn\juc\image\1681279106353-e2d0f17f-32e0-41d3-b1af-4eeaa4016f6b.png)
+![image.png](../image/1681279106353-e2d0f17f-32e0-41d3-b1af-4eeaa4016f6b.png)
 
 ### 6.5.8 3句话总结 
 
