@@ -13,10 +13,10 @@ IoC 容器是 Spring 框架中最重要的核心组件之一，它贯穿了 Spri
 - 控制反转是一种思想。
 - 控制反转是为了降低程序耦合度，提高程序扩展力。
 - 控制反转，反转的是什么？
-- - 将对象的创建权利交出去，交给第三方容器负责。
+  - 将对象的创建权利交出去，交给第三方容器负责。
   - 将对象和对象之间关系的维护权交出去，交给第三方容器负责。
 - 控制反转这种思想如何实现呢？
-- - DI（Dependency Injection）：依赖注入
+  - DI（Dependency Injection）：依赖注入
 
 ### 3.1.2 依赖注入
 
@@ -49,9 +49,7 @@ BeanFactory 的子接口，提供了更多高级特性。面向 Spring 的使用
 
 **③ApplicationContext的主要实现类**
 
-![iamges](https://oss.lixiaoxu.cn/halo/img005.png)
-
-![image-20240826230924245](D:\IdeaProjects\learn\spring\springframework\image\image-20240826230924245.png)
+![iamges](../image/img005.png)
 
 | 类型名                          | 简介                                                         |
 | ------------------------------- | ------------------------------------------------------------ |
@@ -820,7 +818,7 @@ public void setTeacherMap(Map<String, Teacher> teacherMap) {
 
 **②创建外部属性文件**
 
-![images](https://oss.lixiaoxu.cn/halo/img010.png)
+![images](../image/img010.png)
 
 ```properties
 jdbc.user=root
@@ -1609,7 +1607,7 @@ public @interface Autowired {
 源码中有两处需要注意：
 
 - 第一处：该注解可以标注在哪里？
-- - 构造方法上
+  - 构造方法上
   - 方法上
   - 形参上
   - 属性上
@@ -1735,7 +1733,7 @@ public class UserTest {
 
 测试结果：
 
-![image-20221101153556681](https://oss.lixiaoxu.cn/halo/image-20221101153556681.png)
+![image-20221101153556681](../image/image-20221101153556681.png)
 
 以上构造方法和setter方法都没有提供，经过测试，仍然可以注入成功。
 
@@ -2012,7 +2010,7 @@ public class UserServiceImpl implements UserService {
 
 @Resource注解也可以完成属性注入。那它和@Autowired注解有什么区别？
 
-- @Resource注解是JDK扩展包中的，也就是说属于JDK的一部分。所以该注解是标准注解，更加具有通用性。(JSR-250标准中制定的注解类型。JSR是Java规范提案。)
+- @Resource注解是JDK扩展包中的，也就是说属于JDK的一部分。所以该注解是标准注解，更加具有通用性。(JSR-250标准中制定的注解类型。JSR是Java规范提案。)，在spring中是spring自己实现的。
 - @Autowired注解是Spring框架自己的。
 - **@Resource注解默认根据名称装配byName，未指定name时，使用属性名作为name。通过name找不到的话会自动启动通过类型byType装配。**
 - **@Autowired注解默认根据类型装配byType，如果想根据名称装配，需要配合@Qualifier注解一起用。**
