@@ -24,7 +24,7 @@ public interface Calculator {
 
 ### 5.1.2 创建实现类
 
-![images](https://oss.lixiaoxu.cn/halo/img014.png)
+![images](../image/img014.png)
 
 ```java
 public class CalculatorImpl implements Calculator {
@@ -73,7 +73,7 @@ public class CalculatorImpl implements Calculator {
 
 ### 5.1.3 创建带日志功能的实现类
 
-![images](https://oss.lixiaoxu.cn/halo/img015.png)
+![images](../image/img015.png)
 
 ```java
 public class CalculatorLogImpl implements Calculator {
@@ -161,11 +161,11 @@ public class CalculatorLogImpl implements Calculator {
 
 二十三种设计模式中的一种，属于结构型模式。它的作用就是通过提供一个代理类，让我们在调用目标方法的时候，不再是直接对目标方法进行调用，而是通过代理类**间接**调用。让不属于目标方法核心逻辑的代码从目标方法中剥离出来——**解耦**。调用目标方法时先调用代理对象的方法，减少对目标方法的调用和打扰，同时让附加功能能够集中在一起也有利于统一维护。
 
-![images](https://oss.lixiaoxu.cn/halo/img016.png)
+![images](../image/img016.png)
 
 使用代理后：
 
-![images](https://oss.lixiaoxu.cn/halo/img017.png)
+![images](../image/img017.png)
 
 **②生活中的代理**
 
@@ -214,7 +214,7 @@ public class CalculatorStaticProxy implements Calculator {
 
 ### 5.2.3 动态代理
 
-![images](https://oss.lixiaoxu.cn/halo/img018.png)
+![images](../image/img018.png)
 
 生产代理对象的工厂类：
 
@@ -294,7 +294,7 @@ AOP（Aspect Oriented Programming）是一种设计思想，是软件设计领�
 
 这个概念不是语法层面的，而是根据附加功能的逻辑上的需要：有十个附加功能，就有十个横切关注点。
 
-![images](https://oss.lixiaoxu.cn/halo/img019.png)
+![images](../image/img019.png)
 
 #### ②通知（增强）
 
@@ -308,13 +308,13 @@ AOP（Aspect Oriented Programming）是一种设计思想，是软件设计领�
 - 后置通知：在被代理的目标方法**最终结束**后执行（**盖棺定论**）
 - 环绕通知：使用try…catch…finally结构围绕**整个**被代理的目标方法，包括上面四种通知对应的所有位置
 
-![images](https://oss.lixiaoxu.cn/halo/img020.png)
+![images](../image/img020.png)
 
 #### ③切面
 
 封装通知方法的类。
 
-![images](https://oss.lixiaoxu.cn/halo/img021.png)
+![images](../image/img021.png)
 
 #### ④目标
 
@@ -330,7 +330,7 @@ AOP（Aspect Oriented Programming）是一种设计思想，是软件设计领�
 
 把方法排成一排，每一个横切位置看成x轴方向，把方法从上到下执行的顺序看成y轴，x轴和y轴的交叉点就是连接点。**通俗说，就是spring允许你使用通知的地方**
 
-![images](https://oss.lixiaoxu.cn/halo/img022.png)
+![images](../image/img022.png)
 
 #### ⑦切入点
 
@@ -353,9 +353,9 @@ AOP（Aspect Oriented Programming）是一种设计思想，是软件设计领�
 
 ### 5.4.1 技术说明
 
-![images](https://oss.lixiaoxu.cn/halo/img023.png)
+![images](../image/img023.png)
 
-![image-20221216132844066](https://oss.lixiaoxu.cn/halo/image-20221216132844066.png)
+![image-20221216132844066](../image/image-20221216132844066.png)
 
 - 动态代理分为JDK动态代理和cglib动态代理
 - 当目标类有接口的情况使用JDK动态代理和cglib动态代理，没有接口时只能使用cglib动态代理
@@ -610,7 +610,7 @@ public class CalculatorTest {
 
 **①作用**
 
-![images](https://oss.lixiaoxu.cn/halo/img024.png)
+![images](../image/img024.png)
 
 **②语法细节**
 
@@ -636,6 +636,8 @@ public class CalculatorTest {
 
 ### 5.4.6 重用切入点表达式
 
+* 重复使用切入点表达式
+
 **①声明**
 
 ```java
@@ -645,23 +647,36 @@ public void pointCut(){}
 
 **②在同一个切面中使用**
 
+* 在同一个切面类中使用
+
 ```java
-@Before("pointCut()")
-public void beforeMethod(JoinPoint joinPoint){
-    String methodName = joinPoint.getSignature().getName();
-    String args = Arrays.toString(joinPoint.getArgs());
-    System.out.println("Logger-->前置通知，方法名："+methodName+"，参数："+args);
-}
+    @Pointcut("execution(* com.chanpller.springframework_6.chapter5.CalculatorImpl.*(..))")
+    public void pointCut(){}
+
+    @Before("pointCut()")
+    public void beforeMethodPointCut(JoinPoint joinPoint){
+        String methodName = joinPoint.getSignature().getName();
+        String args = Arrays.toString(joinPoint.getArgs());
+        System.out.println("Logger-->重用切入点前置通知，方法名："+methodName+"，参数："+args);
+    }
 ```
 
 **③在不同切面中使用**
 
+* 在不同切面类中使用
+
 ```java
-@Before("com.atguigu.aop.CommonPointCut.pointCut()")
-public void beforeMethod(JoinPoint joinPoint){
-    String methodName = joinPoint.getSignature().getName();
-    String args = Arrays.toString(joinPoint.getArgs());
-    System.out.println("Logger-->前置通知，方法名："+methodName+"，参数："+args);
+// @Aspect表示这个类是一个切面类
+@Aspect
+// @Component注解保证这个切面类能够放入IOC容器
+@Component
+public class LogAspect2 {
+    @Before("com.chanpller.springframework_6.chapter5.LogAspect.pointCut()")
+    public void beforeMethodPointCut(JoinPoint joinPoint){
+        String methodName = joinPoint.getSignature().getName();
+        String args = Arrays.toString(joinPoint.getArgs());
+        System.out.println("Logger-->重用切入点前置通知，方法名："+methodName+"，参数："+args);
+    }
 }
 ```
 
@@ -741,7 +756,7 @@ public Object aroundMethod(ProceedingJoinPoint joinPoint){
 - @Order(较小的数)：优先级高
 - @Order(较大的数)：优先级低
 
-![images](https://oss.lixiaoxu.cn/halo/img026.png)
+![images](../image/img026.png)
 
 ## 5.5 基于XML的AOP
 
@@ -767,8 +782,3 @@ public Object aroundMethod(ProceedingJoinPoint joinPoint){
     </aop:aspect>
 </aop:config>
 ```
-
-[7](javascript:;)
-
-[
-  ](https://lixx.cn/archives/spring6-6)
