@@ -800,9 +800,9 @@ set REPOSITORY_PATH=D:\repository  改成你本地仓库地址即可！
 2. 通用模块 (common-service)
     1. 创建模块
 
-        ![img](F:\spring6_springboot3_ssm\image\1-18.png)
+        ![img](../image/1-18.png)
 
-        ![img](F:\spring6_springboot3_ssm\image\1-19.png)
+        ![img](../image/1-19.png)
     2. pom.xml配置
 
 ```XML
@@ -839,9 +839,9 @@ set REPOSITORY_PATH=D:\repository  改成你本地仓库地址即可！
 3. 用户模块 (user-service)
     1. 创建模块
 
-        ![img](F:\spring6_springboot3_ssm\image\1-20.png)
+        ![img](../image/1-20.png)
 
-        ![img](F:\spring6_springboot3_ssm\image\1-21.png)
+        ![img](../image/1-21.png)
     2. pom.xml配置
 
 ```XML
@@ -882,9 +882,9 @@ set REPOSITORY_PATH=D:\repository  改成你本地仓库地址即可！
 4. 订单模块 (order-service)
     1. 创建模块
 
-        ![img](F:\spring6_springboot3_ssm\image\1-22.png)
+        ![img](../image/1-22.png)
 
-        ![img](F:\spring6_springboot3_ssm\image\1-23.png)
+        ![img](../image/1-23.png)
     2. pom.xml
 
 ```XML
