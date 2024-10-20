@@ -583,7 +583,7 @@ public class CalculatorTest {
 
 执行结果：
 
-![image-20221102155523983](https://oss.lixiaoxu.cn/halo/image-20221102155523983.png)
+![image-20221102155523983](../image/image-20221102155523983.png)
 
 ### 5.4.4 各种通知
 
@@ -632,7 +632,7 @@ public class CalculatorTest {
   - 例如：execution(public int *…\*Service.\*(…, int)) 正确
     例如：execution(* int *…*Service.*(…, int)) 错误
 
-![images](https://oss.lixiaoxu.cn/halo/img025.png)
+![images](../image/img025.png)
 
 ### 5.4.6 重用切入点表达式
 

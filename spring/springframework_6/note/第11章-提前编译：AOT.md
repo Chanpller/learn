@@ -1,6 +1,6 @@
 # 第11章-提前编译：AOT
 
-![image-20221218154841001](https://oss.lixiaoxu.cn/halo/image-20221218154841001.png)
+![image-20221218154841001](../image/image-20221218154841001.png)
 
 ### 11.1、AOT概述
 
@@ -23,7 +23,7 @@ AOT 编译能直接将源代码转化为机器码，内存占用低，启动速�
 Copy
 ```
 
-![image-20221207113544080](https://oss.lixiaoxu.cn/halo/image-20221207113544080.png)
+![image-20221207113544080](../image/image-20221207113544080.png)
 
 **（3）AOT的优点**
 
@@ -71,33 +71,35 @@ Native Image 是一项创新技术，可将 Java 代码编译成独立的本机�
 
 进入官网下载：https://www.graalvm.org/downloads/
 
-![image-20221207153944132](https://oss.lixiaoxu.cn/halo/image-20221207153944132.png)
+或者：https://www.oracle.com/java/technologies/javase/graalvm-jdk17-archive-downloads.html
 
-![image-20221207152841304](https://oss.lixiaoxu.cn/halo/image-20221207152841304.png)
+![image-20221207153944132](../image/image-20221207153944132.png)
+
+![image-20221207152841304](../image/image-20221207152841304.png)
 
 ##### （2）配置环境变量
 
 **添加GRAALVM_HOME**
 
-![image-20221207110539954](https://oss.lixiaoxu.cn/halo/image-20221207110539954.png)
+![image-20221207110539954](../image/image-20221207110539954.png)
 
 **把JAVA_HOME修改为graalvm的位置**
 
-![image-20221207153724340](https://oss.lixiaoxu.cn/halo/image-20221207153724340.png)
+![image-20221207153724340](../image/image-20221207153724340.png)
 
 **把Path修改位graalvm的bin位置**
 
-![image-20221207153755732](https://oss.lixiaoxu.cn/halo/image-20221207153755732.png)
+![image-20221207153755732](../image/image-20221207153755732.png)
 
 **使用命令查看是否安装成功**
 
-![image-20221207153642253](https://oss.lixiaoxu.cn/halo/image-20221207153642253.png)
+![image-20221207153642253](../image/image-20221207153642253.png)
 
 ##### （3）安装native-image插件
 
 **使用命令 gu install native-image下载安装**
 
-![image-20221207155009832](https://oss.lixiaoxu.cn/halo/image-20221207155009832.png)
+![image-20221207155009832](../image/image-20221207155009832.png)
 
 #### 11.2.2、安装C++的编译环境
 
@@ -105,27 +107,41 @@ Native Image 是一项创新技术，可将 Java 代码编译成独立的本机�
 
 https://visualstudio.microsoft.com/zh-hans/downloads/
 
-![image-20221219112426052](https://oss.lixiaoxu.cn/halo/image-20221219112426052.png)
+![image-20221219112426052](../image/image-20221219112426052.png)
 
 ##### （2）安装Visual Studio
 
-![image-20221207155726572](https://oss.lixiaoxu.cn/halo/image-20221207155726572.png)
+![image-20221207155726572](../image/image-20221207155726572.png)
 
-![image-20221207155756512](https://oss.lixiaoxu.cn/halo/image-20221207155756512.png)
+![image-20221207155756512](../image/image-20221207155756512.png)
 
 ##### （3）添加Visual Studio环境变量
 
 配置INCLUDE、LIB和Path
 
-![image-20221207110947997](https://oss.lixiaoxu.cn/halo/image-20221207110947997.png)
+* C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.41.34120\include
+* C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\cppwinr
+* C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\shared
+* C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\ucrt
+* C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\um
+* C:\Program Files (x86)\Windows Kits\10\Include\10.0.22621.0\winrt
 
-![image-20221207111012582](https://oss.lixiaoxu.cn/halo/image-20221207111012582.png)
+![image-20221207110947997](../image/image-20221207110947997.png)
 
-![image-20221207111105569](https://oss.lixiaoxu.cn/halo/image-20221207111105569.png)
+* C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.41.34120\lib\x64
+* C:\Program Files (x86)\Windows Kits\10\Lib\10.0.22621.0\um\x64
+* C:\Program Files (x86)\Windows Kits\10\Lib\10.0.22621.0\ucrt\x64
+* C:\Program Files (x86)\Windows Kits\10\Lib\10.0.22621.0\ucrt_enclave\x64
+
+![image-20221207111012582](../image/image-20221207111012582.png)
+
+* C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.41.34120\bin\Hostx64\x64
+
+![image-20221207111105569](../image/image-20221207111105569.png)
 
 ##### （4）打开工具，在工具中操作
 
-![image-20221207111206279](https://oss.lixiaoxu.cn/halo/image-20221207111206279.png)
+![image-20221207111206279](../image/image-20221207111206279.png)
 
 #### 11.2.3、编写代码，构建Native Image
 
@@ -142,26 +158,26 @@ public class Hello {
 
 ##### （2）复制文件到目录，执行编译
 
-![image-20221207111420056](https://oss.lixiaoxu.cn/halo/image-20221207111420056.png)
+![image-20221207111420056](../image/image-20221207111420056.png)
 
 ##### （3）Native Image 进行构建
 
-![image-20221207111509837](https://oss.lixiaoxu.cn/halo/image-20221207111509837.png)
+![image-20221207111509837](../image/image-20221207111509837.png)
 
-![image-20221207111609878](https://oss.lixiaoxu.cn/halo/image-20221207111609878.png)
+![image-20221207111609878](../image/image-20221207111609878.png)
 
 ##### （4）查看构建的文件
 
-![image-20221207111644950](https://oss.lixiaoxu.cn/halo/image-20221207111644950.png)
+![image-20221207111644950](../image/image-20221207111644950.png)
 
 ##### （5）执行构建的文件
 
-![image-20221207111731150](https://oss.lixiaoxu.cn/halo/image-20221207111731150.png)
+![image-20221207111731150](../image/image-20221207111731150.png)
 
 可以看到这个Hello最终打包产出的二进制文件大小为11M，这是包含了SVM和JDK各种库后的大小，虽然相比C/C++的二进制文件来说体积偏大，但是对比完整JVM来说，可以说是已经是非常小了。
 
 相比于使用JVM运行，Native Image的速度要快上不少，cpu占用也更低一些，从官方提供的各类实验数据也可以看出Native Image对于启动速度和内存占用带来的提升是非常显著的：
 
-![image-20221207111947283](https://oss.lixiaoxu.cn/halo/image-20221207111947283.png)
+![image-20221207111947283](../image/image-20221207111947283.png)
 
-![image-20221207112009852](https://oss.lixiaoxu.cn/halo/image-20221207112009852.png)
+![image-20221207112009852](../image/image-20221207112009852.png)

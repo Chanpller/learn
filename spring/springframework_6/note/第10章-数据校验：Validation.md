@@ -1,28 +1,29 @@
 # 第10章-数据校验：Validation
 
-![image-20221218154808754](https://oss.lixiaoxu.cn/halo/image-20221218154808754.png)
+![image-20221218154808754](../image/image-20221218154808754.png)
 
 ### 10.1、Spring Validation概述
 
-![image-20221206220207266](https://oss.lixiaoxu.cn/halo/image-20221206220207266.png)
+![image-20221206220207266](../image/image-20221206220207266.png)
 
-在开发中，我们经常遇到参数校验的需求，比如用户注册的时候，要校验用户名不能为空、用户名长度不超过20个字符、手机号是合法的手机号格式等等。如果使用普通方式，我们会把校验的代码和真正的业务处理逻辑耦合在一起，而且如果未来要新增一种校验逻辑也需要在修改多个地方。而spring validation允许通过注解的方式来定义对象校验规则，把校验和业务逻辑分离开，让代码编写更加方便。Spring Validation其实就是对Hibernate Validator进一步的封装，方便在Spring中使用。
+* 在开发中，我们经常遇到参数校验的需求，比如用户注册的时候，要校验用户名不能为空、用户名长度不超过20个字符、手机号是合法的手机号格式等等。
+
+* 如果使用普通方式，我们会把校验的代码和真正的业务处理逻辑耦合在一起，而且如果未来要新增一种校验逻辑也需要在修改多个地方。而spring validation允许通过注解的方式来定义对象校验规则，把校验和业务逻辑分离开，让代码编写更加方便。
+* Spring Validation其实就是对Hibernate Validator进一步的封装，方便在Spring中使用。
 
 在Spring中有多种校验的方式
 
-**第一种是通过实现org.springframework.validation.Validator接口，然后在代码中调用这个类**
+- **第一种是通过实现org.springframework.validation.Validator接口，然后在代码中调用这个类**
+- **第二种是按照Bean Validation方式来进行校验，即通过注解的方式。**
 
-**第二种是按照Bean Validation方式来进行校验，即通过注解的方式。**
-
-**第三种是基于方法实现校验**
-
-**除此之外，还可以实现自定义校验**
+- **第三种是基于方法实现校验**
+- **除此之外，还可以实现自定义校验**
 
 ### 10.2、实验一：通过Validator接口实现
 
 **第一步 创建子模块 spring6-validator**
 
-![image-20221206221002615](https://oss.lixiaoxu.cn/halo/image-20221206221002615.png)
+![image-20221206221002615](../image/image-20221206221002615.png)
 
 **第二步 引入相关依赖**
 
