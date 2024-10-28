@@ -3761,6 +3761,7 @@ spring aop 重点是配置  ，实现是是 jdk|cglib的动态代理
 
 
   1. JointPoint接口
+
     需要获取方法签名、传入的实参等信息时，可以在通知方法声明JoinPoint类型的形参。
       - 要点1：JoinPoint 接口通过 getSignature() 方法获取目标方法的签名（方法声明时的完整信息）
     - 要点2：通过目标方法签名对象获取方法名
@@ -3800,6 +3801,7 @@ public void printLogBeforeCore(JoinPoint joinPoint) {
 ```
 
   2. 方法返回值
+
     在返回通知中，通过@AfterReturning注解的returning属性获取目标方法的返回值！
 
 ```Java
@@ -3820,6 +3822,7 @@ public void printLogAfterCoreSuccess(JoinPoint joinPoint, Object targetMethodRet
 ```
 
   3. 异常对象捕捉
+
     在异常通知中，通过@AfterThrowing注解的throwing属性获取目标方法抛出的异常对象
 
 ```Java
@@ -3983,7 +3986,7 @@ public Object roundAdvice(ProceedingJoinPoint joinPoint) {
 ```
 
   4. 切点统一管理
-    
+        
       建议：将切点表达式统一存储到一个类中进行集中管理和维护！
 
 ```Java
@@ -4209,10 +4212,10 @@ public class AopTest {
       - bean 对应的类没有实现任何接口
       - 根据 bean 本身的类型获取 bean
           - 测试：IOC容器中同类型的 bean 只有一个
-        
+          
               正常获取到 IOC 容器中的那个 bean 对象
           - 测试：IOC 容器中同类型的 bean 有多个
-        
+          
               会抛出 NoUniqueBeanDefinitionException 异常，表示 IOC 容器中这个类型的 bean 有多个
           
       
@@ -4283,15 +4286,15 @@ public class AopTest {
 
 如果使用AOP技术，目标类有接口，必须使用接口类型接收IoC容器中代理组件！
 
-## 六、Spring 声明式事务
+## 2.6 Spring 声明式事务
 
-  ### 6.1 声明式事务概念
+  ### 2.6.1 声明式事务概念
 
-    #### 6.1.1 编程式事务
+#### 2.6.1.1 编程式事务
 
-​      编程式事务是指手动编写程序来管理事务，即通过编写代码的方式直接控制事务的提交和回滚。在 Java 中，通常使用事务管理器(如 Spring 中的 `PlatformTransactionManager`)来实现编程式事务。
-​    
-​      编程式事务的主要优点是灵活性高，可以按照自己的需求来控制事务的粒度、模式等等。但是，编写大量的事务控制代码容易出现问题，对代码的可读性和可维护性有一定影响。
+​	编程式事务是指手动编写程序来管理事务，即通过编写代码的方式直接控制事务的提交和回滚。在 Java 中，通常使用事务管理器(如 Spring 中的 `PlatformTransactionManager`)来实现编程式事务。
+
+​	编程式事务的主要优点是灵活性高，可以按照自己的需求来控制事务的粒度、模式等等。但是，编写大量的事务控制代码容易出现问题，对代码的可读性和可维护性有一定影响。
 
 ```Java
 Connection conn = ...;
@@ -4317,50 +4320,72 @@ try {
 }
 ```
 
-​      编程式的实现方式存在缺陷：
-​    
-​      - 细节没有被屏蔽：具体操作过程中，所有细节都需要程序员自己来完成，比较繁琐。
-​            - 代码复用性不高：如果没有有效抽取出来，每次实现功能都需要自己编写代码，代码就没有得到复用。
+编程式的实现方式存在缺陷：
 
-    #### 6.1.2 声明式事务
+- 细节没有被屏蔽：具体操作过程中，所有细节都需要程序员自己来完成，比较繁琐。
+- 代码复用性不高：如果没有有效抽取出来，每次实现功能都需要自己编写代码，代码就没有得到复用。
 
-​      声明式事务是指使用注解或 XML 配置的方式来控制事务的提交和回滚。
-​    
-​      开发者只需要添加配置即可， 具体事务的实现由第三方框架实现，避免我们直接进行事务操作！
-​    
-​      使用声明式事务可以将事务的控制和业务逻辑分离开来，提高代码的可读性和可维护性。
-​    
-​      区别：
-​    
-​      - 编程式事务需要手动编写代码来管理事务
-​            - 而声明式事务可以通过配置文件或注解来控制事务。
+#### 2.6.1.2 声明式事务
 
-    #### 6.1.3 Spring事务管理器
-      1. Spring声明式事务对应依赖
-          - spring-tx: 包含声明式事务实现的基本规范（事务管理器规范接口和事务增强等等）
-          - spring-jdbc: 包含DataSource方式事务管理器实现类DataSourceTransactionManager
-          - spring-orm: 包含其他持久层框架的事务管理器实现类例如：Hibernate/Jpa等
-            2. Spring声明式事务对应事务管理器接口
+声明式事务是指使用注解或 XML 配置的方式来控制事务的提交和回滚。
 
+开发者只需要添加配置即可， 具体事务的实现由第三方框架实现，避免我们直接进行事务操作！
 
-​          
+使用声明式事务可以将事务的控制和业务逻辑分离开来，提高代码的可读性和可维护性。
 
-    ![](https://secure2.wostatic.cn/static/cTpSy6E9Vzq4H8i1x7MLEf/image.png)
-              
-    我们现在要使用的事务管理器是org.springframework.jdbc.datasource.DataSourceTransactionManager，将来整合 JDBC方式、JdbcTemplate方式、Mybatis方式的事务实现！
-              
-    DataSourceTransactionManager类中的主要方法：
-              
-          - doBegin()：开启事务
-          - doSuspend()：挂起事务
-          - doResume()：恢复挂起的事务
-          - doCommit()：提交事务
-          - doRollback()：回滚事务
+区别：
 
-  ### 6.2 基于注解的声明式事务
+* 编程式事务需要手动编写代码来管理事务
 
-    #### 6.2.1 准备工作
-      1. 准备项目
+- 而声明式事务可以通过配置文件或注解来控制事务。
+
+#### 2.6.1.3 Spring事务管理器
+  1. Spring声明式事务对应依赖
+      - spring-tx: 包含声明式事务实现的基本规范（事务管理器规范接口和事务增强等等）
+      - spring-jdbc: 包含DataSource方式事务管理器实现类DataSourceTransactionManager
+      - spring-orm: 包含其他持久层框架的事务管理器实现类例如：Hibernate/Jpa等
+  2. Spring声明式事务对应事务管理器接口 
+
+![img](../image/2-45.png)
+我们现在要使用的事务管理器是org.springframework.jdbc.datasource.DataSourceTransactionManager，将来整合 JDBC方式、JdbcTemplate方式、Mybatis方式的事务实现！
+
+DataSourceTransactionManager类中的主要方法：
+
+   - doBegin()：开启事务
+   - doSuspend()：挂起事务
+   - doResume()：恢复挂起的事务
+   - doCommit()：提交事务
+      - doRollback()：回滚事务
+
+PlatformTransactionManager事务管理器是一个接口，提供了事务获取事务，提交事务，回滚事务的方法，下面根据不同的实现（比如jdbcTemplate,Hibernate等），提供不同的事务管理类。
+
+TransactionManager实际没有任何代码，只是spring5.2加入的一个规范。提供方法的实际是PlatformTransactionManager接口。
+
+```java
+package org.springframework.transaction;
+
+import org.springframework.lang.Nullable;
+
+public interface PlatformTransactionManager extends TransactionManager {
+    TransactionStatus getTransaction(@Nullable TransactionDefinition definition) throws TransactionException;
+
+    void commit(TransactionStatus status) throws TransactionException;
+
+    void rollback(TransactionStatus status) throws TransactionException;
+}
+```
+
+```java
+package org.springframework.transaction;
+
+public interface TransactionManager {
+}
+```
+
+  ### 2.6.2 基于注解的声明式事务
+
+#### 2.6.2.1 准备工作
+  1. 准备项目
 
 ```XML
 <dependencies>
@@ -4435,9 +4460,9 @@ try {
 </dependencies>
 ```
 
-      2. 外部配置文件
-        
-          jdbc.properties
+  2. 外部配置文件
+    
+      jdbc.properties
 
 ```.properties
 atguigu.url=jdbc:mysql://localhost:3306/studb
@@ -4446,7 +4471,7 @@ atguigu.username=root
 atguigu.password=root
 ```
 
-      3. spring配置文件
+3. spring配置文件
 
 ```Java
 @Configuration
@@ -4489,9 +4514,8 @@ public class JavaConfig {
 
 ```
 
-      4. 准备dao/service层
-        
-          dao
+  4. 准备dao/service层
+    dao
 
 ```Java
 @Repository
@@ -4513,7 +4537,7 @@ public class StudentDao {
 
 ```
 
-​          service
+service
 
 ```Java
 @Service
@@ -4531,7 +4555,7 @@ public class StudentService {
 
 ```
 
-      5. 测试环境搭建
+5. 测试环境搭建
 
 ```Java
 /
@@ -4553,10 +4577,10 @@ public class TxTest {
 
 ```
 
-    #### 6.2.2 基本事务控制
-      1. 配置事务管理器
-        
-          数据库相关的配置
+#### 2.6.2.2 基本事务控制
+  1. 配置事务管理器
+    
+      数据库相关的配置
 
 ```Java
 /
@@ -4619,7 +4643,7 @@ public class DataSourceConfig {
 
 ```
 
-      2. 使用声明事务注解@Transactional
+2. 使用声明事务注解@Transactional
 
 ```Java
 /
@@ -4643,7 +4667,7 @@ public class StudentService {
 
 ```
 
-      3. 测试事务效果
+3. 测试事务效果
 
 ```Java
 /
@@ -4666,33 +4690,34 @@ public class TxTest {
 
 ```
 
-    #### 6.2.3 事务属性：只读
-      1. 只读介绍
-        
-          对一个查询操作来说，如果我们把它设置成只读，就能够明确告诉数据库，这个操作不涉及写操作。这样数据库就能够针对查询操作来进行优化。
-            2. 设置方式
+#### 2.6.2.3 事务属性：只读
+  1. 只读介绍
+    
+      对一个查询操作来说，如果我们把它设置成只读，就能够明确告诉数据库，这个操作不涉及写操作。这样数据库就能够针对查询操作来进行优化。
+
+2. 设置方式
 
 ```Java
 // readOnly = true把当前事务设置为只读 默认是false!
 @Transactional(readOnly = true)
 ```
 
-      3. 针对DML动作设置只读模式
-        
-          会抛出下面异常：
-        
-          Caused by: java.sql.SQLException: Connection is read-only. Queries leading to data modification are not allowed
-            4. @Transactional注解放在类上
-          1. 生效原则
-       
-              如果一个类中每一个方法上都使用了 @Transactional 注解，那么就可以将 @Transactional 注解提取到类上。反过来说：@Transactional 注解在类级别标记，会影响到类中的每一个方法。同时，类级别标记的 @Transactional 注解中设置的事务属性也会延续影响到方法执行时的事务属性。除非在方法上又设置了 @Transactional 注解。
-        
-              对一个方法来说，离它最近的 @Transactional 注解中的事务属性设置生效。
-          2. 用法举例
-       
-              在类级别@Transactional注解中设置只读，这样类中所有的查询方法都不需要设置@Transactional注解了。因为对查询操作来说，其他属性通常不需要设置，所以使用公共设置即可。
-        
-              然后在这个基础上，对增删改方法设置@Transactional注解 readOnly 属性为 false。
+  3. 针对DML动作设置只读模式
+    
+      会抛出下面异常：Caused by: java.sql.SQLException: Connection is read-only. Queries leading to data modification are not allowed
+    
+  4. @Transactional注解放在类上
+      1. 生效原则
+         
+          如果一个类中每一个方法上都使用了 @Transactional 注解，那么就可以将 @Transactional 注解提取到类上。反过来说：@Transactional 注解在类级别标记，会影响到类中的每一个方法。同时，类级别标记的 @Transactional 注解中设置的事务属性也会延续影响到方法执行时的事务属性。除非在方法上又设置了 @Transactional 注解。
+          
+          **对一个方法来说，离它最近的 @Transactional 注解中的事务属性设置生效。**
+          
+      2. 用法举例
+
+          在类级别@Transactional注解中设置只读，这样类中所有的查询方法都不需要设置@Transactional注解了。因为对查询操作来说，其他属性通常不需要设置，所以使用公共设置即可。
+
+          然后在这个基础上，对增删改方法设置@Transactional注解 readOnly 属性为 false。
 
 ```Java
 @Service
@@ -4714,15 +4739,16 @@ public class EmpService {
 }
 ```
 
-    #### 6.2.4 事务属性：超时时间
-      1. 需求
-        
-          事务在执行过程中，有可能因为遇到某些问题，导致程序卡住，从而长时间占用数据库资源。而长时间占用资源，大概率是因为程序运行出现了问题（可能是Java程序或MySQL数据库或网络连接等等）。
-        
-          此时这个很可能出问题的程序应该被回滚，撤销它已做的操作，事务结束，把资源让出来，让其他正常程序可以执行。
-        
-          概括来说就是一句话：超时回滚，释放资源。
-            2. 设置超时时间
+#### 2.6.2.4 事务属性：超时时间
+  1. 需求
+    
+      事务在执行过程中，有可能因为遇到某些问题，导致程序卡住，从而长时间占用数据库资源。而长时间占用资源，大概率是因为程序运行出现了问题（可能是Java程序或MySQL数据库或网络连接等等）。
+    
+      此时这个很可能出问题的程序应该被回滚，撤销它已做的操作，事务结束，把资源让出来，让其他正常程序可以执行。
+    
+      概括来说就是一句话：超时回滚，释放资源。
+      
+  2. 设置超时时间
 
 ```Java
 @Service
@@ -4749,9 +4775,8 @@ public class StudentService {
 
 ```
 
-      3. 测试超时效果
-        
-          执行抛出事务超时异常
+  3. 测试超时效果
+    执行抛出事务超时异常
 
 ```Java
 org.springframework.transaction.TransactionTimedOutException: Transaction timed out: deadline was Wed May 24 09:10:43 IRKT 2023
@@ -4764,10 +4789,10 @@ org.springframework.transaction.TransactionTimedOutException: Transaction timed 
 
 ```
 
-    #### 6.2.5 事务属性：事务异常
-      1. 默认情况
-        
-          默认只针对运行时异常回滚，编译时异常不回滚。情景模拟代码如下：
+#### 2.6.2.5 事务属性：事务异常
+  1. 默认情况
+    
+      默认只针对运行时异常(也就是默认发生RuntimeException异常才回滚，这个不需要捕获。Throwable氛围Error和Exception，Exception分为RuntimeException和IOException)回滚，编译时异常不回滚。情景模拟代码如下：
 
 ```Java
 @Service
@@ -4791,9 +4816,9 @@ public class StudentService {
 }
 ```
 
-      2. 设置回滚异常
-        
-          rollbackFor属性：指定哪些异常类才会回滚,默认是 RuntimeException and Error 异常方可回滚!
+  2. 设置回滚异常
+    
+      rollbackFor属性：指定哪些异常类才会回滚,默认是 RuntimeException and Error 异常方可回滚!
 
 ```Java
 /
@@ -4810,11 +4835,11 @@ public void changeInfo() throws FileNotFoundException {
 }
 ```
 
-      3. 设置不回滚的异常
-        
-          在默认设置和已有设置的基础上，再指定一个异常类型，碰到它不回滚。
-        
-          noRollbackFor属性：指定哪些异常不会回滚, 默认没有指定,如果指定,应该在rollbackFor的范围内!
+  3. 设置不回滚的异常
+    
+      在默认设置和已有设置的基础上，再指定一个异常类型，碰到它不回滚。
+    
+      noRollbackFor属性：指定哪些异常不会回滚, 默认没有指定,如果指定,应该在rollbackFor的范围内!
 
 ```Java
 @Service
@@ -4839,22 +4864,22 @@ public class StudentService {
 
 ```
 
-    #### 6.2.6 事务属性：事务隔离级别
-      1. 事务隔离级别
-        
-          数据库事务的隔离级别是指在多个事务并发执行时，数据库系统为了保证数据一致性所遵循的规定。常见的隔离级别包括：
-        
-          1. 读未提交（Read Uncommitted）：事务可以读取未被提交的数据，容易产生脏读、不可重复读和幻读等问题。实现简单但不太安全，一般不用。
-          2. 读已提交（Read Committed）：事务只能读取已经提交的数据，可以避免脏读问题，但可能引发不可重复读和幻读。
-          3. 可重复读（Repeatable Read）：在一个事务中，相同的查询将返回相同的结果集，不管其他事务对数据做了什么修改。可以避免脏读和不可重复读，但仍有幻读的问题。
-          4. 串行化（Serializable）：最高的隔离级别，完全禁止了并发，只允许一个事务执行完毕之后才能执行另一个事务。可以避免以上所有问题，但效率较低，不适用于高并发场景。
+rollbackFor = Exception.class,noRollbackFor = Exception.class会发生什么，如果配置了rollbackFor 和 noRollbackFor 且两个都是用同样的异常，那么遇到该异常，还是回滚。
 
+#### 2.6.2.6 事务属性：事务隔离级别
 
-​          
+  1. 事务隔离级别
+    
+      数据库事务的隔离级别是指在多个事务并发执行时，数据库系统为了保证数据一致性所遵循的规定。常见的隔离级别包括：
+    
+      1. 读未提交（Read Uncommitted）：事务可以读取未被提交的数据，容易产生脏读、不可重复读和幻读等问题。实现简单但不太安全，一般不用。
+      2. 读已提交（Read Committed）：事务只能读取已经提交的数据，可以避免脏读问题，但可能引发不可重复读和幻读。
+      3. 可重复读（Repeatable Read）：在一个事务中，相同的查询将返回相同的结果集，不管其他事务对数据做了什么修改。可以避免脏读和不可重复读，但仍有幻读的问题。
+      4. 串行化（Serializable）：最高的隔离级别，完全禁止了并发，只允许一个事务执行完毕之后才能执行另一个事务。可以避免以上所有问题，但效率较低，不适用于高并发场景。 
 
-      不同的隔离级别适用于不同的场景，需要根据实际业务需求进行选择和调整。
-      
-            2. 事务隔离级别设置
+  不同的隔离级别适用于不同的场景，需要根据实际业务需求进行选择和调整。
+
+        2. 事务隔离级别设置
 
 ```Java
 package com.atguigu.service;
@@ -4898,12 +4923,12 @@ public class StudentService {
 
 ```
 
-    #### 6.2.7 事务属性：事务传播行为
-      1. 事务传播行为要研究的问题
-        
-          ![](https://secure2.wostatic.cn/static/t9aMhzWSt1v8HnQy7Uaoui/img012.png)
-        
-          举例代码：
+#### 2.6.2.7 事务属性：事务传播行为
+  1. 事务传播行为要研究的问题
+    
+      ![img](../image/2-46.png)
+    
+      举例代码：
 
 ```Java
 @Transactional
@@ -4921,24 +4946,24 @@ public void MethodB(){
 
 ```
 
-      2. propagation属性
-        
-          @Transactional 注解通过 propagation 属性设置事务的传播行为。它的默认值是：
+  2. propagation属性
+    
+      @Transactional 注解通过 propagation 属性设置事务的传播行为。它的默认值是：
 
 ```Java
 Propagation propagation() default Propagation.REQUIRED;
 
 ```
 
-​          propagation 属性的可选值由 org.springframework.transaction.annotation.Propagation 枚举类提供：
+propagation 属性的可选值由 org.springframework.transaction.annotation.Propagation 枚举类提供：
 
 | 名称             | 含义                                               |
 | ---------------- | -------------------------------------------------- |
 | REQUIRED  默认值 | 如果父方法有事务，就加入，如果没有就新建自己独立！ |
 | REQUIRES_NEW     | 不管父方法是否有事务，我都新建事务，都是独立的！   |
 
-      3. 测试
-          1. 声明两个业务方法
+  3. 测试
+      1. 声明两个业务方法
 
 ```Java
 @Service
@@ -4983,7 +5008,7 @@ public class StudentService {
 }
 ```
 
-          2. 声明一个整合业务方法
+​      2. 声明一个整合业务方法
 
 ```Java
 @Service
@@ -5001,7 +5026,7 @@ public class TopService {
 
 ```
 
-          3. 添加传播行为测试
+​      3. 添加传播行为测试
 
 ```Java
 @SpringJUnitConfig(classes = AppConfig.class)
@@ -5021,17 +5046,18 @@ public class TxTest {
 
 ```
 
-​          注意：
-​    
-​            在同一个类中，对于@Transactional注解的方法调用，事务传播行为不会生效。这是因为Spring框架中使用代理模式实现了事务机制，在同一个类中的方法调用并不经过代理，而是通过对象的方法调用，因此@Transactional注解的设置不会被代理捕获，也就不会产生任何事务传播行为的效果。
-​      4. 其他传播行为值（了解）
-​          1. Propagation.REQUIRED：如果当前存在事务，则加入当前事务，否则创建一个新事务。
-​          2. Propagation.REQUIRES_NEW：创建一个新事务，并在新事务中执行。如果当前存在事务，则挂起当前事务，即使新事务抛出异常，也不会影响当前事务。
-​          3. Propagation.NESTED：如果当前存在事务，则在该事务中嵌套一个新事务，如果没有事务，则与Propagation.REQUIRED一样。
-​          4. Propagation.SUPPORTS：如果当前存在事务，则加入该事务，否则以非事务方式执行。
-​          5. Propagation.NOT_SUPPORTED：以非事务方式执行，如果当前存在事务，挂起该事务。
-​          6. Propagation.MANDATORY：必须在一个已有的事务中执行，否则抛出异常。
-​          7. Propagation.NEVER：必须在没有事务的情况下执行，否则抛出异常。
+注意：
+
+​		**在同一个类中，对于@Transactional注解的方法调用，事务传播行为不会生效。**
+
+4. 其他传播行为值（了解）
+   1. Propagation.REQUIRED：如果当前存在事务，则加入当前事务，否则创建一个新事务。
+   2. Propagation.REQUIRES_NEW：创建一个新事务，并在新事务中执行。如果当前存在事务，则挂起当前事务，即使新事务抛出异常，也不会影响当前事务。
+   3. Propagation.NESTED：如果当前存在事务，则在该事务中嵌套一个新事务，如果没有事务，则与Propagation.REQUIRED一样。
+   4. Propagation.SUPPORTS：如果当前存在事务，则加入该事务，否则以非事务方式执行。
+   5. Propagation.NOT_SUPPORTED：以非事务方式执行，如果当前存在事务，挂起该事务。
+   6. Propagation.MANDATORY：必须在一个已有的事务中执行，否则抛出异常。
+   7. Propagation.NEVER：必须在没有事务的情况下执行，否则抛出异常。
 
 ## 七、Spring核心掌握总结
 
@@ -5043,14 +5069,3 @@ public class TxTest {
 | spring ioc / di | 组件管理、ioc容器、ioc/di , 三种配置方式           |
 | spring aop      | aop和aop框架和代理技术、基于注解的aop配置          |
 | spring tx       | 声明式和编程式事务、动态事务管理器、事务注解、属性 |
-
-
-
-|      |      |
-| ---- | ---- |
-|      |      |
-|      |      |
-|      |      |
-|      |      |
-|      |      |
-|      |      |
