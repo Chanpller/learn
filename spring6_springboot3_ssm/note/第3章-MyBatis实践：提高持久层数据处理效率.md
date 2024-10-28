@@ -16,6 +16,8 @@ MyBatis 是一款优秀的持久层框架，它支持自定义 SQL、存储过�
 
 本课程使用：3.5.11版本
 
+mybatis前身一直是ibatis，1.x,2.x都是ibatis，被google收购后，3.x开始改名为mybatis，mybatis还是对ibatis的封装，所以可以在mybatis包中看到ibatis的包。
+
   ### 3.1.2 持久层框架对比
 - JDBC
     - SQL 夹杂在Java代码中耦合度高，导致硬编码内伤
@@ -103,7 +105,7 @@ public class Employee {
 ```
 3. 准备Mapper接口和MapperXML文件
 
-    MyBatis 框架下，SQL语句编写位置发生改变，从原来的Java类，改成**XML**或者注解定义！
+    MyBatis 框架下，SQL语句编写位置发生改变，从原来的Java类，改成XML或者注解定义！
 
     推荐在XML文件中编写SQL语句，让用户能更专注于 SQL 代码，不用关注其他的JDBC代码。
 
