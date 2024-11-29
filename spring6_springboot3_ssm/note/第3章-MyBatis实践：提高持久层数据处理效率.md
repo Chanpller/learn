@@ -4,7 +4,7 @@
 
   ### 3.1.1 简介
 
-https://mybatis.org/mybatis-3/zh/index.html
+https://mybatis.org/mybatis-3/zh_CN/index.html
 
 MyBatis最初是Apache的一个开源项目iBatis, 2010年6月这个项目由Apache Software Foundation迁移到了Google Code。随着开发团队转投Google Code旗下， iBatis3.x正式更名为MyBatis。代码于2013年11月迁移到Github。
 
@@ -159,7 +159,7 @@ public interface EmployeeMapper {
     
     <!-- 查询使用 select标签
             id = 方法名
-            resultType = 返回值类型
+            resultType = 返回值类型，必须写，不写不知道如何返回
             标签内编写SQL语句
      -->
     <select id="selectEmployee" resultType="com.atguigu.pojo.Employee">
@@ -220,6 +220,13 @@ public interface EmployeeMapper {
 5. 运行和测试
 
 ```Java
+import org.apache.ibatis.io.Resources;
+import org.apache.ibatis.session.SqlSession;
+import org.apache.ibatis.session.SqlSessionFactory;
+import org.apache.ibatis.session.SqlSessionFactoryBuilder;
+import org.junit.jupiter.api.Test;
+import java.io.IOException;
+import java.io.InputStream;
 /**
  * projectName: com.atguigu.test
  *
@@ -247,9 +254,16 @@ public class MyBatisTest {
         EmployeeMapper employeeMapper = session.getMapper(EmployeeMapper.class);
 
         // 4. 调用代理类方法既可以触发对应的SQL语句
+        //动态代理技术。传入的是全限定符号.方法名去查找sql语句标签。并整合参数。mysbatis底层依然调用ibatis只不过有固定模式。
         Employee employee = employeeMapper.selectEmployee(1);
 
         System.out.println("employee = " + employee);
+
+         //sqlSession提供了curd方法进行数据库查询
+        //selectOne/selectList/insert/delete/update 这些sqlSession提供的方法，是通过找xml中对应的sql语句标签，然后执行。
+        //参数1：字符串 对应xml文件中的sql标签id或则namespace.id。参数2：Object 执行sql语句传入的参数
+        Object o = sqlSession.selectOne("ibatiesTestSelectOne", 2);
+        System.out.println(o);
 
         // 4.关闭SqlSession
         session.commit(); //提交事务 [DQL不需要,其他需要]
@@ -274,29 +288,114 @@ public class MyBatisTest {
 
    ![img](../image/3-4.png)
 
+### 3.1.4 ibatis与mybatis
+
+* ibatis通过sqlSession的curd进行操作
+
+  * 基本有selectOne/selectList/insert/delete/update这些方法
+  * 方法参数1：字符串 对应xml文件中的sql标签id或则namespace.id（名称可以随意，不必想mapper中一样，接口名与sql id必须是对应的）。参数2：Object 执行sql语句传入的参数
+  * 缺点：1、sql语句标签对应的字符串标识，容易出现错误，重复等。2、参数需要整合只能传递一个。3、返回值是object，必须要强转
+
+  ![Screenshot_2024-11-05-22-25-59-132_tv.danmaku.bili](../image/3-21.jpg)
+
+* mybatis封装了ibatis的的sqlSession的curd操作，通过sqlSession的getMapper获取到对应的动态代理类进行操作，动态代理类实际也是操作的sqlSession的curd
+
+  * sqlSession.getMapper->MapperProxyFactory.newInstance
+
+    ```java
+    protected T newInstance(MapperProxy<T> mapperProxy) {
+        return Proxy.newProxyInstance(this.mapperInterface.getClassLoader(), new Class[]{this.mapperInterface}, mapperProxy);
+    }
+    ```
+
+  * 执行时，MapperProxy处理器，通过MapperMethod中执行execute方法，调用sqlSession处理，传入的是全限定符号.方法名。然后去查找sql语句标签。并整合参数。mysbatis底层依然调用ibatis只不过有固定模式。
+
+    ```java
+    public Object execute(SqlSession sqlSession, Object[] args) {
+            Object result;
+            Object param;
+            switch(this.command.getType()) {
+            case INSERT:
+                param = this.method.convertArgsToSqlCommandParam(args);
+                result = this.rowCountResult(sqlSession.insert(this.command.getName(), param));
+                break;
+            case UPDATE:
+                param = this.method.convertArgsToSqlCommandParam(args);
+                result = this.rowCountResult(sqlSession.update(this.command.getName(), param));
+                break;
+            case DELETE:
+                param = this.method.convertArgsToSqlCommandParam(args);
+                result = this.rowCountResult(sqlSession.delete(this.command.getName(), param));
+                break;
+            case SELECT:
+    ```
+
+    
+
+  * ![3-22.jpg](../image/3-22.jpg)
+
 ## 3.2 MyBatis基本使用
 
   ### 3.2.1 向SQL语句传参
 
 #### 3.2.1.1 **mybatis日志输出配置**
 
-  mybatis配置文件设计标签和顶层结构如下：
+#####   3.2.1.1.1 mybatis配置文件
+
+设计标签和顶层结构如下，需要按顺序配置：
 
   - configuration（配置）
-      - [properties（属性）](https://mybatis.org/mybatis-3/zh/configuration.html#properties)
-      - [settings（设置）](https://mybatis.org/mybatis-3/zh/configuration.html#settings)
-      - [typeAliases（类型别名）](https://mybatis.org/mybatis-3/zh/configuration.html#typeAliases)
-      - [typeHandlers（类型处理器）](https://mybatis.org/mybatis-3/zh/configuration.html#typeHandlers)
-      - [objectFactory（对象工厂）](https://mybatis.org/mybatis-3/zh/configuration.html#objectFactory)
-      - [plugins（插件）](https://mybatis.org/mybatis-3/zh/configuration.html#plugins)
-      - [environments（环境配置）](https://mybatis.org/mybatis-3/zh/configuration.html#environments)
+      - [properties（属性）](https://mybatis.org/mybatis-3/zh_CN/configuration.html#properties)
+      - [settings（设置）](https://mybatis.org/mybatis-3/zh_CN/configuration.html#settings)
+      - [typeAliases（类型别名）](https://mybatis.org/mybatis-3/zh_CN/configuration.html#typeAliases)
+      - [typeHandlers（类型处理器）](https://mybatis.org/mybatis-3/zh_CN/configuration.html#typeHandlers)
+      - [objectFactory（对象工厂）](https://mybatis.org/mybatis-3/zh_CN/configuration.html#objectFactory)
+      - [plugins（插件）](https://mybatis.org/mybatis-3/zh_CN/configuration.html#plugins)
+      - [environments（环境配置）](https://mybatis.org/mybatis-3/zh_CN/configuration.html#environments)
           - environment（环境变量）
               - transactionManager（事务管理器）
               - dataSource（数据源）
-      - [databaseIdProvider（数据库厂商标识）](https://mybatis.org/mybatis-3/zh/configuration.html#databaseIdProvider)
-      - [mappers（映射器）](https://mybatis.org/mybatis-3/zh/configuration.html#mappers)
+      - [databaseIdProvider（数据库厂商标识）](https://mybatis.org/mybatis-3/zh_CN/configuration.html#databaseIdProvider)
+      - [mappers（映射器）](https://mybatis.org/mybatis-3/zh_CN/configuration.html#mappers)
 
-  我们可以在mybatis的配置文件使用**settings标签**设置，输出运过程SQL日志！
+```xml
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <!-- environments表示配置Mybatis的开发环境，可以配置多个环境，在众多具体环境中，使用default属性指定实际运行时使用的环境。default属性的取值是environment标签的id属性的值。 -->
+    <environments default="development">
+        <!-- environment表示配置Mybatis的一个具体的环境 -->
+        <environment id="development">
+            <!-- Mybatis的内置的事务管理器 ，可以设置开关事务，类型分为JDBC和MANAGED，常用JDBC，MANAGED几乎没做什么，他从来不提交或回滚一个链接。更多配置参考mybatis官网-->
+            <transactionManager type="JDBC"/>
+            <!-- 配置数据源 -->
+            <dataSource type="POOLED">
+                <!-- 建立数据库连接的具体信息 -->
+                <property name="driver" value="com.mysql.cj.jdbc.Driver"/>
+                <property name="url" value="jdbc:mysql://localhost:3306/mybatis-example"/>
+                <property name="username" value="root"/>
+                <property name="password" value="HHXXttxs19"/>
+            </dataSource>
+        </environment>
+    </environments>
+
+
+    <mappers>
+        <!-- Mapper注册：指定Mybatis映射文件的具体位置 -->
+        <!-- mapper标签：配置一个具体的Mapper映射文件 -->
+        <!-- resource属性：指定Mapper映射文件的实际存储位置，这里需要使用一个以类路径根目录为基准的相对路径 -->
+        <!--    对Maven工程的目录结构来说，resources目录下的内容会直接放入类路径，所以这里我们可以以resources目录为基准 -->
+        <mapper resource="base/mappers/EmployeeMapper.xml"/>
+    </mappers>
+
+</configuration>
+```
+
+#####   3.2.1.1.2 日志配置
+
+我们可以在mybatis的配置文件使用**settings标签**设置，输出运过程SQL日志！
 
   通过查看日志，我们可以判定#{} 和 ${}的输出效果！
 
@@ -327,7 +426,7 @@ public class MyBatisTest {
 
   ![img](../image/3-6.png)
 
-  通常不会采用${}的方式传值。一个特定的适用场景是：通过Java程序动态生成数据库表，表名部分需要Java程序通过参数传入；而JDBC对于表名部分是不能使用问号占位符的，此时只能使用
+  通常不会采用${}的方式传值。一个特定的适用场景是：通过Java程序动态生成数据库表，表名部分需要Java程序通过参数传入；而JDBC对于表名部分是不能使用问号占位符的，此时只能使用${}
 
   结论：实际开发中，能用#{}实现的，肯定不用${}。
 
@@ -408,7 +507,13 @@ int insertEmployee(Employee employee);
 
   ![img](../image/3-8.png)
 
-  Mapper接口中抽象方法的声明
+解决方案：
+
+*  注解指定，使用@Param指定多个简单参数，key=@Param("value")
+* 默认机制，从左往右，依次为arg0,arg1，这个是从0开始的。
+* 默认机制，从左往右，依次为param1,param2，这个是从1开始的。
+
+Mapper接口中抽象方法的声明
 
 ```Java
 int updateEmployee(@Param("empId") Integer empId,@Param("empSalary") Double empSalary);
@@ -422,7 +527,19 @@ int updateEmployee(@Param("empId") Integer empId,@Param("empSalary") Double empS
 </update>
 ```
 
-  对应关系
+```xml
+<update id="updateEmployee" >
+        update t_emp  set emp_salary=#{arg1} where emp_id=#{arg0};
+    </update>
+```
+
+```xml
+<update id="updateEmployeeParam" >
+        update t_emp  set emp_salary=#{param2} where emp_id=#{param1};
+    </update>
+```
+
+ 对应关系
 
 ![img](../image/3-9.png)
 
@@ -539,7 +656,7 @@ public void testEmpCount() {
 
   别名问题：
 
-​    [https://mybatis.org/mybatis-3/zh/configuration.html#typeAliases](https://mybatis.org/mybatis-3/zh/configuration.html#typeAliases)
+​    [https://mybatis.org/mybatis-3/zh_CN/configuration.html#typeAliases](https://mybatis.org/mybatis-3/zh_CN/configuration.html#typeAliases)
 
 ​    类型别名可为 Java 类型设置一个缩写名字。 它仅用于 XML 配置，意在降低冗余的全限定类名书写。例如：
 
@@ -552,7 +669,7 @@ public void testEmpCount() {
 
 ​    当这样配置时，`Blog` 可以用在任何使用 `domain.blog.Blog` 的地方。
 
-​    也可以指定一个包名，MyBatis 会在包名下面搜索需要的 Java Bean，比如：
+​    也可以指定一个包名，MyBatis 会在包名下面搜索需要的 Java Bean，使用时使用大小写的都可以，比如：
 
 ```XML
 <typeAliases> <package name="domain.blog"/> </typeAliases>
@@ -649,7 +766,7 @@ Employee selectEmployee(Integer empId);
 
 #### 3.2.3.4 返回Map类型
 
-  适用于SQL查询返回的各个字段综合起来并不和任何一个现有的实体类对应，没法封装到实体类对象中。能够封装成实体类类型的，就不使用Map类型。
+  适用于SQL查询返回的各个字段综合起来并不和任何一个现有的实体类对应，没法封装到实体类对象中。能够封装成实体类类型的，就不使用Map类型。map中Key是列名，有别名先取别名。value是列值。
 
   Mapper接口的抽象方法
 
@@ -730,7 +847,11 @@ public void testSelectAll() {
 }
 ```
 
+* 返回类型不需要指定集合类型，只需要指定集合的泛型即可。
+* 为什么不用指定集合：操作步骤mybatis->ibatis->selectOne调用的selectList|selectList集合
+
 #### 3.2.3.6 返回主键值
+
   1. 自增长类型主键
 
       Mapper接口中的抽象方法
@@ -765,13 +886,14 @@ public void testSaveEmp() {
 }
 ```
 
-​      注意
+**注意：Mybatis是将自增主键的值设置到实体类对象中，而不是以Mapper接口方法返回值的形式返回。**
 
-​      Mybatis是将自增主键的值设置到实体类对象中，而不是以Mapper接口方法返回值的形式返回。
   2. 非自增长类型主键
 
       而对于不支持自增型主键的数据库（例如 Oracle）或者字符串类型主键，则可以使用 selectKey 子元素：selectKey 元素将会首先运行，id 会被设置，然后插入语句会被调用！
 
+      好处是不用自己代码维护主键
+      
       使用 `selectKey` 帮助插入UUID作为字符串类型主键示例：
 
 ```XML
@@ -1831,9 +1953,9 @@ Parameter 'empList' not found. Available parameters are [arg0, collection, list]
 
         ![](../image/3-13.png)
 
-        ![](https://secure2.wostatic.cn/static/sAqWwce8qsUKcoddYAqMws/image.png?auth_key=1729819453-gFUW4qHs4xVhJzgALdiFLH-0-a278ea8ef49f971a652e48c6876e2a16)
+        ![img](../image/3-27.jpg)
 
-  ### 3.5.2 插件和分页插件PageHelper
+### 3.5.2 插件和分页插件PageHelper
 
 #### 3.5.2.1 插件机制和PageHelper插件介绍
 
