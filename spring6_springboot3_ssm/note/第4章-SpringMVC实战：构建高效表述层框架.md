@@ -1,5 +1,9 @@
 
 
+
+
+
+
 # 第4章-SpringMVC实战：构建高效表述层框架
 
 ## 4.1 SpringMVC简介和体验
@@ -182,18 +186,12 @@ public class HelloController {
    > 声明springmvc涉及组件信息的配置类
 
 ```Java
-//TODO: SpringMVC对应组件的配置类 [声明SpringMVC需要的组件信息]
-
-//TODO: 导入handlerMapping和handlerAdapter的三种方式
- //1.自动导入handlerMapping和handlerAdapter [推荐]
- //2.可以不添加,springmvc会检查是否配置handlerMapping和handlerAdapter,没有配置默认加载
- //3.使用@Bean方式配置handlerMapper和handlerAdapter
-@EnableWebMvc     
-@Configuration
+   
+@Configuration//声明为配置类
 @ComponentScan(basePackages = "com.atguigu.controller") //TODO: 进行controller扫
 //WebMvcConfigurer springMvc进行组件配置的规范,配置组件,提供各种方法! 前期可以实现
 public class SpringMvcConfig implements WebMvcConfigurer {
-
+//需要handlerMapping(秘书)和handlerAdapter（经理）加入到spring容器中。
     @Bean
     public HandlerMapping handlerMapping(){
         return new RequestMappingHandlerMapping();
@@ -211,6 +209,10 @@ public class SpringMvcConfig implements WebMvcConfigurer {
 6. SpringMVC环境搭建
 
    > 对于使用基于 Java 的 Spring 配置的应用程序，建议这样做，如以下示例所示：
+   >
+   > 不实现AbstractAnnotationConfigDispatcherServletInitializer接口就写DispatchServlet到web.xml中
+   >
+   > 下面是 SpringMVC提供的接口,是替代web.xml的方案，可以快速配置
 
 ```Java
 //TODO: SpringMVC提供的接口,是替代web.xml的方案,更方便实现完全注解方式ssm处理!
@@ -246,6 +248,62 @@ public class MyWebAppInitializer extends AbstractAnnotationConfigDispatcherServl
 }
 ```
 
+下面时通过xml方式实现的：
+
+需要在xml中配置如下内容
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+         xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd"
+         version="4.0">
+    <servlet>
+        <servlet-name>dispatcher</servlet-name>
+        <servlet-class>
+            org.springframework.web.servlet.DispatcherServlet
+        </servlet-class>
+        <init-param>
+            <param-name>contextConfigLocation</param-name>
+            <param-value>/WEB-INF/spring/dispatcher-config.xml</param-value>
+        </init-param>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>dispatcher</servlet-name>
+        <url-pattern>/</url-pattern>
+    </servlet-mapping>
+</web-app>
+```
+
+dispatcher-config.xml内容
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+            http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+            http://www.springframework.org/schema/context
+            http://www.springframework.org/schema/context/spring-context-3.2.xsd
+            http://www.springframework.org/schema/mvc
+            http://www.springframework.org/schema/mvc/spring-mvc-3.2.xsd">
+    <context:component-scan base-package="controller">
+    </context:component-scan>
+</beans>
+```
+
+设置tomcat
+
+![image-20241130003954037](../image/image-20241130003954037.png)
+
+
+
+springmvc的初始化路径最终的实例
+
 ![image-20241128232045196](../image/4-27.png)
 
 1. 启动测试
@@ -253,6 +311,29 @@ public class MyWebAppInitializer extends AbstractAnnotationConfigDispatcherServl
    注意： tomcat应该是10+版本！方可支持 Jakarta EE API!
 
    ![img](../image/4-4.png)
+
+实现WebApplicationInitializer接口的onStartup方法，可在程序启动时加载内容。
+
+```java
+package config;
+
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletException;
+import org.springframework.web.WebApplicationInitializer;
+
+public class MyWebApplicationInLizer implements WebApplicationInitializer {
+    @Override
+    public void onStartup(ServletContext servletContext) throws ServletException {
+        System.out.println("程序启动加载");
+    }
+}
+```
+
+分析：
+
+我们自己写实现的AbstractAnnotationConfigDispatcherServletInitializer接口的getServletConfigClasses方法，会在AbstractAnnotationConfigDispatcherServletInitializer的createServletApplicationContext注册到spring容器
+
+![image-20241130010502035](../image/image-20241130010502035.png)
 
 ## 4.2 SpringMVC接收数据
 
@@ -302,11 +383,11 @@ public class UserController {
 @Controller
 public class ProductController {
 
-    /
+    /**
      *  路径设置为 /product/*  
-     *    /* 为单层任意字符串  /product/a  /product/aaa 可以访问此handler  
+     *    /* 为单层任意字符串  /product/a  /product/aaa 可以访问此handler  /product不能访问
      *    /product/a/a 不可以
-     *  路径设置为 /product/ 
+     *  路径设置为 /product/**
      *   / 为任意层任意字符串  /product/a  /product/aaa 可以访问此handler  
      *   /product/a/a 也可以访问
      */
@@ -323,7 +404,7 @@ public class ProductController {
 ```
 单层匹配和多层匹配：
   /*：只能匹配URL地址中的一层，如果想准确匹配两层，那么就写“/*/*”以此类推。
-  /：可以匹配URL地址中的多层。
+  /**：可以匹配URL地址中的多层。
 其中所谓的一层或多层是指一个URL地址字符串被“/”划分出来的各个层次
 这个知识点虽然对于@RequestMapping注解来说实用性不大，但是将来配置拦截器的时候也遵循这个规则。
 ```
@@ -458,14 +539,21 @@ public class UserController {
 
      handler接收参数
 
-     只要形参数名和类型与传递参数相同，即可自动接收!
+     只要形参数名和类型与传递参数相同，即可自动接收! 
+     
+     可以不传递，也不报错，但是数值类型的不行，会到导致包哦从。
+     
+     ```
+     http://localhost:8080/param/value?age=18不报错
+     http://localhost:8080/param/value?name=123报错，报age转换异常，tomcat报错
+     ```
 
 ```Java
 @Controller
 @RequestMapping("param")
 public class ParamController {
 
-    /
+    /** 
      * 前端请求: http://localhost:8080/param/value?name=xx&age=18
      *
      * 可以利用形参列表,直接接收前端传递的param参数!
@@ -496,7 +584,7 @@ public class ParamController {
      基本用法：
 
 ```Java
- /
+ /**
  * 前端请求: http://localhost:8080/param/data?name=xx&stuAge=18
  * 
  *  使用@RequestParam注解标记handler方法的形参
@@ -537,7 +625,7 @@ public Object paramForm(@RequestParam("name") String name,
      ​	多选框，提交的数据的时候一个key对应多个值，我们可以使用集合进行接收！
 
 ```Java
-  /
+  /**
    * 前端请求: http://localhost:8080/param/mul?hbs=吃&hbs=喝
    *
    *  一名多值,可以使用集合接收即可!但是需要使用@RequestParam注解指定
@@ -621,7 +709,7 @@ public String getUser(@PathVariable Long id,
 
   前端传递 JSON 数据时，Spring MVC 框架可以使用 `@RequestBody` 注解来将 JSON 数据转换为 Java 对象。`@RequestBody` 注解表示当前方法参数的值应该从请求体中获取，并且需要指定 value 属性来指示请求体应该映射到哪个参数上。其使用方式和示例代码如下：
 
-    1. 前端发送 JSON 数据的示例：（使用postman测试）
+1. 前端发送 JSON 数据的示例：（使用postman测试）
 
 ```JSON
 {
@@ -631,7 +719,7 @@ public String getUser(@PathVariable Long id,
 }
 ```
 
-    2. 定义一个用于接收 JSON 数据的 Java 类，例如：
+2. 定义一个用于接收 JSON 数据的 Java 类，例如：
 
 ```Java
 public class Person {
@@ -642,7 +730,7 @@ public class Person {
 }
 ```
 
-    3. 在控制器中，使用 `@RequestBody` 注解来接收 JSON 数据，并将其转换为 Java 对象，例如：
+3. 在控制器中，使用 `@RequestBody` 注解来接收 JSON 数据，并将其转换为 Java 对象，例如：
 
 ```Java
 @PostMapping("/person")
@@ -684,7 +772,7 @@ public String addPerson(@RequestBody Person person) {
  //1.自动导入handlerMapping和handlerAdapter [推荐]
  //2.可以不添加,springmvc会检查是否配置handlerMapping和handlerAdapter,没有配置默认加载
  //3.使用@Bean方式配置handlerMapper和handlerAdapter
-@EnableWebMvc  //json数据处理,必须使用此注解,因为他会加入json处理器
+@EnableWebMvc  //json数据处理,必须使用此注解,因为他会加入json处理器，handlerAdapter配置了json转换器，以及RequestMappingHandlerMapping和RequestMappingHandlerAdapter。所以步涌再自己导入
 @Configuration
 @ComponentScan(basePackages = "com.atguigu.controller") //TODO: 进行controller扫描
 
@@ -780,6 +868,8 @@ class AnnotationDrivenBeanDefinitionParser implements BeanDefinitionParser {
 
 可以使用 `@CookieValue` 注释将 HTTP Cookie 的值绑定到控制器中的方法参数。
 
+和@RequestParam一样，没有参数会报400异常
+
 考虑使用以下 cookie 的请求：
 
 ```Java
@@ -798,6 +888,8 @@ public void handle(@CookieValue("JSESSIONID") String cookie) {
   ### 4.2.4 接收请求头数据
 
 可以使用 `@RequestHeader` 批注将请求标头绑定到控制器中的方法参数。
+
+和@RequestParam一样，没有参数会报400异常
 
 请考虑以下带有标头的请求：
 
@@ -864,18 +956,20 @@ public String api(HttpSession session , HttpServletRequest request,
 
   在 JavaWeb 中，共享域指的是在 Servlet 中存储数据，以便在同一 Web 应用程序的多个组件中进行共享和访问。常见的共享域有四种：`ServletContext`、`HttpSession`、`HttpServletRequest`、`PageContext`。
 
-    1. `ServletContext` 共享域：`ServletContext` 对象可以在整个 Web 应用程序中共享数据，是最大的共享域。一般可以用于保存整个 Web 应用程序的全局配置信息，以及所有用户都共享的数据。在 `ServletContext` 中保存的数据是线程安全的。
-    2. `HttpSession` 共享域：`HttpSession` 对象可以在同一用户发出的多个请求之间共享数据，但只能在同一个会话中使用。比如，可以将用户登录状态保存在 `HttpSession` 中，让用户在多个页面间保持登录状态。
-    3. `HttpServletRequest` 共享域：`HttpServletRequest` 对象可以在同一个请求的多个处理器方法之间共享数据。比如，可以将请求的参数和属性存储在 `HttpServletRequest` 中，让处理器方法之间可以访问这些数据。
-    4. `PageContext` 共享域：`PageContext` 对象是在 JSP 页面Servlet 创建时自动创建的。它可以在 JSP 的各个作用域中共享数据，包括`pageScope`、`requestScope`、`sessionScope`、`applicationScope` 等作用域。
+1. `ServletContext` 共享域：`ServletContext` 对象可以在整个 Web 应用程序中共享数据，是最大的共享域。一般可以用于保存整个 Web 应用程序的全局配置信息，以及所有用户都共享的数据。在 `ServletContext` 中保存的数据是线程安全的。
+2. `HttpSession` 共享域：`HttpSession` 对象可以在同一用户发出的多个请求之间共享数据，但只能在同一个会话中使用。比如，可以将用户登录状态保存在 `HttpSession` 中，让用户在多个页面间保持登录状态。
+3. `HttpServletRequest` 共享域：`HttpServletRequest` 对象可以在同一个请求的多个处理器方法之间共享数据。比如，可以将请求的参数和属性存储在 `HttpServletRequest` 中，让处理器方法之间可以访问这些数据。
+4. `PageContext` 共享域：`PageContext` 对象是在 JSP 页面Servlet 创建时自动创建的。它可以在 JSP 的各个作用域中共享数据，包括`pageScope`、`requestScope`、`sessionScope`、`applicationScope` 等作用域。
 
   共享域的作用是提供了方便实用的方式在同一 Web 应用程序的多个组件之间传递数据，并且可以将数据保存在不同的共享域中，根据需要进行选择和使用。
 
 ![img](../image/4-12.png)
 
-#### 4.2.6.2 Request级别属性（共享）域
+#### 4.2.6.2 Request级别属性（共享）域（一次请求转发）
 
-    1. 使用 Model 类型的形参
+
+
+1. 使用 Model 类型的形参
 
 ```Java
 @RequestMapping("/attr/request/model")
@@ -893,7 +987,7 @@ public String testAttrRequestModel(
 }
 ```
 
-    2. 使用 ModelMap 类型的形参
+2. 使用 ModelMap 类型的形参
 
 ```Java
 @RequestMapping("/attr/request/model/map")
@@ -911,7 +1005,7 @@ public String testAttrRequestModelMap(
 }
 ```
 
-    3. 使用 Map 类型的形参
+3. 使用 Map 类型的形参
 
 ```Java
 @RequestMapping("/attr/request/map")
@@ -929,7 +1023,7 @@ public String testAttrRequestMap(
 }
 ```
 
-    4. 使用原生 request 对象
+4. 使用原生 request 对象
 
 ```Java
 @RequestMapping("/attr/request/original")
@@ -945,7 +1039,7 @@ public String testAttrOriginalRequest(
 }
 ```
 
-    5. 使用 ModelAndView 对象
+5. 使用 ModelAndView 对象
 
 ```Java
 @RequestMapping("/attr/request/mav")
@@ -962,7 +1056,7 @@ public ModelAndView testAttrByModelAndView() {
 }
 ```
 
-#### 4.2.6.3 Session级别属性（共享）域
+#### 4.2.6.3 Session级别属性（共享）域（一次会话，一个浏览器的多次请求）
 
 ```Java
 @RequestMapping("/attr/session")
@@ -973,7 +1067,7 @@ public String testAttrSession(HttpSession session) {
 }
 ```
 
-#### 4.2.6.4 Application级别属性（共享）域
+#### 4.2.6.4 Application级别属性（共享）域（整个项目）
 
   解释：springmvc会在初始化容器的时候，讲servletContext对象存储到ioc容器中！
 
@@ -1089,8 +1183,8 @@ public Object handler(简化请求参数接收){
 
 ```
 
-    4. 快速响应模版页面
-       1. 配置jsp视图解析器
+4. 快速响应模版页面
+   1. 配置jsp视图解析器
 
 
 ​              
@@ -1148,6 +1242,11 @@ public String redirectDemo() {
 public String forwardDemo() {
     // 转发到 /demo 路径
     return "forward:/demo";
+}
+@RequestMapping("/redirect/baidu")
+public String forwardBaidu() {
+    // 转发到 /demo 路径
+    return "redirect:http://www.baidu.com";
 }
 
 //注意： 转发和重定向到项目下资源路径都是相同，都不需要添加项目根路径！填写项目下路径即可！
@@ -1338,15 +1437,35 @@ public class SpringMvcConfig implements WebMvcConfigurer {
 ​        再次测试访问图片：
 
 ![img](../image/4-19.png)
-    - 新的问题：其他原本正常的handler请求访问不了了
 
-        handler无法访问
-    
-        解决方案：
+- 新的问题：其他原本正常的handler请求访问不了了
+
+​    handler无法访问
+
+​    解决方案：
 
 ```XML
 @EnableWebMvc  //json数据处理,必须使用此注解,因为他会加入json处理器
 ```
+
+开启后的处理流程，MvcNamespaceHandler->registerBeanDefinitionParser("default-servlet-handler", new DefaultServletHandlerBeanDefinitionParser());->DefaultServletHandlerBeanDefinitionParser.parse()->RootBeanDefinition defaultServletHandlerDef = new RootBeanDefinition(DefaultServletHttpRequestHandler.class);->DefaultServletHttpRequestHandler->handleRequest()
+
+```java
+@Override
+	public void handleRequest(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+
+		Assert.state(this.servletContext != null, "No ServletContext set");
+		RequestDispatcher rd = this.servletContext.getNamedDispatcher(this.defaultServletName);
+		if (rd == null) {
+			throw new IllegalStateException("A RequestDispatcher could not be located for the default servlet '" +
+					this.defaultServletName + "'");
+		}
+		rd.forward(request, response);//找不后转发到静态资源
+	}
+```
+
+相当于handlerMapping通过路径找不到-->找DefaultServletHandler处理转发到真实的静态资源-->如果没有静态资源也返回404
 
 ## 4.4 RESTFul风格设计和实战
 
@@ -1368,10 +1487,10 @@ public class SpringMvcConfig implements WebMvcConfigurer {
 
 #### 4.4.1.2 RESTFul风格特点
 
-    1. 每一个URI代表1种资源（URI 是名词）；
-    2. 客户端使用GET、POST、PUT、DELETE 4个表示操作方式的动词对服务端资源进行操作：GET用来获取资源，POST用来新建资源（也可以用于更新资源），PUT用来更新资源，DELETE用来删除资源；
-    3. 资源的表现形式是XML或者JSON；
-    4. 客户端与服务端之间的交互在请求之间是无状态的，从客户端到服务端的每个请求都必须包含理解请求所必需的信息。
+1. 每一个URI代表1种资源（URI 是名词）；
+2. 客户端使用GET、POST、PUT、DELETE 4个表示操作方式的动词对服务端资源进行操作：GET用来获取资源，POST用来新建资源（也可以用于更新资源），PUT用来更新资源，DELETE用来删除资源；
+3. 资源的表现形式是XML或者JSON；
+4. 客户端与服务端之间的交互在请求之间是无状态的，从客户端到服务端的每个请求都必须包含理解请求所必需的信息。
 
 #### 4.4.1.3 RESTFul风格设计规范
 
@@ -1403,7 +1522,7 @@ public class SpringMvcConfig implements WebMvcConfigurer {
 
     根据接口的具体动作，选择具体的HTTP协议请求方式
 
-    路径设计从原来携带动标识，改成名词，对应资源的唯一标识即可！
+    **路径设计从原来携带动标识，改成名词，对应资源的唯一标识即可！**
 
 #### 4.4.1.4 RESTFul风格好处
 
@@ -1455,7 +1574,7 @@ public class SpringMvcConfig implements WebMvcConfigurer {
 
 #### 4.4.2.2 RESTFul风格接口设计
 
-    1. 接口设计
+1. 接口设计
 
 |          |                  |                               |              |
 | -------- | ---------------- | ----------------------------- | ------------ |
