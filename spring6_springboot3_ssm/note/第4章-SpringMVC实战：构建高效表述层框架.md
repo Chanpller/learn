@@ -1,9 +1,3 @@
-
-
-
-
-
-
 # 第4章-SpringMVC实战：构建高效表述层框架
 
 ## 4.1 SpringMVC简介和体验
@@ -1505,11 +1499,15 @@ public class SpringMvcConfig implements WebMvcConfigurer {
 | 删除操作 | DELETE   |
 | 更新操作 | PUT      |
 
-  2. URL路径风格要求
+GET\DELETE没有请求体，用路径参数+param参数。/url/id?param
 
-     REST风格下每个资源都应该有一个唯一的标识符，例如一个 URI（统一资源标识符）或者一个 URL（统一资源定位符）。资源的标识符应该能明确地说明该资源的信息，同时也应该是可被理解和解释的！
+POST/PUT有请求体，使用请求体传递json
 
-     使用URL+请求方式确定具体的动作，他也是一种标准的HTTP协议请求！
+2. URL路径风格要求
+
+   REST风格下每个资源都应该有一个唯一的标识符，例如一个 URI（统一资源标识符）或者一个 URL（统一资源定位符）。资源的标识符应该能明确地说明该资源的信息，同时也应该是可被理解和解释的！
+
+   使用URL+请求方式确定具体的动作，他也是一种标准的HTTP协议请求！
 
 | 操作 | 传统风格                | REST 风格                              |
 | ---- | ----------------------- | -------------------------------------- |
@@ -1731,7 +1729,7 @@ public class UserController {
 
   ### 4.5.1 全局异常处理机制
 
-#### 5.1.1 异常处理两种方式
+#### 4.5.1.1 异常处理两种方式
 
   开发过程中是不可避免地会出现各种异常情况的，例如网络连接异常、数据格式异常、空指针异常等等。异常的出现可能导致程序的运行出现问题，甚至直接导致程序崩溃。因此，在开发过程中，合理处理异常、避免异常产生、以及对异常进行有效的调试是非常重要的。
 
@@ -1748,20 +1746,21 @@ public class UserController {
 
 ​    使用声明式异常处理，可以统一项目处理异常思路，项目更加清晰明了！
 
-#### 5.1.2 基于注解异常声明异常处理
+#### 4.5.1.2 基于注解异常声明异常处理
 
   1. 声明异常处理控制器类
 
-     异常处理控制类，统一定义异常处理handler方法！
+     * 异常处理控制类，统一定义异常处理handler方法！使用注解RestControllerAdvice=@ControllerAdvice + @ResponseBody
+     * @ControllerAdvice 可以返回逻辑视图，转发和重定向
 
 ```Java
-/
+/**
  * projectName: com.atguigu.execptionhandler
  * 
  * description: 全局异常处理器,内部可以定义异常处理Handler!
  */
 
-/
+/**
  * @RestControllerAdvice = @ControllerAdvice + @ResponseBody
  * @ControllerAdvice 代表当前类的异常处理controller! 
  */
@@ -1773,15 +1772,13 @@ public class GlobalExceptionHandler {
 ```
 
   2. 声明异常处理hander方法
-
-     异常处理handler方法和普通的handler方法参数接收和响应都一致！
-
-     只不过异常处理handler方法要映射异常，发生对应的异常会调用！
-
-     普通的handler方法要使用@RequestMapping注解映射路径，发生对应的路径调用！
+* 使用注解ExceptionHandler声明异常处理的方法
+     * 异常处理handler方法和普通的handler方法参数接收和响应都一致！
+* 只不过异常处理handler方法要映射异常，发生对应的异常会调用！
+     * 普通的handler方法要使用@RequestMapping注解映射路径，发生对应的路径调用！
 
 ```Java
-/
+/**
  * 异常处理handler 
  * @ExceptionHandler(HttpMessageNotReadableException.class) 
  * 该注解标记异常处理Handler,并且指定发生异常调用该方法!
@@ -1796,7 +1793,7 @@ public Object handlerJsonDateException(HttpMessageNotReadableException e){
     return null;
 }
 
-/
+/**
  * 当发生空指针异常会触发此方法!
  * @param e
  * @return
@@ -1807,11 +1804,11 @@ public Object handlerNullException(NullPointerException e){
     return null;
 }
 
-/
+/**
  * 所有异常都会触发此方法!但是如果有具体的异常处理Handler! 
  * 具体异常处理Handler优先级更高!
  * 例如: 发生NullPointerException异常!
- *       会触发handlerNullException方法,不会触发handlerException方法!
+ *      会触发handlerNullException方法,不会触发handlerException方法!
  * @param e
  * @return
  */
@@ -1828,8 +1825,7 @@ public Object handlerException(Exception e){
 
 ```Java
  <!-- 扫描controller对应的包,将handler加入到ioc-->
- @ComponentScan(basePackages = {"com.atguigu.controller",
- "com.atguigu.exceptionhandler"})
+ @ComponentScan(basePackages = {"com.atguigu.controller","com.atguigu.exceptionhandler"})
 ```
 
   ### 4.5.2 拦截器使用
@@ -1841,6 +1837,8 @@ public Object handlerException(Exception e){
   - 生活中
 
     为了提高乘车效率，在乘客进入站台前统一检票
+
+    Filter相当于检票闸机，可以设置整体编码等，只能控制到Servlet层
 
     ![img](../image/4-22.png)
 
@@ -1871,11 +1869,13 @@ public Object handlerException(Exception e){
 
 ​    功能需要如果用 SpringMVC 的拦截器能够实现，就不使用过滤器。
 
+![img](../image/Screenshot_2024-12-06-08-00-13-283_tv.danmaku.bili.jpg)
+
 ​    ![img](../image/4-24.png)
 
-#### 5.2.2 拦截器使用
+#### 4.5.2.2 拦截器使用
 
-    1. 创建拦截器类
+1. 创建拦截器类
 
 ```Java
 public class Process01Interceptor implements HandlerInterceptor {
@@ -1912,7 +1912,7 @@ public class Process01Interceptor implements HandlerInterceptor {
 
 ​     ![img](../image/4-25.png)
 
-    2. 修改配置类添加拦截器
+2. 修改配置类添加拦截器
 
 ```Java
 @EnableWebMvc  //json数据处理,必须使用此注解,因为他会加入json处理器
@@ -1999,10 +1999,16 @@ public void addInterceptors(InterceptorRegistry registry) {
 }
 ```
 
-    4. 多个拦截器执行顺序
-       a. preHandle() 方法：SpringMVC 会把所有拦截器收集到一起，然后按照配置顺序调用各个 preHandle() 方法。
-       b. postHandle() 方法：SpringMVC 会把所有拦截器收集到一起，然后按照配置相反的顺序调用各个 postHandle() 方法。
-       c. afterCompletion() 方法：SpringMVC 会把所有拦截器收集到一起，然后按照配置相反的顺序调用各个 afterCompletion() 方法。
+4. 多个拦截器执行顺序
+   a. preHandle() 方法：SpringMVC 会把所有拦截器收集到一起，然后按照配置顺序调用各个 preHandle() 方法。
+   b. postHandle() 方法：SpringMVC 会把所有拦截器收集到一起，然后按照配置相反的顺序调用各个 postHandle() 方法。
+   c. afterCompletion() 方法：SpringMVC 会把所有拦截器收集到一起，然后按照配置相反的顺序调用各个 afterCompletion() 方法。
+   
+   ApreHandle->BpreHandle-BpostHandle->ApostHandle->BafterCompletion->AafterCompletion
+   
+   ![image-20241224114326962](../image/image-20241224114326962.png)
+   
+   ![image-20241224114357652](../image/image-20241224114357652.png)
 
   ### 4.5.3 参数校验
 
@@ -2010,7 +2016,14 @@ public void addInterceptors(InterceptorRegistry registry) {
 
 1. 校验概述
 
-   JSR 303 是 Java 为 Bean 数据合法性校验提供的标准框架，它已经包含在 JavaEE 6.0 标准中。JSR 303 通过在 Bean 属性上标注类似于 @NotNull、@Max 等标准的注解指定校验规则，并通过标准的验证接口对Bean进行验证。
+   * JSR 303 是 Java 为 Bean 数据合法性校验提供的标准框架，它已经包含在 JavaEE 6.0 标准中。JSR 303 通过在 Bean 属性上标注类似于 @NotNull、@Max 等标准的注解指定校验规则，并通过标准的验证接口对Bean进行验证。
+
+   * JSR250->@Resoure
+
+   * JSR只是指定规范，未实现。
+   * JSR 303 提供，hibernate框架实现，springmvc支持这套实现
+
+   
 
 | 注解                       | 规则                                           |
 | -------------------------- | ---------------------------------------------- |
@@ -2126,12 +2139,17 @@ public class User {
 @RequestMapping("user")
 public class UserController {
 
-    /
+    /**
      * @Validated 代表应用校验注解! 必须添加!
+     * 添加步骤1：在实体类上添加上校验注解
+     *步骤2：在controller方法也就是mvc的hander添加hander(@Validated 实体类 对象)
+     * param | json 校验驻俄界都有效果，json参数@RequestBody
+     * 如果不符合校验规则，直接向前端抛出异常。如果想修改
+     * 为自定义结果可以使用BindingResult绑定错误信息
      */
     @PostMapping("save")
     public Object save(@Validated @RequestBody User user,
-                       //在实体类参数和 BindingResult 之间不能有任何其他参数, BindingResult可以接受错误信息,避免信息抛出!
+                       //在实体类参数和 BindingResult必须紧挨着， 之间不能有任何其他参数, BindingResult可以接受错误信息,避免信息抛出!
                        BindingResult result){
        //判断是否有信息绑定错误! 有可以自行处理!
         if (result.hasErrors()){
@@ -2146,9 +2164,9 @@ public class UserController {
 }
 ```
 
-    - 测试效果
-    
-        ![img](../image/4-26.png)
+- 测试效果
+
+    ![img](../image/4-26.png)
 
 3. 易混总结
 
@@ -2170,9 +2188,8 @@ public class UserController {
 
 ## 4.6 SpringMVC总结
 
-|                 |                                            |
-| --------------- | ------------------------------------------ |
 | 核心点          | 掌握目标                                   |
+| --------------- | ------------------------------------------ |
 | springmvc框架   | 主要作用、核心组件、调用流程               |
 | 简化参数接收    | 路径设计、参数接收、请求头接收、cookie接收 |
 | 简化数据响应    | 模板页面、转发和重定向、JSON数据、静态资源 |
