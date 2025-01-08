@@ -1296,9 +1296,9 @@ public class PortalVo {
  * 首页分页查询
  * @return
  */
-@PostMapping("findNewPage")
-public Result findNewPage(@RequestBody PortalVo portalVo){
-    Result result = headlineService.findNewPage(portalVo);
+@PostMapping("findNewsPage")
+public Result findNewsPage(@RequestBody PortalVo portalVo){
+    Result result = headlineService.findNewsPage(portalVo);
     return result;
 }
 ```
@@ -1318,7 +1318,7 @@ public class HeadlineServiceImpl extends ServiceImpl<HeadlineMapper, Headline>
      * @return
      */
     @Override
-    public Result findNewPage(PortalVo portalVo) {
+    public Result findNewsPage(PortalVo portalVo) {
 
         //1.条件拼接 需要非空判断
         LambdaQueryWrapper<Headline> queryWrapper = new LambdaQueryWrapper<>();

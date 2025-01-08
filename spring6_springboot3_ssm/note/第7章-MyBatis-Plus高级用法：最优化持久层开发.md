@@ -579,6 +579,17 @@ public void testQuick(){
 }
 ```
 
+* mybatisplus自定义分页时
+
+  * 入参第一个需要放IPage,Mapper参数返回时需要指定返回参数为Page，否则会报异常
+
+    ```
+    org.apache.ibatis.exceptions.TooManyResultsException: Expected one result (or null) to be returned by selectOne(), but found: 4
+    ```
+
+  * Page<Headline> selectPageMap(IPage<Headline> page, @Param("portalVo") PortalVo portalVo);
+    
+
   ### 7.2.4 条件构造器使用
 
 #### 7.2.4.1 条件构造器作用
@@ -969,7 +980,7 @@ public interface UserMapper extends BaseMapper<User> {
     - 使用位置：实体类
 
 ```Java
-@TableName("sys_user") //对应数据库表名。可以不加，使用实体类的名字作为表名。忽略大小写。
+@TableName("sys_user") //对应数据库表名
 public class User {
     private Long id;
     private String name;
@@ -996,7 +1007,7 @@ mybatis-plus: # mybatis-plus的配置
 ```Java
 @TableName("sys_user")
 public class User {
-    @TableId(value="主键列名",type=主键策略)//如果id就是id字段，不用单独标记为TableId
+    @TableId(value="主键列名",type=主键策略)
     private Long id;
     private String name;
     private Integer age;
@@ -1014,7 +1025,7 @@ public class User {
 
 | 值                | 描述                                                         |
 | ----------------- | ------------------------------------------------------------ |
-| AUTO              | 数据库 ID 自增 (mysql配置主键自增长，要保证数据库字段也是自增设置) |
+| AUTO              | 数据库 ID 自增 (mysql配置主键自增长)                         |
 | ASSIGN_ID（默认） | 分配 ID(主键类型为 Number(Long )或 String)(since 3.3.0),使用接口`IdentifierGenerator`的方法`nextId`(默认实现类为`DefaultIdentifierGenerator`雪花算法) |
 
 ​    全局配置修改主键策略:
@@ -1070,7 +1081,7 @@ mybatis-plus:
 ```Java
 @TableName("sys_user")
 public class User {
-    @TableId//如果实体类是id属性，这个TableId可以不写，但必须是Long,String类型。默认mybatis-plus是使用的雪花算法。
+    @TableId
     private Long id;
     @TableField("nickname")
     private String name;
@@ -1120,7 +1131,7 @@ public class User {
     private String email;
     
     @TableLogic
-    //逻辑删除字段 int mybatis-plus下,默认 逻辑删除值为0 未逻辑删除 1 
+    //逻辑删除字段 int mybatis-plus下,默认 逻辑删除值为1 未逻辑删除 1 
     private Integer deleted;
 }
 
@@ -1138,7 +1149,7 @@ public class User {
     private Integer age;
     private String email;
      @TableLogic
-    //逻辑删除字段 int mybatis-plus下,默认 逻辑删除值为0 未逻辑删除 1 
+    //逻辑删除字段 int mybatis-plus下,默认 逻辑删除值为1 未逻辑删除 1 
     private Integer deleted;
 }
 ```
@@ -1174,7 +1185,6 @@ public void testQuick5(){
 ==> Preparing: UPDATE user SET deleted=1 WHERE id=? AND deleted=0
 ==> Parameters: 5(Integer)
 <==    Updates: 1
-
     4. 测试查询数据
 
 ```Java
@@ -1186,11 +1196,6 @@ public void testQuick6(){
 
 //SELECT id,name,age,email,deleted FROM user WHERE deleted=0
 ```
-
-@TableLogic(delval = "2",value = "1")
-通过设置TableLogic的delval和value 值来指定删除和正常值的状态。默认delval=1，value =0
-
-设置逻辑删除后，数据库中的查询也会过滤掉逻辑删的数据。
 
   ### 7.3.2 乐观锁实现
 
@@ -1283,16 +1288,12 @@ public void testQuick7(){
 
     user.setAge(20);
     user1.setAge(30);
-//乐观锁生效,成功!,返回更新1条user的version已经+1
+
     userMapper.updateById(user);
-    //乐观锁生效,失败!,返回更新0条，user1的version已经+1
+    //乐观锁生效,失败!
     userMapper.updateById(user1);
-    //再更新user是可以成功的
-      userMapper.updateById(user);
 }
 ```
-
-* 乐观锁更新后，查询出来的user中的version会自动+1，如果再用user更新，则更新成功。只有使用不同的user更新查出来的version一致的才不更新。
 
   ### 7.3.3 防全表更新和删除实现
 
@@ -1324,14 +1325,6 @@ public void testQuick8(){
 }
 ```
 
-开启后更新或删除会报错
-
-```
-# Cause: com.baomidou.mybatisplus.core.exceptions.MybatisPlusException: Prohibition of table update operation
-```
-
-
-
 # 7.4 MyBatis-Plus代码生成器(MyBatisX插件)
 
   ### 7.4.1 Mybatisx插件逆向工程
@@ -1352,10 +1345,4 @@ MyBatisX一款基于 IDEA 的快速开发插件，为效率而生。
 
 使用mybatisX插件,自动生成sql语句实现
 
-https://baomidou.com/guides/mybatis-x/官网介绍，有动态图。
-
-
-
-![image-20250107120617837](../image/7-9.png)
-
-![image-20250107121059236](../image/7-10.png)
+https://baomidou.com/pages/ba5b24/#功能
