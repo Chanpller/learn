@@ -112,11 +112,11 @@ jedis-lettuce-RedisTemplate三者的联系
 
    Lettuce是一个Redis的Java驱动包，Lettuce翻译为生菜，就是吃的那种生成，所以它的logo如下：
 
-![](D:/迅雷下载/Learning-in-practice-master/Redis/11.SpringBoot集成Redis/images/1.Redis驱动之Lettuce.jpg)
+![](../image/1.Redis驱动之Lettuce.jpg)
 
 2. lettuce VS Jedis
 
-   ![](D:/迅雷下载/Learning-in-practice-master/Redis/11.SpringBoot集成Redis/images/2.lettuce VS Jedis.jpg)
+   ![](../image/2.lettuce VS Jedis.jpg)
 
 # RedisTemplate-推荐使用
 
@@ -419,7 +419,7 @@ RedisTemplate使用的是JDK序列化方式（默认）惹的祸
 
        【故障演练】 Redis Cluster集群部署采用了3主3从拓扑结构，数据读写访问master节点，slave节点负责备份。$\textcolor{red}{\large 当master宕机主从切换成功，redis手动OK，but 2个经典故障}$
 
-       ![](D:/迅雷下载/Learning-in-practice-master/Redis/11.SpringBoot集成Redis/images/6.Java连接Redis经典故障.png)
+       ![](../image/6.Java连接Redis经典故障.png)
 
      - 导致原因
        SpringBoot 2.X版本，Redis默认的连接池采用Lettuce，当Redis集群节点发生变化后，Letture默认是不会刷新节点拓扑
@@ -428,13 +428,13 @@ RedisTemplate使用的是JDK序列化方式（默认）惹的祸
 
        1. 排除lettuce采用Jedis（不推荐）
 
-          ![](D:/迅雷下载/Learning-in-practice-master/Redis/11.SpringBoot集成Redis/images/7.将Lettuce二方包仲裁掉.png)
+          ![](../image/7.将Lettuce二方包仲裁掉.png)
 
        2. 重写连接工厂实例（极度不推荐）
 
        3. 刷新节点集群拓扑动态感应
 
-          ![](D:/迅雷下载/Learning-in-practice-master/Redis/11.SpringBoot集成Redis/images/8.刷新节点集群拓扑动态感应官网说明.png)
+          ![](../image/8.刷新节点集群拓扑动态感应官网说明.png)
 
           解决方法：
 

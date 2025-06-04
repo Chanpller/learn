@@ -265,7 +265,7 @@ IP：192.168.0.100 + 端口6385/6386
 
 ```conf
 // 一定要注意，此处要修改自己的IP为真实IP
-redis-cli -a 123456 --cluster create --cluster-replicas 1 192.168.111.175:6381 192.168.111.175:6382 192:168.111.172:6383 192.168.111.172:6384 192.168.111.174:6385 192.168.111.174:6386
+redis-cli -a redis --cluster create --cluster-replicas 1 192.168.197.130:6379 192.168.197.131:6379 192.168.197.132:6379 192.168.197.133:6379 192.168.197.134:6379 192.168.197.135:6379
 ```
 
 --cluster- replicas 1 表示为每个master创建一一个slave节点
@@ -276,9 +276,13 @@ redis-cli -a 123456 --cluster create --cluster-replicas 1 192.168.111.175:6381 1
 
 ![](../image/18.3主3从.jpg)
 
-### 6381作为切入点，查看并检验集群状态
+![image-20250604105443022](../image/image-20250604105443022.png)
+
+#### 10.4.1.4 链接进入6381作为切入点，查看并检验集群状态
 
 **连接进6381作为切入点，查看节点状态**
+
+**info replication**
 
 ![](../image/19.集群节点状态.jpg)
 
@@ -290,21 +294,17 @@ redis-cli -a 123456 --cluster create --cluster-replicas 1 192.168.111.175:6381 1
 
 ![](../image/21.cluster info.jpg)
 
-
-
-
-
 ### 10.4.2  3主3从redis集群读写
 
-### 对6381新增连个key，看看效果如何
+#### 10.4.2.1 对6381新增连个key，看看效果如何
 
 ![](../image/22.集群环境对6381新增两个key.jpg)
 
-### 为什么报错
+#### 10.4.2.2 为什么报错
 
 ![](../image/23.为什么报错.jpg)
 
-### 如何解决
+#### 10.4.2.3 如何解决
 
 防止路由失效加参数-c并新增两个key：
 
@@ -312,19 +312,19 @@ redis-cli -a 123456 -p 6381 -c
 
 ![](../image/24.集群重定向.jpg)
 
-### 服务加上-c后查看集群信息
+#### 10.4.2.4 服务加上-c后查看集群信息
 
 信息无变化![](../image/25.查看集群信息.jpg)
 
-### 查看某个key该属于对应的槽位值 cluster keyslot 键名称
+#### 10.4.2.5 查看某个key该属于对应的槽位值 cluster keyslot 键名称
 
 ![](../image/26.cluster keyslot 键名称.jpg)
 
 
 
-### 10.4.3 主从容错切换迁移
+### 10.4.3 主从容错切换迁移案例
 
-### 容错切换迁移
+#### 10.4.3.1 容错切换迁移
 
 - 主6381和从机切换，先停止主机6381
 
@@ -335,98 +335,100 @@ redis-cli -a 123456 -p 6381 -c
 
 - 再次查看集群信息，本次6381主6384从
 
-  ![](D:\迅雷下载\Learning-in-practice-master\Redis\10.Redis集群(cluster)\images\28.集群主从查看.png)
+  ![](../image/28.集群主从查看.png)
 
 - 停止主机6381，再次查看集群信息
 
-  ![](D:\迅雷下载\Learning-in-practice-master\Redis\10.Redis集群(cluster)\images\27.从机上位.png)
+  ![](../image/27.从机上位.png)
 
   6384成功上位
 
 - 随后，6381原来的主机回来了，是否会上位？
 
-  恢复前：![](D:\迅雷下载\Learning-in-practice-master\Redis\10.Redis集群(cluster)\images\29.集群主节点恢复前.png)
+  恢复前：![](../image/29.集群主节点恢复前.png)
 
-  恢复后：![](D:\迅雷下载\Learning-in-practice-master\Redis\10.Redis集群(cluster)\images\30.集群主节点恢复后.png)
+  恢复后：![](../image/30.集群主节点恢复后.png)
 
   6381不会上位并以从节点形式回归
 
 
 
 
-### 集群不保证数据一致性100%OK，是会有数据丢失的情况
+#### 10.4.3.2 集群不保证数据一致性100%OK，是会有数据丢失的情况
 
 Redis集群不保证强一致性这意味着在特定的条件下，Redis集群可能会丢掉一些被系统收到的写入请求命令
 
-![](D:\迅雷下载\Learning-in-practice-master\Redis\10.Redis集群(cluster)\images\16.Redis集群不保证强一致性.jpg)
+![](../image/16.Redis集群不保证强一致性.jpg)
 
-### 手动故障转移or节点从属调整该如何处理
+#### 10.4.3.3 手动故障转移or节点从属调整该如何处理
 
-上面6381宕机后，6381鸡儿6384主从对调了，和原始设计图不一样了,该如何调换主从位置呢
+上面6381宕机后，6381、6384主从对调了，和原始设计图不一样了,该如何调换主从位置呢
 
 重新登录6381机器 
 
-常用命令：cluster failover
+常用命令：cluster failover，需要去对于节点执行。不是对于节点报错。
 
-![](D:\迅雷下载\Learning-in-practice-master\Redis\10.Redis集群(cluster)\images\31.6391上位命令.png)
+![image-20250604111411798](../image/image-20250604111411798.png)
+
+![](../image/31.6391上位命令.png)
 
 
 
 ### 10.4.5 主从扩容案例
 
-### 新建6387、6388两个服务实例配置文件+新建后启动
+#### 10.4.5.1 新建6387、6388两个服务实例配置文件+新建后启动
 
 IP：192.168.11.174+端口6387/端口6388
 
 vim /myredis/cluster/redisCluster6387.conf
 
-![](D:\迅雷下载\Learning-in-practice-master\Redis\10.Redis集群(cluster)\images\32.6387配置文件.png)
+![](../image/32.6387配置文件.png)
 
 vim /myredis/cluster/redisCluster6388.conf
 
-### 启动87/88两个新的节点实例，此时他们自己都是master
+#### 10.4.5.2 启动87/88两个新的节点实例，此时他们自己都是master
 
 redis-server /myredis/cluster/redisCluster6387.conf
 
 redis-server /myredis/cluster/redisCluster6388.conf
 
-### 将新增的6387节点(空槽位)作为master节点加入集群
+#### 10.4.5.3 将新增的6387节点(空槽位)作为master节点加入集群
 
 将新增的6387作为master节点加入原有集群
 
-redis-cli -a 密码 --cluster add-node 自己实际IP地址:6387 自己实际IP地址:6381
+redis-cli -a 密码 --cluster add-node 自己实际IP（新实例的ip）地址:6387 自己实际IP（已有集群的ip）地址:6381
 
 6387就是将要作为master新增节点
 6381 就是原来集群节点里面的领路人，相当于6387拜拜6381的码头从而找到组织加入集群redis-cli -a 123456 --cluster add-node 192.168.111.174:6387 192.168.111.175:6381
 
-![](D:\迅雷下载\Learning-in-practice-master\Redis\10.Redis集群(cluster)\images\33.新节点加入集群master.png)
+![](../image/33.新节点加入集群master.png)
 
-### 检查集群情况第一次
+#### 10.4.5.4 检查集群情况第一次
 
 redis-cli -a 密码 --cluster check 真实ip地址:6381
 
 例如：redis-cli -a 123456 --cluster check 192.168.111.175:6381
 
-![](D:\迅雷下载\Learning-in-practice-master\Redis\10.Redis集群(cluster)\images\34.加入后集群情况.png)
+![](../image/34.加入后集群情况.png)
 
-### 重新分派槽位( reshard)
+#### 10.4.5.5 重新分派槽位( reshard)
 
 重新分派槽号
 命令:redis-cli -a 密码 --cluster reshard IP地址:端口号
 
 redis-cli -a 123456 --cluster reshard 192.168.111.175:6381
 
-![](D:\迅雷下载\Learning-in-practice-master\Redis\10.Redis集群(cluster)\images\35.分配槽位1.png)
+![](../image/35.分配槽位1.png)
 
-![](D:\迅雷下载\Learning-in-practice-master\Redis\10.Redis集群(cluster)\images\36.分配槽位2.png)
+![](../image/36.分配槽位2.png)
 
-### 检查集群情况第二次
+#### 10.4.5.6 检查集群情况第二次
 
 redis-cli --cluster check 真实IP地址：6381
 
 redis-cli --cluster check 192.168.111.175:6381
 
-![](D:\迅雷下载\Learning-in-practice-master\Redis\10.Redis集群(cluster)\images\37.集群情况查看.png)
+![](../image/37.集群情况查看.png)
 
 **槽位分派说明**
 
@@ -434,49 +436,63 @@ redis-cli --cluster check 192.168.111.175:6381
 
 重新分配成本太高，所以前3家各自匀出来一部分，从6381/6383/6385三个旧节点分别匀出1367个坑位给信节点6387
 
-![](D:\迅雷下载\Learning-in-practice-master\Redis\10.Redis集群(cluster)\images\38.槽号分配说明.png)
+![](../image/38.槽号分配说明.png)
 
-### 为主节点6387分配从节点6388
+#### 10.4.5.7 为主节点6387分配从节点6388
 
-命令：redis-cli -a 密码 $\textcolor{red}{ --cluster \ add-node ip:新slave端口 IP :新master端口 --cluster-slave --cluster-master-id 新主机节ID
-redis-cli -a 111111 --cluster add-node 192.168.111.174:6388 192.168.111.174:6387 --cluster-slave
+命令：redis-cli -a 密码 --cluster  add-node ip:新slave端口 IP :新master端口 --cluster-slave --cluster-master-id 新主机节ID
+
+```
+redis-cli -a 111111 --cluster add-node 192.168.111.174:6388 192.168.111.174:6387 --cluster-slave --cluster-master-id 4feb6a7ee0ed2b39f86474cf4189ab2a554a40f
+```
+
+4feb6a7ee0ed2b39f86474cf4189ab2a554a40f-------这个是6387的编号，按照自己实际情况
+
 --cluster-master-id 4feb6a7ee0ed2b39f86474cf4189ab2a554a40f-------这个是6387的编号，按照自己实际情况
 
-![](D:\迅雷下载\Learning-in-practice-master\Redis\10.Redis集群(cluster)\images\38.为主机分配从节点.png)
+![](../image/38.为主机分配从节点.png)
 
-### 检查集群情况第三次
+#### 10.4.5.8 检查集群情况第三次
 
 redis-cli --cluster check 真实IP地址：6381
 
 redis-cli --cluster check 192.168.111.175:6381
 
-![](D:\迅雷下载\Learning-in-practice-master\Redis\10.Redis集群(cluster)\images\40.集群情况第三次查看.png)
+![](../image/40.集群情况第三次查看.png)
 
 
 
- 主从缩容案例
+### 10.4.6 主从缩容案例
 
-### 目的：6387和6388下线
+#### 10.4.6.1 目的：6387和6388下线
 
 - 检查集群情况第一次，先获得从节点6388的节点ID
 
   redis-cli -a 123456 --cluster check 192.168.111.174:6388
 
-![](D:\迅雷下载\Learning-in-practice-master\Redis\10.Redis集群(cluster)\images\41.获取缩容结点.png)
+![](../image/41.获取缩容结点.png)
 
-- 从集群中将4号结点6388删除
+- 从集群中将4号slave节点6388删除
 
   redis-cli -a 123456 --cluster del-node 192.168.111.174:6388 218e7b8b4f81be54ff173e4776b4f4faaf7c13da
 
-  ![](D:\迅雷下载\Learning-in-practice-master\Redis\10.Redis集群(cluster)\images\42.删除从节点.png)
+  ![](../image/42.删除从节点.png)
 
 - 将6387的槽号清空，重新分配，本例将清出来的槽号都给6381
 
   redis-cli -a 123456 --cluster reshard 192.168.111.175:6381
 
-  ![](D:\迅雷下载\Learning-in-practice-master\Redis\10.Redis集群(cluster)\images\43.查询节点ID.png)
+  找到剔除节点的槽位数
 
-  ![](D:\迅雷下载\Learning-in-practice-master\Redis\10.Redis集群(cluster)\images\44.删除节点槽位分配.png)
+  Srource node #1 输入剔除节点
+
+  Srource node #2 done
+
+  
+
+  ![](../image/43.查询节点ID.png)
+
+  ![](../image/44.删除节点槽位分配.png)
 
 - 检查集群情况第二次
 
@@ -484,19 +500,19 @@ redis-cli --cluster check 192.168.111.175:6381
 
   4096个槽位都指给6381，它变成了8192个槽位，相当于全部都给6381了，不然要输入三次 Source node
 
-  ![](D:\迅雷下载\Learning-in-practice-master\Redis\10.Redis集群(cluster)\images\45.集群缩容第二次检查.png)
+  ![](../image/45.集群缩容第二次检查.png)
 
-- 将6387删除
+- 剔除槽位后，master节点变为slave，然后将6387删除
 
   redis-cli -a 123456 --cluster del-node 192.168.111.174:6387 307a5f6617a6eeb4949f3cb9124ed04c6962c348
 
-  ![](D:\迅雷下载\Learning-in-practice-master\Redis\10.Redis集群(cluster)\images\46.从节点删除.png)
+  ![](../image/46.从节点删除.png)
 
 - 检查集群情况第三次 6387/6388被彻底删除
 
   redis-cli -a 123456 --cluster check 192.168.111.174:6381
 
-  ![](D:\迅雷下载\Learning-in-practice-master\Redis\10.Redis集群(cluster)\images\47.集群缩容彻底删除.png)
+  ![](../image/47.集群缩容彻底删除.png)
 
 
 
