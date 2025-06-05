@@ -1,12 +1,10 @@
 # 第11章-springboot集成redis
 
-# SpringBoot集成Redis简介
+## 11.1 总体概述
 
-### 总体概述
+jedis-lettuce-RedisTemplate三者的联系。jedis是早期版本，lettuce是后起之秀，RedisTemplate集成了lettuce。
 
-jedis-lettuce-RedisTemplate三者的联系
-
-### 本地Java连接Redis常见问题，小白注意
+## 11.2 本地Java连接Redis常见问题，小白注意
 
 1. bind配置请注释掉
 2. 保护模式设置为no
@@ -14,7 +12,7 @@ jedis-lettuce-RedisTemplate三者的联系
 4. Redis服务器的IP地址和密码是否正确
 5. 忘记写访问redis的服务端口号和auth密码
 
-### 集成Jedis
+## 11.3 集成Jedis
 
 是什么：Jedis Client是Redis官网推荐的一个面向Java客户端，库文件实现了对各类API进行封装调用
 
@@ -24,26 +22,24 @@ jedis-lettuce-RedisTemplate三者的联系
 
 2. 改pom
 
-   ```pom
+   ```xml
    <?xml version="1.0" encoding="UTF-8"?>
-   <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-            xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-       <modelVersion>4.0.0</modelVersion>
+   <project xmlns="http://maven.apache.org/POM/4.0.0"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
        <parent>
-           <groupId>org.springframework.boot</groupId>
-           <artifactId>spring-boot-starter-parent</artifactId>
-           <version>2.7.11</version>
-           <relativePath/> <!-- lookup parent from repository -->
+           <artifactId>learn_code</artifactId>
+           <groupId>org.example</groupId>
+           <version>1.0</version>
        </parent>
-       <groupId>com.luojia</groupId>
-       <artifactId>redis7_study</artifactId>
-       <version>0.0.1-SNAPSHOT</version>
-       <name>redis7_study</name>
-       <description>Demo project for Spring Boot</description>
+       <modelVersion>4.0.0</modelVersion>
+   
+       <artifactId>redis7_jedis</artifactId>
+   
+   
        <properties>
-           <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-           <maven.compiler.source>1.8</maven.compiler.source>
-           <maven.compiler.target>1.8</maven.compiler.target>
+           <maven.compiler.source>8</maven.compiler.source>
+           <maven.compiler.target>8</maven.compiler.target>
            <junit.version>4.12</junit.version>
            <log4j.version>1.2.17</log4j.version>
            <lombok.version>1.16.18</lombok.version>
@@ -54,6 +50,7 @@ jedis-lettuce-RedisTemplate三者的联系
            <dependency>
                <groupId>org.springframework.boot</groupId>
                <artifactId>spring-boot-starter-web</artifactId>
+               <version>2.7.11</version>
            </dependency>
            <!-- jedis -->
            <dependency>
@@ -84,6 +81,7 @@ jedis-lettuce-RedisTemplate三者的联系
                <scope>test</scope>
            </dependency>
        </dependencies>
+   
        <build>
            <plugins>
                <plugin>
@@ -92,6 +90,7 @@ jedis-lettuce-RedisTemplate三者的联系
                </plugin>
            </plugins>
        </build>
+   
    </project>
    ```
 
@@ -104,9 +103,28 @@ jedis-lettuce-RedisTemplate三者的联系
 
 4. 主启动
 
+   ```java
+   import redis.clients.jedis.Jedis;
+   
+   public class JedisTest {
+       public static void main(String[] args) {
+           Jedis jedis = new Jedis("192.168.197.136",6379);
+           jedis.auth("redis");
+           jedis.set("key1","value1");
+           jedis.set("key2","value2");
+   
+           String key1 = jedis.get("key1");
+           System.out.println(key1);
+   
+           String key2 = jedis.get("key2");
+           System.out.println(key2);
+       }
+   }
+   ```
+
 5. 业务类
 
-### 集成letter
+## 11.4 集成letter
 
 1. 是什么
 
@@ -118,9 +136,147 @@ jedis-lettuce-RedisTemplate三者的联系
 
    ![](../image/2.lettuce VS Jedis.jpg)
 
-# RedisTemplate-推荐使用
+3. pom.xml
 
-### 连接单机
+   ```xml
+   <?xml version="1.0" encoding="UTF-8"?>
+   <project xmlns="http://maven.apache.org/POM/4.0.0"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+       <parent>
+           <artifactId>learn_code</artifactId>
+           <groupId>org.example</groupId>
+           <version>1.0</version>
+       </parent>
+       <modelVersion>4.0.0</modelVersion>
+   
+       <artifactId>redis7_jedis</artifactId>
+   
+   
+       <properties>
+           <maven.compiler.source>8</maven.compiler.source>
+           <maven.compiler.target>8</maven.compiler.target>
+           <junit.version>4.12</junit.version>
+           <log4j.version>1.2.17</log4j.version>
+           <lombok.version>1.16.18</lombok.version>
+       </properties>
+   
+       <dependencies>
+           <!--SpringBoot 通用依赖模块-->
+           <dependency>
+               <groupId>org.springframework.boot</groupId>
+               <artifactId>spring-boot-starter-web</artifactId>
+               <version>2.7.11</version>
+           </dependency>
+           <!-- jedis -->
+           <dependency>
+               <groupId>redis.clients</groupId>
+               <artifactId>jedis</artifactId>
+               <version>4.3.1</version>
+           </dependency>
+           <!-- 通用基础配置 -->
+           <dependency>
+               <groupId>junit</groupId>
+               <artifactId>junit</artifactId>
+               <version>${junit.version}</version>
+           </dependency>
+           <dependency>
+               <groupId>log4j</groupId>
+               <artifactId>log4j</artifactId>
+               <version>${log4j.version}</version>
+           </dependency>
+           <dependency>
+               <groupId>org.projectlombok</groupId>
+               <artifactId>lombok</artifactId>
+               <version>${lombok.version}</version>
+           </dependency>
+   
+           <dependency>
+               <groupId>org.springframework.boot</groupId>
+               <artifactId>spring-boot-starter-test</artifactId>
+               <scope>test</scope>
+           </dependency>
+       </dependencies>
+   
+       <build>
+           <plugins>
+               <plugin>
+                   <groupId>org.springframework.boot</groupId>
+                   <artifactId>spring-boot-maven-plugin</artifactId>
+               </plugin>
+           </plugins>
+       </build>
+   
+   </project>
+   ```
+
+4. 代码
+
+   ```java
+   import io.lettuce.core.RedisClient;
+   import io.lettuce.core.RedisURI;
+   import io.lettuce.core.api.StatefulRedisConnection;
+   import io.lettuce.core.api.sync.RedisCommands;
+   
+   import java.util.HashMap;
+   import java.util.List;
+   import java.util.Map;
+   import java.util.Set;
+   
+   public class RedisLettuceTest {
+       public static void main(String[] args) {
+           RedisURI redisURI = RedisURI.builder()
+                   .withHost("192.168.197.136")
+                   .withPort(6379)
+                   .withAuthentication("default","redis")
+                   .build();
+           RedisClient redisClient = RedisClient.create(redisURI);
+           StatefulRedisConnection<String, String> connect = redisClient.connect();
+           RedisCommands<String, String> redisCommands = connect.sync();
+           redisCommands.auth("redis");
+           redisCommands.set("key1","value1");
+           redisCommands.set("key2","value2");
+   
+           String key1 = redisCommands.get("key1");
+           System.out.println(key1);
+   
+           String key2 = redisCommands.get("key2");
+           System.out.println(key2);
+   
+           Map<String,String> map = new HashMap<>();
+           map.put("age","1");
+           map.put("name","zhangsan");
+           redisCommands.hset("user",map);
+           String hget = redisCommands.hget("user", "age");
+           System.out.println(hget);
+           String agee = redisCommands.hget("user", "agee");
+           System.out.println(agee);
+   
+           redisCommands.lpush("list1","1","2","3","3");
+           List<String> list1 = redisCommands.lrange("list1", 0, -1);
+           System.out.println(list1);
+   
+           redisCommands.sadd("set1","1","2","3","3");
+           Set<String> set1 = redisCommands.smembers("set1");
+           System.out.println(set1);
+   
+           redisCommands.zadd("zset1",0.1,"1");
+           redisCommands.zadd("zset1",0.2,"3");
+           redisCommands.zadd("zset1",0.01,"2");
+           List<String> zset1 = redisCommands.zrange("zset1",0,-1);
+           System.out.println(zset1);
+   
+           connect.close();
+           redisClient.shutdown();
+       }
+   }
+   ```
+
+   
+
+## 14.5 RedisTemplate-推荐使用
+
+### 14.5.1连接单机
 
 boot整合Redis基础演示
 
@@ -129,7 +285,35 @@ boot整合Redis基础演示
 改pom
 
 ```xml
-<!-- SpringBoot 与Redis整合依赖 -->
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>learn_code</artifactId>
+        <groupId>org.example</groupId>
+        <version>1.0</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>redis7_RedisTemplate</artifactId>
+
+    <properties>
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
+        <junit.version>4.12</junit.version>
+        <log4j.version>1.2.17</log4j.version>
+        <lombok.version>1.16.18</lombok.version>
+    </properties>
+
+    <dependencies>
+        <!--SpringBoot 通用依赖模块-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+            <version>2.7.11</version>
+        </dependency>
+        <!-- SpringBoot 与Redis整合依赖 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-redis</artifactId>
@@ -149,6 +333,40 @@ boot整合Redis基础演示
             <artifactId>springfox-swagger-ui</artifactId>
             <version>2.9.2</version>
         </dependency>
+        <!-- 通用基础配置 -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${junit.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>${log4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>${lombok.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
 ```
 
 写YML
