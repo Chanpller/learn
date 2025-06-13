@@ -582,15 +582,15 @@ spring.redis.lettuce.pool.min-idle=0
 
 项目启动，连接swagger：http://localhost:7777/swagger-ui.html
 
- 序列化问题：![](D:\迅雷下载\Learning-in-practice-master\Redis\11.SpringBoot集成Redis\images\3.序列化问题.jpg)
+ 序列化问题：![](../image/3.序列化问题.jpg)
 
 为什么会这样？
 
-![](D:\迅雷下载\Learning-in-practice-master\Redis\11.SpringBoot集成Redis\images\4.RedisTemplate 序列化.png)
+![](../image/4.RedisTemplate 序列化.png)
 
 RedisTemplate使用的是JDK序列化方式（默认）惹的祸
 
-![](D:\迅雷下载\Learning-in-practice-master\Redis\11.SpringBoot集成Redis\images\5.jdk序列化方式.png)
+![](../image/5.jdk序列化方式.png)
 
 
 
@@ -662,14 +662,30 @@ spring.redis.cluster.nodes=192.168.111.175:6381,192.168.111.175:6382,192.168.111
      * springboot可以修改配置
    
        ```properties
+       #支持集群动态感应刷新，自适应刷新是否有使用所有可用的更新，默认flase关闭
        spring.redis.lettuce.cluster.refresh.adaptive=true
+       #定时刷新
        spring.redis.lettuce.cluster.refresh.period=2000
-       #spring.redis.lettuce.cluster.refresh.dynamic-refresh-sources=true
+   #spring.redis.lettuce.cluster.refresh.dynamic-refresh-sources=true
        ```
-   
-       
+     
+     * redis-cluster下Lettuce 配置详解
+       为了实现高效的故障转移，我们需要利用 Lettuce 提供的一些集群相关的配置选项：
+       * 动态刷新源 (dynamicRefreshSources) ：允许 Lettuce 动态选择用于拓扑刷新请求的源节点，增强恢复的灵活性。
+       * 刷新周期 (refresh.period) ：设置集群拓扑刷新之间的间隔时间，建议配置为较小值以便于快速检测变化。
+       * 自适应刷新 (adaptive) ：启用后，Lettuce 会在探测到连接问题时更加频繁地刷新拓扑。
+       * 命令超时 (command-timeout) ：缩短命令执行的超时时间以便快速响应网络问题。
 
-
+```
+spring:
+  redis:
+    lettuce:
+      cluster:
+        refresh:
+          dynamic-refresh-sources: true
+          period: 3000
+          adaptive: true
+```
 
 
 
