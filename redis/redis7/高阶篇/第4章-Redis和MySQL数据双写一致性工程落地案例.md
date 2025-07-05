@@ -1,11 +1,13 @@
 # 第4章-Redis和MySQL数据双写一致性工程落地案例
-# 复习+面试
+## 4.1 复习+面试
 
 ![](../image2/1.面试题复习.jpg)
 
-# canal介绍
+![Screenshot_2025-07-02-07-57-43-651_tv.danmaku.bili](../image2/Screenshot_2025-07-02-07-57-43-651_tv.danmaku.bili.jpg)
 
-### 是什么
+## 4.2 canal介绍
+
+### 4.2.1 是什么
 
 官网地址：https://github.com/alibaba/canal/wiki
 
@@ -13,7 +15,7 @@ canal [ka'nael]，中文翻译为水道/管道/沟渠/运河，主要用途是�
 
 历史背景是早期阿里巴巴因为杭州和美国双机房部署，存在跨机房数据同步的业务需求，实现方式主要是基于业务trigger (触发器)获取增量变更。从2010年开始，阿里巴巴逐步尝试采用解析数据库日志获取增量变更进行同步，由此衍生出了canal项目;
 
-### 能干嘛
+### 4.2.2 能干嘛
 
 基于日志增量订阅和消费的业务包括
 
@@ -23,15 +25,15 @@ canal [ka'nael]，中文翻译为水道/管道/沟渠/运河，主要用途是�
 - 业务 cache 刷新
 - 带业务逻辑的增量数据处理
 
-### 去哪下
+### 4.2.3 去哪下
 
 下载地址：https://github.com/alibaba/canal/releases/tag/canal-1.1.6
 
 
 
-### 工作原理，面试回答
+## 4.3 工作原理，面试回答
 
-- 传统的MySQL主从复制工作原理
+### 4.3.1 传统的MySQL主从复制工作原理
 
 ![](../image2/2.MySQL主从复制示意图.jpg)
 
@@ -44,34 +46,39 @@ MySQL的主从复制将经过如下步骤:
 5、salve 从服务器将启动SQL Thread从中继日志中读取二进制日志，在本地重放，使得其数据和主服务器保持一致；
 6、后I/O Thread和SQL Thread将进入睡眠状态，等待下一次被唤醒。
 
-- canal工作原理
+### 4.3.2 canal工作原理
 
 ![](../image2/3.canal工作原理示意图.jpg)
 
 工作原理
 
 - canal 模拟MySQL slave的交互协议，伪装自己为MySQL slave，向MySQL master发送dump协议
-- MySQL master收到dump请求，开始推送binary log给slave (即canal )canal 解析binary log对象(原始为byte流)
+- MySQL master收到dump请求，开始推送binary log给slave (即canal )
+- canal 解析binary log对象(原始为byte流)
 
 
 
-# 双写一致性-MySQL
+# 4.4 双写一致性-MySQL
 
-### Java案例，来源出处
+### 4.4.1 Java案例，来源出处
 
 https://github.com/alibaba/canal/wiki/ClientExample
 
+### 4.4.2 mysql
+
 - 查看MySQL版本
 
-  select version(); // 5.7.17
+  select version(); // 5.7.17     8.0.26
 
 - 当前的主机二进制日志
 
   show master status;
 
+  ![](../image2/image-20250703105055300.png)
+
 - 查看 show variables like 'log_bin';
 
-  默认未开启![](../image2/4.默认log-bin.jpg)
+  5.x版本默认未开启(8.0默认开启)![](../image2/4.默认log-bin.jpg)
 
 - 开启MySQL的binlog写入功能
 
@@ -102,36 +109,29 @@ https://github.com/alibaba/canal/wiki/ClientExample
     ```sql
     DROP USER IF EXISTS 'canal'@'%' ;
     CREATE USER 'canal'@'%' IDENTIFIED BY 'canal' ;
+    --mysql8报错
     GRANT ALL PRIVILEGES ON *.* TO 'canal'@'%' IDENTIFIED BY 'canal' ;
-    FLUSH PRIVILEGES;
+    --mysql8执行
+    GRANT ALL PRIVILEGES ON *.* TO 'canal'@'%' WITH GRANT OPTION;
+FLUSH PRIVILEGES;
     SELECT * FROM mysql .user;
     ```
-
+    
     ![](../image2/8.授权canal.jpg)
 
+### 4.4.3 canal服务端
 
-
-
-
-
-
-
-
-
-
-# canal服务端
-
-### 下载
+* 下载
 
 官网地址：https://github.com/alibaba/canal/releases/tag/canal-1.1.6
 
 ![](../image2/9.canal下载.jpg)
 
-### 解压
+- 解压
 
 解压后整体放入到/mycanal路径下
 
-### 配置
+- 配置
 
 修改 /mycanal/conf/example路径下instance.properties文件
 
@@ -143,11 +143,11 @@ https://github.com/alibaba/canal/wiki/ClientExample
 
 ![](../image2/11.canal换成自己MySQL的账户密码.jpg)
 
-### 启动
+- 启动
 
-在/mycanal/bin路径下执行 -> ./startup.sh
+在/mycanal/bin路径下执行 -> ./startup.sh。需要安装JDK1.8，安装了JDK21某些参数不存在了，导致无法启动。
 
-### 查看
+- 查看
 
 判断canal是否启动成功
 
@@ -161,9 +161,11 @@ https://github.com/alibaba/canal/wiki/ClientExample
 
 
 
-# 双写一致性 coding-canal客户端(Java编写业务程序)
+### 4.4.4 cannal客户端(Java编写业务程序)
 
-### SQL脚本
+参考自己demo：redis7_test_canal
+
+##### 4.4.4.1 SQL脚本
 
 选中一个库，执行下面建表语句
 
@@ -175,9 +177,9 @@ PRIMARY KEY (`id`)
 )ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4
 ```
 
-## 建module
+##### 4.4.4.2 建module
 
-### 改POM
+##### 4.4.4.3 改POM
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -372,7 +374,7 @@ PRIMARY KEY (`id`)
 </project>
 ```
 
-### 写YML
+##### 4.4.4.4 写YML
 
 ```yaml
 server.port=8000
@@ -383,11 +385,11 @@ spring.datasource.driver-class-name=com.mysql.jdbc.Driver
 spring.datasource.url=jdbc:mysql://127.0.0.1:3306/jmall?useUnicode=true&characterEncoding=utf-8&useSSL=true&serverTimezone=UTC
 spring.datasource.username=root
 spring.datasource.password=root
-spring.datasource.druid.test-while-idle=fasle
+spring.datasource.druid.test-while-idle=false
 
 ```
 
-### 业务类
+##### 4.4.4.5 业务类
 
 RedisUtils
 
@@ -575,13 +577,24 @@ public class RedisCanalClientExample {
 }
 ```
 
-### <font color = 'red'> 题外话 </font>
+###### <font color = 'red'> 4.4.4.5.1 题外话 </font>
 
-java程序下 connector.subscribe配置的过滤正则
+* java程序下 connector.subscribe配置的过滤正则
+
+  ```
+  // canal监听当前库的所有表
+  // connector.subscribe(".*\\..*");
+  //指定监听某个库某个表
+  connector.subscribe("test_redis.t_user");
+  ```
+
+  
 
 ![](../image2/14.canal监控配置正则.jpg)
 
-
+* 关闭资源代码简写
+  * try-with-resources释放资源
+    * jdk1.7后增加了try-with-resources，它是一个声明一个或多个资源的try语句。一个资源作为一个对象，必须在程序结束之后关闭。try-with-resources语句确保在语句的最后每个资源都被关闭，任何实现了java.lang.AutoCloseable和java.io.Closeable的对象都可以使用try-with-resources来实现异常处理和关闭资源。
 
 
 
