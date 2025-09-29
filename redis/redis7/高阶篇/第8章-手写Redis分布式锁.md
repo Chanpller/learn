@@ -1,61 +1,40 @@
 # 第8章-手写Redis分布式锁
-### Redis除了拿来做缓存，还有基于Redis的其他用法吗
 
-- 数据共享，分布式Session
+## 8.1 粉丝反馈回来的题目
 
-- 分布式锁
+* Redis除了拿来做缓存，还有基于Redis的其他用法吗
+  * 数据共享，分布式Session
+  * 分布式锁
+  * 全局ID
+  * 计算器、点赞
+  * 位统计
+  * 购物车
+  * 轻量级消息队列
+    * list -> stream
 
-- 全局ID
+  * 抽奖
 
-- 计算器、点赞
+  * 点赞、签到、打卡
 
-- 位统计
+  * 交集差集并集，用户关注，可能认识的人，推荐模型
 
-- 购物车
+  * 热点新闻、热搜排行
 
-- 轻量级消息队列
+* Redis做分布式的时候需要注意什么问题？
+  * lock/unlock
+* 你们公司自己实现的分布式锁是否用的setnx命令实现?这个是最合适的吗?你如何考虑分布式锁的可重入问题?
+* 如果Redis是单点部署的，会带来什么问题？准备怎么解决单点问题呢？
+* Redis集群模式下，比如主从模式下，CAP方面有没有什么问题？
+  * Redis集群是AP，高可用；Redis单机是C，数据一致性
 
-  list -> stream
-
-- 抽奖
-
-- 点赞、签到、打卡
-
-- 交集差集并集，用户关注，可能认识的人
-
-- 热点新闻、热搜排行
-
-
-
-### Redis做分布式的时候需要注意什么问题？
-
-
-
-### 你们公司自己实现的分布式锁是否用的setnx命令实现?这个是最合适的吗?你如何考虑分布式锁的可重入问题?
+* 简单介绍一下RedLock，谈谈Redisson
+* Redis分布式锁如何续期，看门狗是什么？
 
 
 
-### 如果Redis是单点部署的，会带来什么问题？准备怎么解决单点问题呢？
+上述可重入锁的计数问题，redis中哪个数据类型可以替代
 
-
-
-### Redis集群模式下，比如主从模式下，CAP方面有没有什么问题？
-
-Redis集群是AP，高可用；Redis单机是C，数据一致性
-
-86592695
-
-### 简单介绍一下RedLock，谈谈Redisson
-
-
-
-### Redis分布式锁如何续期，看门狗是什么？
-
-
-
-# 上述可重入锁的计数问题，redis中哪个数据类型可以替代
-
-### K K V 数据结构
+K K V 数据结构
 
 ```java
 hset luojiaRedisLock 0c90d37cb6ec42268861b3d739f8b3a8:1 11
@@ -65,13 +44,13 @@ type luojiaRedisLock -> hash
 
 Map<String, Map<Object, Object>>
 
-### 小总结
+小总结
 
 setnx只能解决有无的问题，够用但是不完美
 
 hset，不但解决有无，还能解决可重入问题
 
-### <font color='red'>设计重点（一横一纵）</font>
+<font color='red'>设计重点（一横一纵）</font>
 
 目前两个分支，目的是保证同一个时候只能有一个线程持有锁进去redis做扣减库存动作
 
@@ -81,17 +60,7 @@ hset，不但解决有无，还能解决可重入问题
 
 ![](../image2/22.扣减库存原子性.png)
 
-
-
-
-
-
-
-
-
-
-
-### 加锁Lua脚本lock
+加锁Lua脚本lock
 
 - 先判断redis分布式锁这个key是否存在
 
@@ -163,7 +132,7 @@ hset，不但解决有无，还能解决可重入问题
 
 
 
-### 解锁LUA脚本unlock
+解锁LUA脚本unlock
 
 - 设计思路：有锁且还是自己的锁 -> HEXISTS key uuid:ThreadID
 
@@ -230,7 +199,7 @@ hset，不但解决有无，还能解决可重入问题
 
 
 
-### 步骤一：<font color='gree'>复原程序为初识无锁版本</font>
+步骤一：<font color='gree'>复原程序为初识无锁版本</font>
 
 ```java
 public String sale() {
@@ -257,15 +226,15 @@ public String sale() {
 }
 ```
 
-### 步骤二：新建RedisDistributedLock类实现JUC里面的Lock接口
+步骤二：新建RedisDistributedLock类实现JUC里面的Lock接口
 
 
 
-### 步骤三：满足JUC里面AQS对Lock锁的接口规范定义来进行实现落地代码
+步骤三：满足JUC里面AQS对Lock锁的接口规范定义来进行实现落地代码
 
 
 
-### 步骤四：结合设计模式开发属于自己的Redis分布式锁工具类
+步骤四：结合设计模式开发属于自己的Redis分布式锁工具类
 
 lua脚本加锁
 
@@ -507,7 +476,7 @@ end
 
 
 
-### 可重入测试
+可重入测试
 
 InventoryService类新增可重入测试方法
 
@@ -558,7 +527,7 @@ testReEntry方法中，会创建一个新的锁Key，因为ThreadID一致了，�
 
 ![](../image2/24.自研可重入锁有Bug.jpg)
 
-### 引入工厂模式改造7.2版本code
+引入工厂模式改造7.2版本code
 
 DistributedLockFactory -> 新增一个无参构造函数
 
@@ -617,11 +586,11 @@ public RedisDistributedLock(StringRedisTemplate stringRedisTemplate, String lock
 
 
 
- ### 确保RedisLock过期时间大于业务执行时间的问题
+确保RedisLock过期时间大于业务执行时间的问题
 
 时间到了，业务没有执行完需要自动续期
 
-### CAP
+CAP
 
 - Redis集群是AP
 
@@ -641,7 +610,7 @@ public RedisDistributedLock(StringRedisTemplate stringRedisTemplate, String lock
 
   ![](../image2/28.nacos的AP.jpg)
 
-### 自动续期的LUA脚本
+自动续期的LUA脚本
 
 ```lua
 // 自动续期的LUA脚本
@@ -663,7 +632,7 @@ expire luojiaRedisLock 30
 eval "if redis.call('hexists', KEYS[1], ARGV[1]) == 1 then return redis.call('expire', KEYS[1], ARGV[2]) else return 0 end" 1 luojiaRedisLock test 1
 ```
 
-### <font color='gree'>8.0新增自动续期功能</font>
+<font color='gree'>8.0新增自动续期功能</font>
 
 ```java
 @Override
@@ -726,7 +695,7 @@ private void resetExpire() {
 
 
 
-# 总结
+总结
 
 synchronized单机版OK； -> v1.0
 
@@ -748,13 +717,13 @@ Nginx分布式微服务，轮询多台服务器，单机锁不行；-> v2.0
 
 锁的自动续期 -> v8.0
 
-# 锁的种类
+## 8.2 锁的种类
 
-#### <font color='red'>单机版同一个虚拟机内，</font>synchronized或者Lock接口。
+### 8.2.1 <font color='red'>单机版同一个虚拟机内，</font>synchronized或者Lock接口。
 
-#### <font color='red'>分布式多个不同jvm虚拟机，</font>单机的线程锁机制不再起作用，资源类在不同的服务器之间共享了。
+### 8.2.2 <font color='red'>分布式多个不同jvm虚拟机，</font>单机的线程锁机制不再起作用，资源类在不同的服务器之间共享了。
 
-# 一个靠谱的分布式锁需要具备的条件和刚需
+## 8.3 一个靠谱的分布式锁需要具备的条件和刚需
 
 - 独占性
 
@@ -780,7 +749,7 @@ Nginx分布式微服务，轮询多台服务器，单机锁不行；-> v2.0
 
 
 
-### 分布式锁
+## 8.4 分布式锁
 
 ![](../image2/1.set命令复习.png)
 
@@ -792,11 +761,11 @@ setnx key value
 
 set key value[EX seconds] \[PX milliseconds] \[NX|XX]
 
-### 重点
+## 8.5 重点
 
 JUC中AQS锁的规范落地参考+可重入锁+Lua脚本+Redis命令一步步实现分布式锁
 
-### Base案例(boot+redis)
+## 8.6 Base案例(boot+redis)
 
 使用场景：多个服务间保证同一时间段内同一用户只能有一个请求（防止关键业务出现并发攻击）
 
@@ -994,7 +963,7 @@ public class InventoryController {
 
 
 
-# 手写分布式锁思路分析2023
+## 8.7 手写分布式锁思路分析2023
 
 <font color = 'red'>上述笔记代码的不足
 </font>
