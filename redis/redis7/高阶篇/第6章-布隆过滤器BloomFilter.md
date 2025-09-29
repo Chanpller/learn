@@ -887,23 +887,13 @@ public Customer findCustomerByIdWithBloomFilter(Integer customerId) {
 
 
 
-
-
-
-
-
-
-
-
-
-
 # 6.7 布隆过滤器优缺点
 
-### 优点
+### 6.7.1 优点
 
 高效地插入和查询，内存中占用bit空间小
 
-### 缺点
+### 6.7.2 缺点
 
 不能删除元素。因为删除元素会导致误判率增加，因为hash冲突同一个位置可能存的东西是多个共有的，你删除一个的同事可能也把其他的删除了
 
