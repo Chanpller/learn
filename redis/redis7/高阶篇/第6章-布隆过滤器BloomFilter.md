@@ -249,160 +249,180 @@
 
       ```xml
       <?xml version="1.0" encoding="UTF-8"?>
-      <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-      	<modelVersion>4.0.0</modelVersion>
-      	<parent>
-      		<groupId>org.springframework.boot</groupId>
-      		<artifactId>spring-boot-starter-parent</artifactId>
-      		<version>2.6.10</version>
-      		<relativePath/> <!-- lookup parent from repository -->
-      	</parent>
+      <project xmlns="http://maven.apache.org/POM/4.0.0"
+               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+               xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+          <modelVersion>4.0.0</modelVersion>
+          <parent>
+              <groupId>org.example</groupId>
+              <artifactId>learn_code</artifactId>
+              <version>1.0</version>
+          </parent>
       
-      	<groupId>com.luojia</groupId>
-      	<artifactId>mybatis_generator</artifactId>
-      	<version>0.0.1-SNAPSHOT</version>
-      	<name>mybatis_generator</name>
-      	<description>Demo project for Spring Boot</description>
+          <artifactId>redis7_bloom_filter</artifactId>
+          <properties>
+              <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+              <maven.compiler.source>17</maven.compiler.source>
+              <maven.compiler.target>17</maven.compiler.target>
+              <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+              <java.version>17</java.version>
+              <hutool.version>5.5.8</hutool.version>
+              <druid.version>1.1.18</druid.version>
+              <mapper.version>4.1.5</mapper.version>
+              <pagehelper.version>5.1.4</pagehelper.version>
+              <mysql.version>8.0.27</mysql.version>
+              <swagger2.version>2.9.2</swagger2.version>
+              <swagger-ui.version>2.9.2</swagger-ui.version>
+              <spring.boot.version>2.7.18</spring.boot.version>
+              <mybatis.spring.version>2.1.3</mybatis.spring.version>
+          </properties>
       
-      	<properties>
-      		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-      		<maven.compiler.source>1.8</maven.compiler.source>
-      		<maven.compiler.target>1.8</maven.compiler.target>
-      		<java.version>1.8</java.version>
-      		<hutool.version>5.5.8</hutool.version>
-      		<druid.version>1.1.18</druid.version>
-      		<mapper.version>4.1.5</mapper.version>
-      		<pagehelper.version>5.1.4</pagehelper.version>
-      		<mysql.version>5.1.39</mysql.version>
-      		<swagger2.version>2.9.2</swagger2.version>
-      		<swagger-ui.version>2.9.2</swagger-ui.version>
-      		<mybatis.spring.version>2.1.3</mybatis.spring.version>
-      	</properties>
+          <dependencies>
+              <dependency>
+                  <groupId>org.springframework.boot</groupId>
+                  <artifactId>spring-boot-starter-web</artifactId>
+                  <version>${spring.boot.version}</version>
+              </dependency>
+              <!-- mybatis 通用mapper tk单独使用，自己到这版本号 -->
+              <dependency>
+                  <groupId>org.mybatis</groupId>
+                  <artifactId>mybatis</artifactId>
+                  <version>3.4.6</version>
+              </dependency>
+              <!-- mybatis-spring -->
+              <dependency>
+                  <groupId>org.mybatis.spring.boot</groupId>
+                  <artifactId>mybatis-spring-boot-starter</artifactId>
+                  <version>${mybatis.spring.version}</version>
+              </dependency>
+              <!-- mybatis Generator -->
+              <dependency>
+                  <groupId>org.mybatis.generator</groupId>
+                  <artifactId>mybatis-generator-core</artifactId>
+                  <version>1.4.0</version>
+                  <scope>compile</scope>
+                  <optional>true</optional>
+              </dependency>
+              <!-- 通用mapper -->
+              <dependency>
+                  <groupId>tk.mybatis</groupId>
+                  <artifactId>mapper</artifactId>
+                  <version>${mapper.version}</version>
+              </dependency>
+              <!-- persistence -->
+              <dependency>
+                  <groupId>javax.persistence</groupId>
+                  <artifactId>persistence-api</artifactId>
+                  <version>1.0.2</version>
+              </dependency>
+              <dependency>
+                  <groupId>org.projectlombok</groupId>
+                  <artifactId>lombok</artifactId>
+                  <version>1.18.30</version>
+                  <optional>true</optional>
+              </dependency>
+              <dependency>
+                  <groupId>org.springframework.boot</groupId>
+                  <artifactId>spring-boot-starter-test</artifactId>
+                  <version>${spring.boot.version}</version>
+                  <scope>test</scope>
+                  <exclusions>
+                      <exclusion>
+                          <groupId>org.junit.vintage</groupId>
+                          <artifactId>junit-vintage-engine</artifactId>
+                      </exclusion>
+                  </exclusions>
+              </dependency>
+          </dependencies>
       
-      	<dependencies>
-      		<dependency>
-      			<groupId>org.springframework.boot</groupId>
-      			<artifactId>spring-boot-starter-web</artifactId>
-      		</dependency>
-      		<!-- mybatis 通用mapper tk单独使用，自己到这版本号 -->
-      		<dependency>
-      			<groupId>org.mybatis</groupId>
-      			<artifactId>mybatis</artifactId>
-      			<version>3.4.6</version>
-      		</dependency>
-      		<!-- mybatis-spring -->
-      		<dependency>
-      			<groupId>org.mybatis.spring.boot</groupId>
-      			<artifactId>mybatis-spring-boot-starter</artifactId>
-      			<version>${mybatis.spring.version}</version>
-      		</dependency>
-      		<!-- mybatis Generator -->
-      		<dependency>
-      			<groupId>org.mybatis.generator</groupId>
-      			<artifactId>mybatis-generator-core</artifactId>
-      			<version>1.4.0</version>
-      			<scope>compile</scope>
-      			<optional>true</optional>
-      		</dependency>
-      		<!-- 通用mapper -->
-      		<dependency>
-      			<groupId>tk.mybatis</groupId>
-      			<artifactId>mapper</artifactId>
-      			<version>${mapper.version}</version>
-      		</dependency>
-      		<!-- persistence -->
-      		<dependency>
-      			<groupId>javax.persistence</groupId>
-      			<artifactId>persistence-api</artifactId>
-      			<version>1.0.2</version>
-      		</dependency>
-      		<dependency>
-      			<groupId>org.projectlombok</groupId>
-      			<artifactId>lombok</artifactId>
-      			<optional>true</optional>
-      		</dependency>
-      		<dependency>
-      			<groupId>org.springframework.boot</groupId>
-      			<artifactId>spring-boot-starter-test</artifactId>
-      			<scope>test</scope>
-      			<exclusions>
-      				<exclusion>
-      					<groupId>org.junit.vintage</groupId>
-      					<artifactId>junit-vintage-engine</artifactId>
-      				</exclusion>
-      			</exclusions>
-      		</dependency>
-      	</dependencies>
+          <build>
+              <resources>
+                  <resource>
+                      <directory>${basedir}/src/main/java</directory>
+                      <includes>
+                          <include>**/*.xml</include>
+                      </includes>
+                  </resource>
+                  <resource>
+                      <directory>${basedir}/src/main/resources</directory>
+                  </resource>
+              </resources>
+              <plugins>
+                  <plugin>
+                      <groupId>org.springframework.boot</groupId>
+                      <artifactId>spring-boot-maven-plugin</artifactId>
+                      <configuration>
+                          <excludes>
+                              <exclude>
+                                  <groupId>org.projectlombok</groupId>
+                                  <artifactId>lombok</artifactId>
+                              </exclude>
+                          </excludes>
+                      </configuration>
+                  </plugin>
+                  <plugin>
+                      <groupId>org.mybatis.generator</groupId>
+                      <artifactId>mybatis-generator-maven-plugin</artifactId>
+                      <version>1.3.6</version>
+                      <configuration>
+                          <configurationFile>${basedir}/src/main/resources/generatorConfig.xml</configurationFile>
+                          <overwrite>true</overwrite>
+                          <verbose>true</verbose>
+                      </configuration>
+                      <dependencies>
+                          <dependency>
+                              <groupId>mysql</groupId>
+                              <artifactId>mysql-connector-java</artifactId>
+                              <version>${mysql.version}</version>
+                          </dependency>
+                          <dependency>
+                              <groupId>tk.mybatis</groupId>
+                              <artifactId>mapper</artifactId>
+                              <version>${mapper.version}</version>
+                          </dependency>
+                      </dependencies>
+                  </plugin>
       
-      	<build>
-      		<resources>
-      			<resource>
-      				<directory>${basedir}/src/main/java</directory>
-      				<includes>
-      					<include>**/*.xml</include>
-      				</includes>
-      			</resource>
-      			<resource>
-      				<directory>${basedir}/src/main/resources</directory>
-      			</resource>
-      		</resources>
-      		<plugins>
-      			<plugin>
-      				<groupId>org.springframework.boot</groupId>
-      				<artifactId>spring-boot-maven-plugin</artifactId>
-      				<configuration>
-      					<excludes>
-      						<exclude>
-      							<groupId>org.projectlombok</groupId>
-      							<artifactId>lombok</artifactId>
-      						</exclude>
-      					</excludes>
-      				</configuration>
-      			</plugin>
-      			<plugin>
-      				<groupId>org.mybatis.generator</groupId>
-      				<artifactId>mybatis-generator-maven-plugin</artifactId>
-      				<version>1.3.6</version>
-      				<configuration>
-      					<configurationFile>${basedir}/src/main/resources/generatorConfig.xml</configurationFile>
-      					<overwrite>true</overwrite>
-      					<verbose>true</verbose>
-      				</configuration>
-      				<dependencies>
-      					<dependency>
-      						<groupId>mysql</groupId>
-      						<artifactId>mysql-connector-java</artifactId>
-      						<version>${mysql.version}</version>
-      					</dependency>
-      					<dependency>
-      						<groupId>tk.mybatis</groupId>
-      						<artifactId>mapper</artifactId>
-      						<version>${mapper.version}</version>
-      					</dependency>
-      				</dependencies>
-      			</plugin>
-      		</plugins>
-      	</build>
+                  <!--<plugin>
+                      <groupId>org.apache.maven.plugins</groupId>
+                      <artifactId>maven-compiler-plugin</artifactId>
+                    <configuration>
+                          <source>17</source>
+                        <target>17</target>
+                          <compilerArgs>
+                            <arg>&#45;&#45;add-exports</arg>
+                              <arg>jdk.compiler/com.sun.tools.javac.processing=ALL-UNNAMED</arg>
+                            <arg>&#45;&#45;add-opens</arg>
+                              <arg>jdk.compiler/com.sun.tools.javac.processing=ALL-UNNAMED</arg>
+                          </compilerArgs>
+                      </configuration>
+                  </plugin>-->
+              </plugins>
+          </build>
+      
       </project>
       ```
 
     * 写YML，本次不需要
-
+  
   * mgb配置相关src/main/resource路径下新建
-
+  
   config.properties
-
+  
   ```properties
   # t_customer 表包名
-  package.name=com.luojia.redis7
-  
-  jdbc.driverClass = com.mysql.jdbc.Driver
-  jdbc.url = jdbc:mysql://localhost:3306/jmall
-  jdbc.user = root
-  jdbc.password = 123
+  # t_customer 表包名
+  package.name=com.chanpller.redis7
+  jdbc.driverClass=com.mysql.jdbc.Driver
+  jdbc.url=jdbc:mysql://localhost:3306/redis?useSSL=false&autoReconnect=true&failOverReadOnly=false&maxReconnects=10&connectTimeout=30000&socketTimeout=30000&zeroDateTimeBehavior=convertToNull
+  jdbc.user=root
+  jdbc.password=HHXXttxs19
   ```
-
+  
+  
+  
+  generatorConfig.xml
+  
   ```xml
   <?xml version="1.0" encoding="UTF-8"?>
   <!DOCTYPE generatorConfiguration
@@ -417,7 +437,7 @@
           <property name="endingDelimiter" value="`" />
   
           <plugin type="tk.mybatis.mapper.generator.MapperPlugin">
-              <property name="mappers" value= "tk.mybatis.mapper.common.Mapper" />
+            <property name="mappers" value= "tk.mybatis.mapper.common.Mapper" />
               <property name="caseSensitive" value="true" />
           </plugin>
   
@@ -437,7 +457,7 @@
       </context>
   </generatorConfiguration>
   ```
-
+  
 * 一键生成
 
   双击插件mybatis- generator:generate，生成entity+mapper接口+xml实现SQL
@@ -885,7 +905,10 @@ public Customer findCustomerByIdWithBloomFilter(Integer customerId) {
 - 布隆过滤器有，Redis无，可以正常访问并会写Redis
 - 布隆过滤器无，直接返回数据，不再继续走下去
 
-
+* ```
+  spring.mvc.pathmatch.matching-strategy=ant_path_matcher
+  如Swagger2依赖于旧的AntPathMatcher策略
+  ```
 
 # 6.7 布隆过滤器优缺点
 
