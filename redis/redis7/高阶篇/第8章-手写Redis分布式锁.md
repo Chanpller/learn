@@ -645,6 +645,8 @@ lua脚本
   ```lua
   eval "if redis.call('get',KEYS[1]) == ARGV[1] then return redis.call('del',KEYS[1]) else return 0 end" 1 luojiaRedisLock 1111
   
+  ```
+
 #内层包双引号，外层单引号也可以
   eval 'if redis.call("get",KEYS[1]) == ARGV[1] then return redis.call("del",KEYS[1]) else return 0 end' 1 luojiaRedisLock 1111
 
@@ -663,9 +665,9 @@ eval luascript numkeys [key [key ...]] [arg [arg ...]]
   ```lua
   if KEYS[1] > KEYS[2] then return ARGV[1] elseif KEYS[1] < KEYS[2] then return ARGV[2] else return ARGV[3] end
   ```
-  
+
   ![](../image2/21.eval条件判断.jpg)
-  
+
   ![](../image2/20.条件判断案例.jpg)
 
 #### 8.7.6.5 通过Lua脚本解决v5.0版本Bug
@@ -990,7 +992,7 @@ end
 
 工厂设计模式引入
 
-- 通过实现JUC里面的Lock接口，实现Redis分布式锁RedisDistributedLock
+- 通过实现JUC里面的Lock接口，实现Redis分布式锁RedisDistributedLock，uuid作为每个服务独立的id，防止不同服务出现相同的线程id。独立的服务，需要使用不同的id来区分不同的线程，只有相同的线程可以重入，不同的线程不可以重入。所以在设置时采用uuidValule+Thread.currentThread().getId()，老师的课件有问题，会导致不同线程也能进入。
 
   ```java
   package com.luojia.redislock.mylock;
@@ -1018,7 +1020,7 @@ end
       public RedisDistributedLock(StringRedisTemplate stringRedisTemplate, String lockName) {
           this.stringRedisTemplate = stringRedisTemplate;
           this.lockName = lockName;
-          this.uuidValule = IdUtil.simpleUUID() + ":" + Thread.currentThread().getId();
+          this.uuidValule = IdUtil.simpleUUID() + ":" 
           this.expireTime = 50L;
       }
   
@@ -1048,13 +1050,13 @@ end
                       "else " +
                            "return 0 " +
                       "end";
-              System.out.println("lockName:" + lockName + "\t" + "uuidValue:" + uuidValule);
+              System.out.println("lockName:" + lockName + "\t" + "uuidValue:" + uuidValule+Thread.currentThread().getId(););
   
               // 加锁失败需要自旋一直获取锁
               while (!stringRedisTemplate.execute(
                       new DefaultRedisScript<>(script, Boolean.class),
                       Arrays.asList(lockName),
-                      uuidValule,
+                      uuidValule+Thread.currentThread().getId();,
                       String.valueOf(expireTime))) {
                   // 休眠60毫秒再来重试
                   try {TimeUnit.MILLISECONDS.sleep(60);} catch (InterruptedException e) {e.printStackTrace();}
@@ -1074,14 +1076,14 @@ end
                   "else " +
                   "return 0 " +
                   "end";
-          System.out.println("lockName:" + lockName + "\t" + "uuidValue:" + uuidValule);
+          System.out.println("lockName:" + lockName + "\t" + "uuidValue:" + uuidValule+Thread.currentThread().getId(););
           
           // LUA脚本由C语言编写，nil -> false; 0 -> false; 1 -> true;
           // 所以此处DefaultRedisScript构造函数返回值不能是Boolean，Boolean没有nil
           Long flag = stringRedisTemplate.execute(
                   new DefaultRedisScript<>(script, Long.class),
                   Arrays.asList(lockName),
-                  uuidValule);
+                  uuidValule+Thread.currentThread().getId(););
           if (null == flag) {
               throw new RuntimeException("this lock does not exists.");
           }
@@ -1127,7 +1129,7 @@ end
   }
   ```
 
-- 如果直接使用上面的代码设计，会有什么问题
+- 如果直接使用上面的代码设计，会有什么问题（下面代码有问题）
   ![](../image2/23.引入工厂模式.jpg)
 
 - 需要考虑扩展，本次是Redis实现分布式锁，以后zookeeper、MySQL实现呢？
