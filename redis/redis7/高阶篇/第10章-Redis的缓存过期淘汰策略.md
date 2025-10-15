@@ -1,39 +1,19 @@
 # 第10章-Redis的缓存过期淘汰策略
-### 总结
+## 10.1 总结
 
-### 生产上你们redis内存设置多少
+* 生产上你们redis内存设置多少
+* 如何配置、修改redis的内存大小
+* 如果内存满了怎么办
+* redis清理内存的方式？定期删除和惰性删除了解过吗？
+* redis缓存淘汰策略有哪些？分别是什么？用过那个？
+* redis的LRU了解过吗？请手写LRU(尚硅谷大厂面试题第3季 65个视频)
+* LRU和LFU算法的区别是什么？
+  * LRU means Least Recently Used 最近最少使用
+  * LFU means Least Frequently Used 最不常用
 
+## 10.2 如果内存满了怎么办
 
-
-### 如何配置、修改redis的内存大小
-
-
-
-### 如果内存满了怎么办
-
-
-
-### redis清理内存的方式？定期删除和惰性删除了解过吗？
-
-
-
-### redis缓存淘汰策略有哪些？分别是什么？用过那个？
-
-
-
-### redis的LRU了解过吗？请手写LRU
-
-
-
-### LRU和LFU算法的区别是什么？
-
-LRU means Least Recently Used 最近最少使用
-
-LFU means Least Frequently Used 最不常用
-
-
-
-### redis默认内存是多少？在哪查看？如何设置修改？
+redis默认内存是多少？在哪查看？如何设置修改？
 
 - **查看Redis最大占用内存**
 
@@ -73,15 +53,15 @@ LFU means Least Frequently Used 最不常用
 
   config get maxmemory
 
-### 内存打满了，超出了设置的最大值会怎么样？
+内存打满了，超出了设置的最大值会怎么样？
 
 ![](../image2/5.超出内存.png)
 
-### 结论
+结论
 
 设置了maxmemory的选项，假如redis内存使用达到了上限，没有加上过期时间就会导致数据写满maxmemory，为了避免类似情况，需要使用内存淘汰策略
 
-
+## 
 
 
 ### redis过期键的删除策略
@@ -184,7 +164,7 @@ LFU：最近<font color = 'red'>最不常用</font>页面置换算法，淘汰�
 - 直接使用config命令
 - 直接redis.conf配置文件
 
-### redis缓存淘汰策略配置性能建议
+## 10.5 redis缓存淘汰策略配置性能建议
 
 - 避免存储BigKey
 - 开启惰性删除，lazyfree-lazy-eviction=yes

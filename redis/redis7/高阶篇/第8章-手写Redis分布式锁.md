@@ -717,8 +717,6 @@ public String sale() {
 
 ![image-20251010232343821](../image2/image-20251010232343821.png)
 
-### 8.7.8 自动续期
-
 ### 8.7.7 可重入锁+设计模式
 
 #### 8.7.7.1 当前代码为6.0版接上一步
@@ -1307,6 +1305,7 @@ RedisDistributedLock -> 修改构造方法
 public RedisDistributedLock(StringRedisTemplate stringRedisTemplate, String lockName, String uuid) {
     this.stringRedisTemplate = stringRedisTemplate;
     this.lockName = lockName;
+    //这段代码可能导致重入失败，必须要每次new一个对象，传入的uuid相同才能正常
     this.uuidValule = uuid + ":" + Thread.currentThread().getId();
     this.expireTime = 50L;
 }
@@ -1316,11 +1315,15 @@ public RedisDistributedLock(StringRedisTemplate stringRedisTemplate, String lock
 
 
 
-确保RedisLock过期时间大于业务执行时间的问题
+### 8.7.8 自动续期
 
-时间到了，业务没有执行完需要自动续期
+#### 8.7.8.1 确保RedisLock过期时间大于业务执行时间的问题
 
-CAP
+时间到了，业务没有执行完需要自动续期。Redis分布式锁如何续期？
+
+#### 8.7.8.2 CAP
+
+一致性（Consistency）、可用性（Availability）和分区容错性（Partition Tolerance）
 
 - Redis集群是AP
 
@@ -1340,7 +1343,7 @@ CAP
 
   ![](../image2/28.nacos的AP.jpg)
 
-自动续期的LUA脚本
+#### 8.7.8.3 自动续期的LUA脚本
 
 ```lua
 // 自动续期的LUA脚本
@@ -1361,7 +1364,7 @@ expire luojiaRedisLock 30
 eval "if redis.call('hexists', KEYS[1], ARGV[1]) == 1 then return redis.call('expire', KEYS[1], ARGV[2]) else return 0 end" 1 luojiaRedisLock test 1
 ```
 
-<font color='gree'>8.0新增自动续期功能</font>
+#### 8.7.8.4 8.0新增自动续期功能
 
 ```java
 @Override
@@ -1418,33 +1421,20 @@ private void resetExpire() {
 }
 ```
 
+## 8.8 总结
 
+* synchronized单机版OK； -> v1.0
 
+* Nginx分布式微服务，轮询多台服务器，单机锁不行；-> v2.0
 
-
-
-
-总结
-
-synchronized单机版OK； -> v1.0
-
-Nginx分布式微服务，轮询多台服务器，单机锁不行；-> v2.0
-
-取消单机锁，上redis分布式锁setnx，中小企业使用没问题；-> v3.1
-
-​	只是加锁了，没有释放锁，出异常的话，可能无法释放锁，必须要在代码层面finally释放锁 -> v3.2
-
-​	如果服务宕机，部署了微服务代码层面根本就没有走到finally这块，没办法保证解锁，这个Key没有被删除，需要对锁设置过期时间 -> v3.2
-
-​	为redis的分布式锁key增加过期时间，还必须要保证setnx+过期时间在同一行，保证原子性 -> v4.1
-
-​	程序由于执行超过锁的过期时间，所以在finally中必须规定只能自己删除自己的锁，不能把别人的锁删除了，防止张冠李戴 -> v5.0
-
-将Lock、unlock变成LUA脚本保证原子性； -> v6.0
-
-保证锁的可重入性，hset替代setnx+Lock变成LUA脚本，保障可重入性； -> v7.0
-
-锁的自动续期 -> v8.0
+* 取消单机锁，上redis分布式锁setnx，中小企业使用没问题；-> v3.1
+  * 只是加锁了，没有释放锁，出异常的话，可能无法释放锁，必须要在代码层面finally释放锁 -> v3.2
+  * 如果服务宕机，部署了微服务代码层面根本就没有走到finally这块，没办法保证解锁，这个Key没有被删除，需要对锁设置过期时间 -> v3.2
+  * 为redis的分布式锁key增加过期时间，还必须要保证setnx+过期时间在同一行，保证原子性 -> v4.1
+    * 程序由于执行超过锁的过期时间，所以在finally中必须规定只能自己删除自己的锁，不能把别人的锁删除了，防止张冠李戴 -> v5.0
+      * 将Lock、unlock变成LUA脚本保证原子性； -> v6.0
+        * 保证锁的可重入性，hset替代setnx+Lock变成LUA脚本，保障可重入性； -> v7.0
+          * 锁的自动续期 -> v8.0
 
 
 
