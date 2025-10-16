@@ -334,12 +334,13 @@ https://github.com/redisson/redisson/wiki/8.-distributed-locks-and-synchronizers
 
 * RedLock 已经被弃用了，使用RLock
   * This object is deprecated. Refer to this [article](https://martin.kleppmann.com/2016/02/08/how-to-do-distributed-locking.html) for more details. Superseded by [RLock](https://redisson.pro/docs/data-and-services/locks-and-synchronizers/#lock) and [RFencedLock](https://redisson.pro/docs/data-and-services/locks-and-synchronizers/#fair-lock) objects.
+  * 
 
 使用Redisson分布式锁，需要单独的Redis master多节点，不能是哨兵模式的master或者集群模式的master；
 
 ![image-20251015221955283](../image2/image-20251015221955283.png)
 
-加入现在有三台Redis 服务器，并且是master：
+加入现在有三台Redis 服务器，并且是master：需要3个都锁住才能往下执行，与RedLock不同。
 
 ```java
 RLock lock1 = redisson1.getLock("lock1");
@@ -358,3 +359,24 @@ multiLock.lock();
 
 
 
+### 9.5.3 RedLock 被废弃的主要原因包括一致性风险、性能问题和维护成本过高：
+
+一致性风险
+
+RedLock 依赖系统时钟同步，若节点间时钟漂移（如某节点时间快）会导致锁提前失效，破坏互斥性。在网络延迟或垃圾回收（GC）停顿场景中，可能引发锁提前释放或并发冲突。 ‌12
+
+性能问题
+
+RedLock 需要等待多数节点（N/2+1）响应才能加锁成功，高延迟环境（如跨地域部署）会显著降低性能。 ‌
+
+维护成本高
+
+需部署多个独立Redis 主节点（通常≥5个），且需保证节点无主从复制关系，增加运维复杂度。 ‌
+
+替代方案
+
+Redisson 推荐使用简化模型：
+
+- ‌**RedissonLock**‌：基于单个 Redis 实例，适用于大多数场景
+- ‌**RedissonMultilock**‌：组合锁，适用于多资源同步锁定
+- ‌**RedissonRedlock**‌：改进版分布式锁，性能和一致性更优 ‌12

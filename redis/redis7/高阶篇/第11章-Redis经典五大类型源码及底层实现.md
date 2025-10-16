@@ -1,5 +1,14 @@
 # 第11章-Redis经典五大类型源码及底层实现
-### Redis数据类型的底层数据结构
+## 11.1 粉丝反馈回来的题目
+
+* redis的跳跃列表了解吗？这个数据机构有什么特点
+* redis项目里面怎么用？redis的数据结构都了解哪些？布隆过滤怎么用？
+* redis的多路io服用如何理解？为什么单线程还可以抗那么高的qps
+* redis的zset底层实现，说了压缩列表和跳表，问这样设计的优缺点？
+* redis的跳表说一下，解决了哪些问题，时间复杂度和空间复杂度如何？
+* redis的zset用的什么数据结构
+
+### 11.1.1 Redis数据类型的底层数据结构
 
 - SDS动态字符串
 - 双向链表
@@ -10,13 +19,152 @@
 - 快速列表quicklist
 - 紧凑列表listpack
 
-### 本章节意义
+### 11.1.2 本章节意义
 
 90%是没有太大意义的，更多的是为了面试
 
 但是如果是大厂，会内部重构redis，比如阿里云redis，美团tair，滴滴kedis等
 
+## 11.2 redis源码在哪里
 
+* redis-7.0.5\src
+
+* https://github.com/redis/redis
+
+![image-20251016215645893](../image2/image-20251016215645893.png)
+
+## 11.3 源码分析参考书
+
+* 《Redis设计与实现》
+* 《Redis5设计与源码分析》
+
+## 11.4 Redis源代码的核心部分
+
+* src源码包下该如何看
+
+  * 源码分析思路
+
+    * 外面考什么就看什么
+    * 分类
+
+  * Redis基本的数据结构（骨架）
+
+    * Github官网说明
+
+      ![image-20251016220115027](../image2/image-20251016220115027.png)
+
+      * Redis对象object.c
+      * 字符串t_string.c
+      * 列表t_list.c
+      * 字典t_hash.c
+      * 集合及有序集合t_set.c和t_zset.c
+      * 数据流t_stream.c：Streams的底层实现结构listpack.c和rax.c；了解即可
+
+    * 简单动态字符串sds.c
+
+    * 整数集合intset.c
+
+    * 压缩列表ziplist.c
+
+    * 快速链表quicklist.c
+
+    * listpack
+
+    * 字段dict.c
+
+  * Redis数据库的实现
+
+    * 数据库的底层实现db.c
+    * 持久化rdb.c和aof.c
+
+  * Redis服务端和客户端实现
+
+    * 事件驱动ae.c和ae_epoll.c
+    * 网络链接anet.c和networking.c
+    * 服务端程序server.c
+    * 客户端程序redis-cli.c
+
+  * 其他
+
+    * 主从复制replication.c
+    * 哨兵sentinel.c
+    * 集群cluster.c
+    * 其他数据机构，如hyperloglog.c、geo.c等
+    * 其他功能，如pub/sub、Lua脚本
+
+## 11.5 我们平时说的redis时字典数据库KV键值对到底时什么
+
+### 11.5.1 怎样实现键值对（key-value）数据库的
+
+* redis时key-value存储系统
+
+  * key一般都是String类型的字符串
+  * value类型则为redis对象
+    * value可以时字符串对象，也可以时集合数据类型的对象，比如List对象、Hash对象、Set对象
+
+* 图说
+
+  ![image-20251016221016770](../image2/image-20251016221016770.png)
+
+### 11.5.2 10类型说明（粗分）
+
+* 传统的5大类型
+  * String
+  * List
+  * Hash
+  * Set
+  * ZSet
+* 新介绍的5大类型
+  * bitmap--实质String
+  * hyperLogLog--实质String
+  * GEO--实质Zset
+  * Stream--实质Stream
+  * BITFIFLD--看具体key
+
+### 11.5.3 上帝视角
+
+![image-20251016221516465](../image2/5.上帝视角.png)
+
+### 11.5.4 Redis定义了redisObject结构体来表示string、hash、list、set、zset等数据类型
+
+Redis中一切皆是KV,键值对俗称dict字段，用户api对到redis中时RedisObject对象的高度抽象，底层C语言时KV，dict字典
+
+* C语言struct结构体语法简介
+
+  ![](../image2/6.C语言struct结构体简介.jpg)
+
+  ![](../image2/7.typedef关键字.jpg)
+
+* Redis中每个对象都是一个redisObject结构
+
+* 字典、KV是什么（重点）
+
+  <font color = 'red'>每个键值对都会有一个dictEntry：</font>
+
+  <font color = 'red'>源码位置：dict.h</font>
+
+  ![](../image2/8.dict.h.jpg)
+
+  <font color = 'red'>重点：从dictEntry到redisObject</font>
+  ![](../image2/9.server.h.jpg)
+
+* 这些键值对如何保存进Redis并进行读取操作，O(1)复杂度
+
+  ![image-20251016223712899](../image2/image-20251016223712899.png)
+
+* redisObject +Redis数据类型+Redis 所有编码方式(底层实现)三者之间的关系
+
+  ![](../image2/10.server.h.jpg)
+
+  ![](../image2/11.底层实现.jpg)
+
+
+
+
+
+11.6 5大结构底层C语言源码分析
+
+11.7 skiplist调表面试题
 
 ### Set的两种编码格式
 
@@ -178,144 +326,6 @@ ziplist(压缩列表):当有序集合的元素个数小于zset-max-ziplist- entr
 维护成本相对要高，
 在单链表中，一旦定位好要插入的位置，插入结点的时间复杂度是很低的，就是O(1)but
 新增或者删除时需要把所有索引都更新一遍，为了保证原始链表中数据的有序性，我们需要先找到要动作的位置，这个查找操作就会比较耗时最后在新增和删除的过程中的更新，时间复杂度也是o(log n)
-
-
-
-
-
-
-
-# src源码包下面该如何看？
-
-### 源码在哪
-
-\redis-7.0.5\src
-
-![](../image2/1.redis编写语言.jpg)
-
-![](../image2/2.redis源码包.jpg)
-
-https://github.com/redis/redis/tree/7.0/src
-
-### 源码分析思路
-
-工作和面试中需要什么，就看什么
-
-### Redis基本的数据结构(骨架)
-
-- github官网说明
-
-  ![](../image2/3.Redis源码官网说明.jpg)
-
-  - Redis对象object.c
-  - 字符串t_string.c
-  - 列表t_list.c
-  - 字典t_hash.c
-  - 集合及有序集合t_set.c和t_zset.c
-  - 数据流t_stream.c：Streams的底层实现结构listpack.c和rax.c；了解即可
-
-- 简单动态字符串sds.c
-
-- 整数集合intset.c
-
-- 压缩列表ziplist.c
-
-- 快速链表quicklist.c
-
-- listpack
-
-- 字典dict.c
-
-### Redis数据库的实现
-
-数据库的底层实现db.c
-
-持久化rdb.c和aof.c
-
-### Redis服务端和客户端实现
-
-事件驱动ae.c和ae_epoll.c
-
-网络连接anet.c和networking.c
-
-服务端程序server.c
-
-客户端程序redis-cli.c
-
-### 其他
-
-主从复制replication.c
-
-哨兵sentinel.c
-
-集群cluster.c
-
-其他数据结构，如hyperLogLog.c、geo.c等
-
-其他功能，如pub/sub、LUA脚本
-
-
-
-
-
-### 如何实现键值对（Key-Value）数据库的
-
-redis 是 key-value 存储系统，其中key类型一般为字符串，value 类型则为redis对象(redisObject)
-
-图说
-
-![](../image2/4.图解5大数据类型.jpg)
-
-### 10大类型说明（粗分）
-
-<font color = 'red'>传统的5大类型</font>
-
-- String
-- List
-- Hash
-- Set
-- ZSet
-
-新介绍的5大类型
-
-- bitmap -> 实质String
-- HyperLogLog -> 实质String
-- GEO -> 实质ZSet
-- Stream -> 实质Stream
-- bitfield -> 看具体key
-
-<font color = 'red'>上帝视角：</font>
-
-![](../image2/5.上帝视角.png)
-
-### Redis定义了redisObject结构体来表示string、hash、list、set、zset等数据类型
-
-- C语言struct结构体语法简介
-
-  ![](../image2/6.C语言struct结构体简介.jpg)
-
-  ![](../image2/7.typedef关键字.jpg)
-
-- Redis中每个对象都是一个redisObject结构
-
-- 字典、KV是什么（重点）
-
-  <font color = 'red'>每个键值对都会有一个dictEntry：</font>
-
-  <font color = 'red'>源码位置：dict.h</font>
-
-  ![](../image2/8.dict.h.jpg)
-
-  <font color = 'red'>重点：从dictEntry到redisObject</font>
-  ![](../image2/9.server.h.jpg)
-
-- redisObject +Redis数据类型+Redis 所有编码方式(底层实现)三者之间的关系
-
-  ![](../image2/10.server.h.jpg)
-
-  ![](../image2/11.底层实现.jpg)
-
-
 
 
 

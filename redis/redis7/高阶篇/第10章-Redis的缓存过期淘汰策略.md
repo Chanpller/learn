@@ -46,6 +46,7 @@ redis默认内存是多少？在哪查看？如何设置修改？
   通过命令修改，但是redis重启后会失效
 
   ![](../image2/4.通过命令修改.png)
+  ![image-20251016204316353](../image2/image-20251016204316353.png)
 
 - 什么命令查看redis内存使用情况
 
@@ -57,20 +58,20 @@ redis默认内存是多少？在哪查看？如何设置修改？
 
 ![](../image2/5.超出内存.png)
 
-结论
+结论：
 
 设置了maxmemory的选项，假如redis内存使用达到了上限，没有加上过期时间就会导致数据写满maxmemory，为了避免类似情况，需要使用内存淘汰策略
 
-## 
+## 10.3 王redis里写的数据时怎么没了的？它如何删除的？
 
 
-### redis过期键的删除策略
+### 10.3.1 redis过期键的删除策略
 
-如果一个键是过期的，那它到了过期时间之后是不是马上就从内存中被删除了呢？
+* 如果一个键是过期的，那它到了过期时间之后是不是马上就从内存中被删除了呢？肯定不是
 
-如果不是，那过期后到底什么时候被删除呢？是什么操作？
+* 如果不是，那过期后到底什么时候被删除呢？是什么操作？
 
-### redis三种删除策略
+### 10.3.2 redis三种删除策略
 
 1. #### 立即删除/定时删除
 
@@ -90,7 +91,22 @@ redis默认内存是多少？在哪查看？如何设置修改？
 
    **总结：**对内存不友好，用存储空间换取处理器性能（拿空间换时间），开启惰性删除淘汰，lazyfree-lazy-eviction=yes
 
+   ```
+   lazyfree-lazy-eviction：表示当Redis运行内存超过maxmemory时，释放开启lazy free机制删除。
+   lazyfree-lazy-expire：表示设置了过期时间的key/value，当过期之后释放开启lazy free机制删除
+   lazyfree-lazy-server-del：有些指令在处理已存在的key时，会
+   带有一个隐式的del键的操作，比如rename命令，当目标key已存储，redis会先删除目标key, 如果这些目标key是一个big key，就会造成阻塞删除的问题，此配置表示在这种场景中是否开启lazy free机制删除。
+   slave-lazy-flush：针对slave从节点进行全量数据同步，slave在加载master的RDB文件之前，会运行flushall来清理自己的数据，他表示此时是否开启lazy free机制删除。
+   
+   建议开其中的lazyfree-lazy-eviction、lazyfree-lazy-expire、lazyfree-lazy-server-del 等配置，这样就可以有效提高主线程的执行效率。
+   ```
+
+   
+
 3. #### 上面两种方案都走极端
+
+   * 定期抽样key，判断是否过期
+   * 有漏网之鱼
 
    <font color = 'red'>**定期删除**策略是前两种策略的折中：</font>
    定期删除策略<font color = 'red'>每隔一段时间执行一次删除过期键操作</font>并通过限制删除操作执行时长和频率来减少删除操作对CPU时间的影响。
@@ -107,7 +123,7 @@ redis默认内存是多少？在哪查看？如何设置修改？
 
    定期删除策略的难点是确定删除操作执行的时长和频率：如果删除操作执行得太频繁或者执行的时间太长，定期删除策略就会退化成立即删除策略，以至于将CPU时间过多地消耗在删除过期键上面。如果删除操作执行得太少，或者执行的时间太短，定期删除策略又会和惰性删除束略一样，出现浪费内存的情况。因此，如果采用定期删除策略的话，服务器必须根据情况，合理地设置删除操作的执行时长和执行频率。
 
-### 上述步骤都过堂了，还有漏洞吗？
+### 10.3.3 上述步骤都过堂了，还有漏洞吗？
 
 1 定期删除时，从来没有被抽查到
 
@@ -116,17 +132,57 @@ redis默认内存是多少？在哪查看？如何设置修改？
 上述两个步骤 ======> 大量过期的key堆积在内存中，导致redis内存空间紧张或者很快耗尽
 <font color = 'blue'>必须要有一个更好的兜底方案......</font>
 
-### redis配置文件
+## 10.4 redis缓存淘汰策略
 
-在MEMORY MANAGEMENT中
+### 10.4.1 redis配置文件
+
+在MEMORY MANAGEMENT中配置maxmemory-policy配置项
 
 ![](../image2/6.缓存淘汰策略配置.png)
 
-### LRU和LFU算法的区别是什么
+### 10.4.2 LRU和LFU算法的区别是什么
 
-LRU：最近<font color = 'red'>最少使用</font>页面置换算法，淘汰最长时间未被使用的页面，看页面最后一次被使用到发生调度的时间长短，首先淘汰最长时间未被使用的页面。
+LRU：最近<font color = 'red'>最少使用</font>页面置换算法，淘汰最长时间未被使用的页面，看页面最后一次被使用到发生调度的时间长短，首先淘汰最长时间未被使用的页面。（LRU基于数据最近被访问的时间（时间维度），优先淘汰最久未使用的数据）
 
-LFU：最近<font color = 'red'>最不常用</font>页面置换算法，淘汰一定时期内被访问次数最少的页面，看一定时间段内页面被使用的频率，淘汰一定时期内被访问次数最少的页
+```java
+public class LRUCache<K, V> extends LinkedHashMap<K, V> {
+
+    // 缓存最大容量
+    private final int maxCapacity;
+
+    // 构造函数：accessOrder=true 表示“按访问顺序排序”（核心）
+    public LRUCache(int maxCapacity) {
+
+        super(maxCapacity, 0.75f, true);
+        this.maxCapacity = maxCapacity;
+    }
+
+    // 核心：当缓存大小超过maxCapacity时，自动删除“最老的 entry”（最近最少使用的）
+    @Override
+    protected boolean removeEldestEntry(Map.Entry<K, V> eldest) {
+
+        return size() > maxCapacity;
+    }
+
+    // 测试
+    public static void main(String[] args) {
+
+        LRUCache<Integer, String> cache = new LRUCache<>(3);
+        cache.put(1, "A");
+        cache.put(2, "B");
+        cache.put(3, "C");
+        System.out.println(cache); // 输出：{1=A, 2=B, 3=C}（插入顺序）
+
+        cache.get(1); // 访问1，1变成最近使用
+        System.out.println(cache); // 输出：{2=B, 3=C, 1=A}（按访问顺序排序）
+
+        cache.put(4, "D"); // 缓存满了，淘汰最老的2
+        System.out.println(cache); // 输出：{3=C, 1=A, 4=D}
+    }
+}
+```
+
+LFU：最近<font color = 'red'>最不常用</font>页面置换算法，淘汰一定时期内被访问次数最少的页面，看一定时间段内页面被使用的频率，淘汰一定时期内被访问次数最少的页。（LFU基于数据被访问的频率（频率维度），优先淘汰访问次数最少的数据。‌‌）
 
 <font color = 'blue'>举个栗子</font>
 
@@ -136,7 +192,149 @@ LFU：最近<font color = 'red'>最不常用</font>页面置换算法，淘汰�
 
 可见LRU关键是看页面最后一次被使用到发生调度的时间长短，而LFU关键是看一定时间段内页面被使用的频率
 
-### 淘汰策略有哪些(Redis7版本)
+```java
+import java.util.*;
+
+public class LFUCache<K, V> {
+   
+    // 缓存节点：存储key、value、使用频率、最后使用时间（处理频率相同时的淘汰）
+    static class Node<K, V> {
+   
+        K key;
+        V value;
+        int freq; // 使用频率
+        long lastUseTime; // 最后使用时间（毫秒）
+
+        public Node(K key, V value) {
+   
+            this.key = key;
+            this.value = value;
+            this.freq = 1; // 初始频率1
+            this.lastUseTime = System.currentTimeMillis();
+        }
+    }
+
+    private final int maxCapacity;
+    private final Map<K, Node<K, V>> cache; // key→Node
+    private final Map<Integer, LinkedHashSet<K>> freqMap; // 频率→key集合（LinkedHashSet保证顺序）
+    private int minFreq; // 当前最小频率（快速定位要淘汰的key）
+
+    public LFUCache(int maxCapacity) {
+   
+        this.maxCapacity = maxCapacity;
+        this.cache = new HashMap<>();
+        this.freqMap = new HashMap<>();
+        this.minFreq = 1;
+    }
+
+    // 1. 获取缓存：命中则更新频率和最后使用时间
+    public V get(K key) {
+   
+        Node<K, V> node = cache.get(key);
+        if (node == null) {
+   
+            return null;
+        }
+        // 更新节点频率
+        updateNodeFreq(node);
+        return node.value;
+    }
+
+    // 2. 存入缓存：不存在则新增，存在则更新；满了则淘汰最小频率的key
+    public void put(K key, V value) {
+   
+        if (maxCapacity <= 0) {
+   
+            return;
+        }
+
+        Node<K, V> node = cache.get(key);
+        if (node != null) {
+   
+            // 存在：更新value、频率、最后使用时间
+            node.value = value;
+            node.lastUseTime = System.currentTimeMillis();
+            updateNodeFreq(node);
+        } else {
+   
+            // 不存在：检查缓存是否满
+            if (cache.size() >= maxCapacity) {
+   
+                // 淘汰最小频率的key（频率相同则淘汰最早使用的）
+                evictMinFreqKey();
+            }
+            // 新增节点
+            Node<K, V> newNode = new Node<>(key, value);
+            cache.put(key, newNode);
+            // 加入freqMap：频率1的集合
+            freqMap.computeIfAbsent(1, k -> new LinkedHashSet<>()).add(key);
+            // 新节点频率是1，minFreq重置为1
+            minFreq = 1;
+        }
+    }
+
+    // 辅助：更新节点频率
+    private void updateNodeFreq(Node<K, V> node) {
+   
+        K key = node.key;
+        int oldFreq = node.freq;
+        int newFreq = oldFreq + 1;
+
+        // 1. 从旧频率的集合中移除key
+        LinkedHashSet<K> oldFreqSet = freqMap.get(oldFreq);
+        oldFreqSet.remove(key);
+        // 如果旧频率是minFreq，且集合为空，minFreq+1
+        if (oldFreq == minFreq && oldFreqSet.isEmpty()) {
+   
+            minFreq = newFreq;
+        }
+
+        // 2. 加入新频率的集合
+        freqMap.computeIfAbsent(newFreq, k -> new LinkedHashSet<>()).add(key);
+
+        // 3. 更新节点的频率和最后使用时间
+        node.freq = newFreq;
+        node.lastUseTime = System.currentTimeMillis();
+    }
+
+    // 辅助：淘汰最小频率的key（频率相同则淘汰最早使用的）
+    private void evictMinFreqKey() {
+   
+        // 1. 获取最小频率的key集合
+        LinkedHashSet<K> minFreqSet = freqMap.get(minFreq);
+        // 2. 淘汰集合中第一个key（LinkedHashSet按插入顺序，即最早使用的）
+        K evictKey = minFreqSet.iterator().next();
+        minFreqSet.remove(evictKey);
+
+        // 3. 同步删除cache和freqMap（如果集合为空）
+        cache.remove(evictKey);
+        if (minFreqSet.isEmpty()) {
+   
+            freqMap.remove(minFreq);
+        }
+
+        System.out.println("淘汰key：" + evictKey);
+    }
+
+    // 测试
+    public static void main(String[] args) {
+   
+        LFUCache<Integer, String> cache = new LFUCache<>(3);
+        cache.put(1, "A");
+        cache.put(2, "B");
+        cache.put(3, "C");
+        System.out.println(cache.get(1)); // 输出A，频率变成2，minFreq还是1
+        cache.put(4, "D"); // 缓存满，淘汰minFreq=1的2（B）
+        System.out.println(cache.get(2)); // 输出null（已淘汰）
+        cache.get(3); // 3频率变成2，minFreq变成2
+        cache.get(4); // 4频率变成2
+        cache.put(5, "E"); // 缓存满，淘汰minFreq=2的3（C，最早使用）
+    }
+```
+
+
+
+### 10.4.3 淘汰策略有哪些(Redis7版本)
 
 1. noeviction：不会驱逐任何key，表示即使内存达到上限也不进行置换，所有能引起内存增加的命令都会返回error
 2. allkeys-lru：对所有key使用LRU算法进行删除，优先删除掉最近最不经常使用的key，用以保存新数据
@@ -147,7 +345,7 @@ LFU：最近<font color = 'red'>最不常用</font>页面置换算法，淘汰�
 7. allkeys-lfu：对所有key使用LFU算法进行删除
 8. volatile-lfu：对所有设置了过期时间的key使用LFU算法进行删除
 
-### <font color = 'red'>对上面淘汰策略的总结</font>
+### 10.4.4 <font color = 'red'>对上面淘汰策略的总结</font>
 
 2个维度：过期键中筛选；所有键中筛选
 
@@ -155,11 +353,11 @@ LFU：最近<font color = 'red'>最不常用</font>页面置换算法，淘汰�
 
 8个选项
 
-### 淘汰策略怎么选
+### 10.4.5 淘汰策略怎么选
 
 ![](../image2/7.淘汰策略的选择.png)
 
-### 如何配置？如何修改？
+### 10.4.6 如何配置？如何修改？
 
 - 直接使用config命令
 - 直接redis.conf配置文件
