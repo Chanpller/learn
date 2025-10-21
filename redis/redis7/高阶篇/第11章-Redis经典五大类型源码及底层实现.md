@@ -162,9 +162,411 @@ Redis中一切皆是KV,键值对俗称dict字段，用户api对到redis中时Red
 
 
 
-11.6 5大结构底层C语言源码分析
+## 11.6 5大结构底层C语言源码分析
 
-11.7 skiplist调表面试题
+### 11.6.1 重点：redis数据类型与数据结构总纲图
+
+1. 源码分析总体数据结构大纲
+
+   - SDS动态字符串
+   - 双向链表
+   - 压缩列表ziplist
+   - 哈希表Hashtable
+   - 跳表skiplist
+   - 整数集合intset
+   - 快速列表quicklist
+   - 紧凑列表listpack
+
+2. redis6.0.5
+
+   ![](../image2/12.redis6.0.5.jpg)
+
+   string = SDS
+
+   Set = intset + hashtabLe
+
+   ZSet = skiplist + ziplist
+
+   List = quicklist + ziplist
+
+   Hash = hashtable + ziplist
+
+3. 2021.11.29之后，Redis7
+   ![](../image2/13.Redis7.jpg)
+
+   string = SDS
+
+   Set = intset + hashtabLe
+
+   ZSet = skiplist + listpack紧凑列表
+
+   List = quicklist
+
+   Hash = hashtable + listpack
+
+### 11.6.2 源码分析总体数据结构大纲
+
+程序员写代码时脑子底层思维
+
+![image-20251021222331117](../image2/image-20251021222331117.png)
+
+上帝视角最右边编码如何来的
+
+![image-20251016221516465](../image2/5.上帝视角.png)
+
+redisObject操作底层定义来自哪里？来自源码server.h
+
+![](../image2/11.底层实现.jpg)
+
+![image-20251021222700132](../image2/image-20251021222700132.png)
+
+### 11.6.3 从set hellow world说起
+
+* 每个键值对都会有一个dictEntry
+  * set hello word为例，因为Redis是KV键值对的数据库，每个键值对都会有一个dictEntry(源码位置:dict.h)，里面指向了key和value的指针,next 指向下一个dictEntry。
+  * key是字符串，但是 Redis没有直接使用C的字符数组，而是存储在redis自定义的SDS中。
+  * value 既不是直接作为字符串存储，也不是直接存储在 SDs中，而是存储在redisobject中。
+  * 实际上五种常用的数据类型的任何一种，都是通过 redisobject来存储的。
+
+![](../image2/15.redisObject.jpg)
+
+* 看看类型：type 键
+
+* 看看编码：object encoding hello
+
+![](../image2/14.类型.jpg)
+
+### 11.6.4 redisObject结构的作用
+
+为了便于操作，Redis采用redisObjec结构来统一五种不同的数据类型，这样所有的数据类型就都可以以相同的形式在函数间传递而不用使用特定的类型结构。同时，为了识别不同的数据类型，redisObjec中定义了type和encoding字段对不同的数据类型加以区别。简单地说，redisObjec就是string、hash、list、set、zset的父类，可以在函数间传递时隐藏具体的类型信息，所以作者抽象了redisObjec结构来到达同样的目的。
+
+![](../image2/16.redisObject解析.jpg)
+
+- redisObject各字段的含义
+
+  ![](../image2/17.redisObjec各字段含义.jpg)
+
+  1、4位的type表示具体的数据类型
+  2、4位的encoding表示该类型的物理编码方式见下表，同一种数据类型可能有不同的编码方式。(比如String就提供了3种:int embstr raw)
+
+  ![](../image2/18.encoding编码.jpg)
+
+  3、lru字段表示当内存超限时采用LRU算法清除内存中的对象。
+
+  4、refcount表示对象的引用计数。
+  <font color='red'>5、ptr指针指向真正的底层数据结构的指针。</font>
+
+- 案例
+
+  set age 17
+
+  ![](../image2/19.模拟同一数据类型不同编码.jpg)
+
+  ![](../image2/20.案例解析.jpg)
+
+| type     | 类型                          |
+| -------- | ----------------------------- |
+| encoding | 编码，本案例是数值类型        |
+| lru      | 最近被访问的时间              |
+| refcount | 等于1，表示当前对象引用的次数 |
+| ptr      | value值是多少，当前就是17     |
+
+
+
+### 11.6.5 经典5大数据结构解析
+
+#### 11.6.5.1 各类型的数据结构的编码映射和定义
+
+![](../image2/21.数据类型定义.jpg)
+
+#### 11.6.5.2 Debug Object key 
+
+- 命令：debug object key
+
+  ![](../image2/22.Debug命令.jpg)
+
+  开启前：
+
+  ![](../image2/23.Debug命令默认关闭.jpg)
+
+  开启后：
+
+  ![](../image2/24.开启debug命令.jpg)
+
+  ![](../image2/25.开启后.jpg)
+
+  Value at：内存地址
+  refcount：引用次数
+  encoding：物理编码类型
+  serializedlength：序列化后的长度（注意这里的长度是序列化后的长度，保存为rdb文件时使用了该算法，不是真正存储在内存的大小)，会对字串做一些可能的压缩以便底层优化
+  lru：记录最近使用时间戳ge
+  lru_seconds_idle：空闲时间（每get一次，最近使用时间戳和空闲时间都会刷新）
+
+
+
+#### 11.6.5.3  String数据结构介绍
+
+##### 11.6.5.3.1 3大物理编码格式
+
+**RedisObject内部对应三大物理编码**
+
+![img](../image2/26.redisObject.jpg?lastModify=1761057805)
+
+1. 整数 int
+
+   - 保存long 型（长整型）的64位（8个字节）有符号整数
+
+     ![img](../image2/27.long型.jpg?lastModify=1761057805)
+
+   - 上面数字最多19位
+
+   - 如果是数字的最大值或最小值，使用INCR key 递增会报 ERR increment or decrement would overflow
+
+   - 只有整数才会使用int，如果是浮点数，Redis内部其实先将浮点数转化为字符串值，然后再保存。
+
+2. 嵌入式 embstr
+
+   代表embstr格式的SDS(Simple Dynamic String简单动态字符串)，保存长度小于44字节的字符串
+
+   EMBSTR顾名思义即：embedded string，表示嵌入式的String
+
+3. 未加工数据 raw
+
+   保存长度大于44字节的字符串
+
+##### 11.6.5.3.2 **3**大物理编码案例
+
+- 案例演示
+
+  ![img](../image2/28.string三大物理编码演示.jpg?lastModify=1761057805)
+
+- C语言中字符串的展现
+
+  ![img](../image2/29.C语言中字符串的展现.jpg?lastModify=1761057805)
+
+  Redis没有直接复用C语言的字符串，而是新建了属于自己的结构-----SDS 在Redis数据库里，包含字符串值的键值对都是由SDS实现的(Redis中所有的键都是由字符串对象实现的即底层是由SDS实现，Redis中所有的值对象中包含的字符串对象底层也是由SDS实现)。
+
+  ![img](../image2/30.jpg?lastModify=1761057805)
+
+- SDS简单动态字符串
+
+  - sds.h源码分析
+
+    ![img](../image2/31.sds.h.jpg?lastModify=1761057805)
+
+  - 说明
+
+    ![img](../image2/32说明.jpg?lastModify=1761057805)
+
+    * Redis中字符串的实现,SDS有多种结构( sds.h) : sdshdr5、(2^5=32byte)，但是不会使用，是redis团队内部测试使用 sdshdr8、(2^8=256byte) sdshdr16、(2^16=65536byte=64KB) sdshdr32、(2 ^32byte=4GB) sdshdr64，2的64次方byte=17179869184G用于存储不同的长度的字符串。
+
+    * len表示SDS的长度，使我们在获取字符串长度的时候可以在o(1)情况下拿到，而不是像C那样需要遍历一遍字符串。
+
+    * alloc可以用来计算 free就是字符串已经分配的未使用的空间，有了这个值就可以引入预分配空间的算法了，而不用去考虑内存分配的问题。
+
+    * buf表示字符串数组，真实存数据的。
+
+  - 官网
+
+- Redis为什么要重新设计一个SDS数据结构？
+
+  ![img](../image2/33.redis字符串展示.jpg?lastModify=1761057805)
+
+  |                | C语言                                                        | SDS                                                          |
+  | -------------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
+  | 字符串长度处理 | 需要从头开始遍历,直到遇到'\O'为止，时间复杂度O(N)            | 记录当前字符串的长度，直接读取即可，时间复杂度O(1)           |
+  | 内存重新分配   | 分配内存空间超过后，会导致数组下标越级或者内存分配溢出       | 空间预分配 SDS修改后，len长度小于1M，那么将会额外分配与 len相同长度的未使用空间。如果修改后长度大于1M，那么将分配1M的使用空间。 惰性空间释放 有空间分配对应的就有空间释放。SDS缩短时并不会回收多余的内存空间,而是使用free字段将多出来的空间记录下来。如果后续有变更操作，直接使用free中记录的空间，减少了内存的分配。 |
+  | 二进制安全     | 二进制数据并不是规则的字符串格式，可能会包含一些特殊的字符，比如 '\0'等。前面提到过，C中字符串遇到'\0'会结束,那'\0'之后的数据就读取不上了 | 根据len长度来判断字符串结束的，二进制安全的问题就解决了      |
+
+- 源码分析
+
+  用户API
+
+  set k1 v1 底层发生了什么？调用关系？
+
+  ![img](../image2/34.底层调用关系.png?lastModify=1761057805)
+
+- 3大物理编码方式
+
+  ![img](../image2/35.3大物理编码方式.png?lastModify=1761057805)
+
+  **INT编码格式**
+
+  命令示例: set k1 123
+
+  当字符串键值的内容可以用一个64位有符号整形来表示时，Redis会将键值转化为long型来进行存储，此时即对应 OB_ENCODING_INT 编码类型。内部的内存结构表示如下:
+
+  ![img](../image2/36.INT类型.png?lastModify=1761057805)
+
+  * Redis启动时会预先建立10000个分别存储0~9999的redisObject变量作为共享对象，这意味着如果set字符串的键值在0~10000之间的话，则可以直接指向共享对象而不需要再建立新对象，此时键值不占用空间(享元模式)。比如 set k1 123    set key2 123
+
+    ![image-20251021231203124](../image2/image-20251021231203124.png)
+
+  * 源码
+
+    ![image-20251021231350042](../image2/image-20251021231350042.png)
+
+  **EMBSTR编码格式**
+
+  ![img](../image2/37.EMBSTR编码格式.png?lastModify=1761057805)
+
+  对于长度小于 44的字符串，Redis 对键值采用OBJ_ENCODING_EMBSTR 方式，EMBSTR 顾名思义即: embedded string，表示嵌入式的String。从内存结构上来讲 即字符串 sds结构体与其对应的 redisObject 对象分配在同一块连续的内存空间，字符串sds嵌入在redisObiect对象之中一样。
+
+**RAW编码格式**
+
+当字符串的键值为长度大于44的超长字符串时，Redis 则会将键值的内部编码方式改为OBJ_ENCODING_RAW格式，这与OBJ_ENCODING_EMBSTR编码方式的不同之处在于，此时动态字符sds的内存与其依赖的redisobiect的内存不再连续了
+
+![image-20251021231551251](../image2/image-20251021231551251.png)
+
+- 明明没有超过阈值，为什么变成raw了
+
+  ![img](../image2/38.raw.png)
+
+##### 11.6.5.3.3 案例结论
+
+只有整数才会使用int,如果是浮点数, Redis内部其实先将浮点数转化为字符串值,然后再保存
+
+embstr与raw类型底层的数据结构其实都是SDS(简单动态字符串，Redis内部定义sdshdr一种结构)
+
+| int    | Long类型整数时，RedisObiect中的ptr指针直接赋值为整数数据，不再额外的指针再指向整数了，节省了指针的空间开销。 |
+| ------ | ------------------------------------------------------------ |
+| embstr | 当保存的是字符串数据且字符串小于等于44字节时，emstr类型将会调用内存分配函数，只分配一块连续的内存空间，空间中依次包含 redisObject 与 sdshdr 两个数据结构，让元数据、指针和SDS是一块连续的内存区域，这样就可以避免内存碎片 |
+| raw    | 当字符串大于44字节时，SDS的数据量变多变大了，SDS和RedisObject布局分家各自过，会给SDS分配多的空间并用指针指SDS结构，raw 类型将会调用两次内存分配函数，分配两块内存空间，一块用于包含 redisObject结构，而另一块用于包含sdshdr 结构 |
+
+![img](../image2/39.string总结.png?lastModify=1761057805)
+
+总结：Redis内部会根据用户给的不同键值而使用不同的编码格式，自适应地选择较优化的内部编码格式，而这一切对用户完全透明。
+
+#### 11.6.5.4 Hash数据结构介绍
+
+##### 11.6.5.4.1 Hash的两种编码格式
+
+* Redis6以前：ziplist、Hashtable
+
+* Redis7：listpack、Hashtable
+
+##### 11.6.5.4.2 Redis6
+
+```shell
+#使用命令查看
+config get hash*
+
+#设置对象
+hset user01 name z3
+
+#查看对象编码
+object encoding user01
+
+#设置hash对象使用ziplist最大的属性个数
+config set hash-max-ziplist-entries 3
+
+#设置hash对象使用ziplist最大的值长度
+config set hash-max-ziplist-value 8
+
+#设置的hash任意超过上面两个值，就会变成hashtable
+```
+
+hash-max-ziplist-entries：使用压缩列表保存时哈希集合中的最大元素个数。
+
+hash-max-ziplist-value：使用压缩列表保存时哈希集合中单个元素的最人长度。
+
+Hash类型键的字段个数 <font color = 'red'>小于 </font>hashh-max-ziplist-entries 并且每个字段名和字段值的长度 <font color = 'red'>小于 </font>hash-max-ziplist-value 时，Redis才会使用 OBJ_ENCODING_ZIPLIST来存该键，前述条件任意一个不满足则会转换为 OBJ_ENCODING_HT的编码方式
+
+![](../image2/40.Hashtable演示一(redis6).png)
+
+![](../image2/41.Hashtable演示二(redis6).png)
+
+**结论**
+
+1. 哈希对象保存的键值对数量小于 512个；
+2. 所有的键值对的健和值的字符串长度都小于等于 64byte (一个英文字母一个字节)时用ziplist，反之用hashtable；
+3. ziplist升级到hashtable可以，反过来降级不可以；即一旦从压缩列表转为了哈希表，Hash类型就会一直用哈希表进行保存而不会再转回压缩列表了。在节省内存空间方面哈希表就没有压缩列表高效了。
+
+**源码分析**
+
+* t_hash.c
+
+  * 在redis中，hashtable被称为字典（dictionary），它时一个数组+链表结构
+
+  * OBJ_ENCODING_HT编码分析。
+
+    ![image-20251021233415110](../image2/image-20251021233415110.png)
+
+    ![image-20251021233541219](../image2/image-20251021233541219.png)
+
+    ![image-20251021233615514](../image2/image-20251021233615514.png)
+
+    * 每个键值对都会有一个dictEntry
+
+  * haset命令解读
+
+    ![image-20251021233749515](../image2/image-20251021233749515.png)
+
+    * 类型
+
+      ![image-20251021233830425](../image2/image-20251021233830425.png)
+
+* ziplist.c
+
+  ![image-20251021233926108](../image2/image-20251021233926108.png)
+
+  * ziplist，什么样
+
+    ![image-20251021234222923](../image2/image-20251021234222923.png)
+
+    ![image-20251021234311433](../image2/image-20251021234311433.png)
+
+    * ziplist各个组成单元什么意思
+
+      ![image-20251021234502289](../image2/image-20251021234502289.png)
+
+  * zlentry，压缩列表节点构成
+
+    * 官网源码
+
+      ![image-20251021234741706](../image2/image-20251021234741706.png)
+
+    * zlentry实体结构解析
+
+      ![image-20251021234823770](../image2/image-20251021234823770.png)
+
+  * ziplist存取情况
+
+  * 明明有链表了，为什么出来一个压缩链表？
+
+  * ziplist总结
+
+##### 11.6.5.4.3 Redis7
+
+hash-max-listpack-entries：使用压缩列表保存时哈希集合中的最大元素个数。
+
+hash-max-listpack-value：使用压缩列表保存时哈希集合中单个元素的最人长度。
+
+Hash类型键的字段个数 <font color = 'red'>小于 </font> hash-max-listpack-entries且每个字段名和字段值的长度 <font color = 'red'>小于 </font> hash-max-listpack-value 时，Redis才会使用OBJ_ENCODING_LISTPACK来存储该键，前述条件任意一个不满足则会转换为 OBI_ENCODING_HT的编码方式
+
+![](../image2/42.Hashtable演示一(redis7).png)
+
+![](../image2/43.Hashtable演示二(redis7).png)
+
+![](../image2/44.Hashtable演示三(redis7).png)
+
+**结论**
+
+1. 哈希对象保存的键值对数量小于 512个；
+2. 所有的键值对的健和值的字符串长度都小于等于 64byte (一个英文字母一个字节时用listpack，反之用hashtable
+3. listpack升级到Hashtable可以，反过来降级不可以
+
+#### 11.6.5.5 List数据结构介绍
+
+#### 11.6.5.6 Set数据结构介绍
+
+#### 11.6.5.7 Zset数据结构介绍
+
+### 11.6.6 小总结
+
+
+
+## 11.7 skiplist调表面试题
 
 ### Set的两种编码格式
 
@@ -329,305 +731,23 @@ ziplist(压缩列表):当有序集合的元素个数小于zset-max-ziplist- entr
 
 
 
+1. 
 
-### 重点：redis数据类型与数据结构总纲图
 
-1. <font color = 'orange'>源码分析总体数据结构大纲</font>
 
-   - SDS动态字符串
-   - 双向链表
-   - 压缩列表ziplist
-   - 哈希表Hashtable
-   - 跳表skiplist
-   - 整数集合intset
-   - 快速列表quicklist
-   - 紧凑列表listpack
 
-2. redis6.0.5
 
-   ![](../image2/12.redis6.0.5.jpg)
 
-   string = SDS
 
-   Set = intset + hashtabLe
 
-   ZSet = skiplist + ziplist
 
-   List = quicklist + ziplist
 
-   Hash = hashtable + ziplist
 
-3. 2021.11.29之后，Redis7
-   ![](../image2/13.Redis7.jpg)
 
-   string = SDS
 
-   Set = intset + hashtabLe
 
-   ZSet = skiplist + listpack紧凑列表
 
-   List = quicklist
-
-   Hash = hashtable + listpack
-
-
-
-### 从set hello world说起
-
-每个键值对都会有一个dictEntry
-
-set hello word为例，因为Redis是KV键值对的数据库，<font color='red'>每个键值对都会有一个dictEntry(源码位置:dict.h)</font>，里面指向了key和value的指针,next 指向下一个dictEntry。
-
-key是字符串，但是 Redis没有直接使用C的字符数组，而是存储在redis自定义的SDS中。
-
-<font color='red'>value 既不是直接作为字符串存储，也不是直接存储在 SDs中，而是存储在redisobject中。</font>
-
-实际上五种常用的数据类型的任何一种，都是通过 redisobject来存储的。
-
-![](../image2/15.redisObject.jpg)
-
-看看类型：type 键
-
-看看编码：object encoding hello
-
-![](../image2/14.类型.jpg)
-
-### redisObject结构的作用
-
-为了便于操作，Redis采用redisObjec结构来统一五种不同的数据类型，这样所有的数据类型就都可以以相同的形式在函数间传递而不用使用特定的类型结构。同时，为了识别不同的数据类型，redisObjec中定义了type和encoding字段对不同的数据类型加以区别。简单地说，<font color='red'>redisObjec就是string、hash、list、set、zset的父类</font>，可以在函数间传递时隐藏具体的类型信息，所以作者抽象了redisObjec结构来到达同样的目的。
-
-![](../image2/16.redisObject解析.jpg)
-
-- redisObject各字段的含义
-
-  ![](../image2/17.redisObjec各字段含义.jpg)
-
-  1 4位的type表示具体的数据类型
-  2 4位的encoding表示该类型的物理编码方式见下表，同一种数据类型可能有不同的编码方式。(比如String就提供了3种:int embstr raw)
-
-  ![](../image2/18.encoding编码.jpg)
-
-  3 lru字段表示当内存超限时采用LRU算法清除内存中的对象。
-
-  4 refcount表示对象的引用计数。
-  <font color='red'>5 ptr指针指向真正的底层数据结构的指针。</font>
-
-- 案例
-
-  set age 17
-
-  ![](../image2/19.模拟同一数据类型不同编码.jpg)
-
-  ![](../image2/20.案例解析.jpg)
-
-| type     | leixing                       |
-| -------- | ----------------------------- |
-| encoding | 编码，本案例是数值类型        |
-| lru      | 最近被访问的时间              |
-| refcount | 等于1，表示当前对象引用的次数 |
-| ptr      | value值是多少，当前就是17     |
-
-
-
-### 各个类型的数据结构的编码映射和定义
-
-![](../image2/21.数据类型定义.jpg)
-
-### Debug Object key 
-
-- 命令：debug object key
-
-  ![](../image2/22.Debug命令.jpg)
-
-  开启前：
-
-  ![](../image2/23.Debug命令默认关闭.jpg)
-
-  开启后：
-
-  ![](../image2/24.开启debug命令.jpg)
-
-  ![](../image2/25.开启后.jpg)
-
-  Value at：内存地址
-  refcount：引用次数
-  encoding：物理编码类型
-  serializedlength：序列化后的长度（注意这里的长度是序列化后的长度，保存为rdb文件时使用了该算法，不是真正存储在内存的大小)，会对字串做一些可能的压缩以便底层优化
-  lru：记录最近使用时间戳
-  lru_seconds_idle：空闲时间（每get一次，最近使用时间戳和空闲时间都会刷新）
-
-
-
-
-
-### 3大物理编码格式
-
-**RedisObject内部对应三大物理编码**
-
-![](../image2/26.redisObject.jpg)
-
-1. 整数 int
-
-   - 保存long 型（长整型）的64位（8个字节）有符号整数
-
-     ![](../image2/27.long型.jpg)
-
-   - 上面数字最多19位
-
-   - <font color = 'blue'>只有整数才会使用int，如果是浮点数，Redis内部其实先将浮点数转化为字符串值，然后再保存。</font>
-
-2. 嵌入式 embstr
-
-   代表embstr格式的SDS(Simple Dynamic String简单动态字符串)，保存长度小于44字节的字符串
-
-   EMBSTR顾名思义即：embedded string，表示嵌入式的String
-
-3. 未加工数据 raw
-
-   保存长度大于44字节的字符串
-
-### 3大物理编码案例
-
-- 案例演示
-
-  ![](../image2/28.string三大物理编码演示.jpg)
-
-- C语言中字符串的展现
-
-  ![](../image2/29.C语言中字符串的展现.jpg)
-
-  <font color = 'blue'>Redis没有直接复用C语言的字符串</font>，<font color = 'red'>而是新建了属于自己的结构-----SDS</font>
-  <font color = 'red'>在Redis数据库里，包含字符串值的键值对都是由SDS实现的(Redis中所有的键都是由字符串对象实现的即底层是由SDS实现，Redis中所有的值对象中包含的字符串对象底层也是由SDS实现)</font>。
-
-  ![](../image2/30.jpg)
-
-- <font color = 'red'>SDS简单动态字符串</font>
-
-  - sds.h源码分析
-
-    ![](../image2/31.sds.h.jpg)
-
-  - 说明
-
-    ![](../image2/32说明.jpg)
-
-    Redis中字符串的实现,SDS有多种结构( sds.h) :
-    sdshdr5、(2^5=32byte)，但是不会使用，是redis团队内部测试使用
-    sdshdr8、(2^8=256byte)
-    sdshdr16、(2^16=65536byte=64KB)
-    sdshdr32、(2 ^32byte=4GB)
-    sdshdr64，2的64次方byte=17179869184G用于存储不同的长度的字符串。
-
-    len表示SDS的长度，使我们在获取字符串长度的时候可以在o(1)情况下拿到，而不是像C那样需要遍历一遍字符串。
-
-    alloc可以用来计算 free就是字符串已经分配的未使用的空间，有了这个值就可以引入预分配空间的算法了，而不用去考虑内存分配的问题。
-
-    buf表示字符串数组，真实存数据的。
-
-  - 官网
-
-- <font color = 'red'>Redis为什么要重新设计一个SDS数据结构？</font>
-
-  ![](../image2/33.redis字符串展示.jpg)
-
-  |                | C语言                                                        | SDS                                                          |
-  | -------------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
-  | 字符串长度处理 | 需要从头开始遍历,直到遇到'\O'为止，时间复杂度O(N)            | 记录当前字符串的长度，直接读取即可，时间复杂度O(1)           |
-  | 内存重新分配   | 分配内存空间超过后，会导致数组下标越级或者内存分配溢出       | <font color = 'blue'>空间预分配</font><br/>SDS修改后，len长度小于1M，那么将会额外分配与 len相同长度的未使用空间。如果修改后长度大于1M，那么将分配1M的使用空间。<br/><font color = 'blue'>惰性空间释放</font><br/>有空间分配对应的就有空间释放。SDS缩短时并不会回收多余的内存空间,而是使用free字段将多出来的空间记录下来。如果后续有变更操作，直接使用free中记录的空间，减少了内存的分配。 |
-  | 二进制安全     | 二进制数据并不是规则的字符串格式，可能会包含一些特殊的字符，比如 '\0'等。前面提到过，C中字符串遇到'\0'会结束,那'\0'之后的数据就读取不上了 | 根据len长度来判断字符串结束的，二进制安全的问题就解决了      |
-
-- 源码分析
-
-  用户API
-
-  set k1 v1 底层发生了什么？调用关系？
-
-  ![](../image2/34.底层调用关系.png)
-
-  3大物理编码方式
-
-  ![](../image2/35.3大物理编码方式.png)
-
-  INT编码格式
-
-  命令示例: set k1 123
-
-  当字符串键值的内容可以用一个64位有符号整形来表示时，Redis会将键值转化为long型来进行存储，此时即对应 OB_ENCODING_INT 编码类型。内部的内存结构表示如下:
-
-  ![](../image2/36.INT类型.png)
-
-  EMBSTR编码格式
-
-  ![](../image2/37.EMBSTR编码格式.png)
-
-  对于长度小于 44的字符串，Redis 对键值采用OBJ_ENCODING_EMBSTR 方式，EMBSTR 顾名思义即: embedded string，表示嵌入式的String。从内存结构上来讲 即字符串 sds结构体与其对应的 redisObject 对象分配在同一块连续的内存空间，字符串sds嵌入在redisObiect对象之中一样。
-
-- RAW编码格式
-
-  当字符串的键值为长度大于44的超长字符串时，Redis 则会将键值的内部编码方式改为OBJ_ENCODING_RAW格式，这与OBJ_ENCODING_EMBSTR编码方式的不同之处在于，此时动态字符sds的内存<font color = 'red'>与其依赖的redisobiect的内存不再连续了</font>
-
-- 明明没有超过阈值，为什么变成raw了
-
-  ![](../image2/38.raw.png)
-
-### 案例结论
-
-只有整数才会使用int,如果是浮点数,<font color = 'blue'> Redis内部其实先将浮点数转化为字符串值,然后再保存</font>
-
-embstr与raw类型底层的数据结构其实都是<font color = 'red'>SDS(简单动态字符串，</font>Redis内部定义sdshdr一种结构)
-
-| int    | Long类型整数时，RedisObiect中的ptr指针直接赋值为整数数据，不再额外的指针再指向整数了，节省了指针的空间开销。 |
-| ------ | ------------------------------------------------------------ |
-| embstr | 当保存的是字符串数据且字符串小于等于44字节时，emstr类型将会调用内存分配函数，只分配一块连续的内存空间，空间中依次包含 redisObject 与 sdshdr 两个数据结构，让元数据、指针和SDS是一块连续的内存区域，这样就可以避免内存碎片 |
-| raw    | 当字符串大于44字节时，SDS的数据量变多变大了，SDS和RedisObject布局分家各自过，会给SDS分配多的空间并用指针指SDS结构，raw 类型将会调用两次内存分配函数，分配两块内存空间，一块用于包含 redisObject结构，而另一块用于包含sdshdr 结构 |
-
-![](../image2/39.string总结.png)
-
-
-
-### Hash的两种编码格式
-
-Redis6以前：ziplist、Hashtable
-
-Redis7：listpack、Hashtable
-
-## Redis6
-
-hash-max-ziplist-entries：使用压缩列表保存时哈希集合中的最大元素个数。
-
-hash-max-ziplist-value：使用压缩列表保存时哈希集合中单个元素的最人长度。
-
-Hash类型键的字段个数 <font color = 'red'>小于 </font>hash-max-ziplist-entries 并且每个字段名和字段值的长度 <font color = 'red'>小于 </font>hash-max-ziplist-value 时，Redis才会使用 OBJ_ENCODING_ZIPLIST来存该键，前述条件任意一个不满足则会转换为 OBJ_ENCODING_HT的编码方式
-
-![](../image2/40.Hashtable演示一(redis6).png)
-
-![](../image2/41.Hashtable演示二(redis6).png)
-
-### 结论
-
-1. 哈希对象保存的键值对数量小于 512个；
-2. 所有的键值对的健和值的字符串长度都小于等于 64byte (一个英文字母一个字节)时用ziplist，反之用hashtable；
-3. ziplist升级到hashtable可以，反过来降级不可以；即一旦从压缩列表转为了哈希表，Hash类型就会一直用哈希表进行保存而不会再转回压缩列表了。在节省内存空间方面哈希表就没有压缩列表高效了。
-
-## Redis7
-
-hash-max-listpack-entries：使用压缩列表保存时哈希集合中的最大元素个数。
-
-hash-max-listpack-value：使用压缩列表保存时哈希集合中单个元素的最人长度。
-
-Hash类型键的字段个数 <font color = 'red'>小于 </font> hash-max-listpack-entries且每个字段名和字段值的长度 <font color = 'red'>小于 </font> hash-max-listpack-value 时，Redis才会使用OBJ_ENCODING_LISTPACK来存储该键，前述条件任意一个不满足则会转换为 OBI_ENCODING_HT的编码方式
-
-![](../image2/42.Hashtable演示一(redis7).png)
-
-![](../image2/43.Hashtable演示二(redis7).png)
-
-![](../image2/44.Hashtable演示三(redis7).png)
-
-### 结论
-
-1. 哈希对象保存的键值对数量小于 512个；
-2. 所有的键值对的健和值的字符串长度都小于等于 64byte (一个英文字母一个字节时用listpack，反之用hashtable
-3. listpack升级到Hashtable可以，反过来降级不可以
+3. 
 
 
 
