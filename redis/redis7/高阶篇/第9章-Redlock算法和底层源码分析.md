@@ -1,5 +1,7 @@
 # 第9章-Redlock算法和底层源码分析
-### <font color='red'>自研一把分布式锁，面试回答的主要考点</font>
+## 9.1 当前代码为8.0版接上一步
+
+### 9.1.1 自研一把分布式锁，面试回答的主要考点
 
 1. 按照JUC里面java.util.concurrent.locks.Lock接口规范编写
 
@@ -25,15 +27,15 @@
 
      ![](../image2/2.unlock解锁关键逻辑.jpg)
 
-上面自研的redis锁对于一般中小公司，不是特别高并发场景足够用了，单机redis小业务也撑得住
+### 9.1.2 上面自研的redis锁对于一般中小公司，不是特别高并发场景足够用了，单机redis小业务也撑得住
 
 
 
-# Redis分布式锁-Redlock红锁算法 Distributed locks with Redis
+## 9.2 Redis分布式锁-Redlock红锁算法 Distributed locks with Redis
 
-### 官网说明
+### 9.2.1 官网说明
 
-https://redis.io/docs/manual/patterns/distributed-locks/
+https://redis.io/docs/latest/develop/clients/patterns/distributed-locks/
 
 主页说明
 
@@ -41,9 +43,9 @@ https://redis.io/docs/manual/patterns/distributed-locks/
 
 ![](../image2/4.官网翻译.jpg)
 
-### 为什么学习这个？怎么产生的？
+### 9.2.2 为什么学习这个？怎么产生的？
 
-<font color = 'red'>之前手写的分布式锁有什么缺点：</font>
+之前手写的分布式锁有什么缺点：单集群故障问题
 
 官网说明：![](../image2/5.基于故障转移的实施是不够的.jpg)
 
@@ -53,11 +55,11 @@ https://redis.io/docs/manual/patterns/distributed-locks/
 
 线程1首先获取锁成功，将键值对写入redis 的 master节点，在 redis将该键值对同步到slave 节点之前，master发生了故障；
 
-redis触发故障转移，其中一个slave升级为新的 master，此时新上位的master并不包含线程1写入的键值对，因此线程⒉尝试获取锁也可以成功拿到锁，<font color = 'red'>此时相当于有两个线程获取到了锁，可能会导致各种预期之外的情况发生，例如最常见的脏数据。</font>
+redis触发故障转移，其中一个slave升级为新的 master，此时新上位的master并不包含线程1写入的键值对，因此线程⒉尝试获取锁也可以成功拿到锁，此时相当于有两个线程获取到了锁，可能会导致各种预期之外的情况发生，例如最常见的脏数据。
 
 我们加的是排它独占锁，同一时间只能有一个建redis锁成功并持有锁，严禁出现2个以上的请求线程拿到锁。
 
-### RedLock算法设计理念
+### 9.2.3 RedLock算法设计理念
 
 - Redis之父提出了RedLock算法解决上面这个一锁被多建的问题
 
@@ -96,11 +98,11 @@ redis触发故障转移，其中一个slave升级为新的 master，此时新上
 
   为什么是奇数：N = 2X + 1 （N是最终部署机器数，X是容错机器数）
 
-### Redisson实现
+### 9.2.4 Redisson实现
 
 Redisson是Java的Redis客户端之一，提供了一些API方便操作Redis
 
-Redisson之官网：https://redisson.org
+Redisson之官网：[https://redisson.pro](https://redisson.pro/)
 
 Redisson之github：https://github.com/redisson/redisson/wiki
 
@@ -108,15 +110,7 @@ Redisson之解决分布式锁：https://github.com/redisson/redisson/wiki/8.-dis
 
 
 
-
-
-
-
-
-
-
-
-### V9.0版本修改
+## 9.3 使用Redisson进行编码改造V9.0版本修改
 
 改pom：加上Redisson相关代码
 
@@ -174,7 +168,7 @@ public String saleByRedisson() {
 }
 ```
 
-### 测试
+**测试**
 
 jmeter压测
 
@@ -195,11 +189,13 @@ jmeter压测
   }
   ```
 
+## 9.4 Redisson编码解析
 
+### 9.4.1 加锁、可重入、续命、解锁
 
-#### 加锁、可重入、续命、解锁
+分标题四个步骤分析
 
-### 分析步骤
+### 9.4.2 分析步骤
 
 - Redis分布式锁过期了，但是业务逻辑还没有处理完怎么办
 
@@ -214,6 +210,8 @@ jmeter压测
 - 在获取锁成功后，给锁加一个watchdog，watchdog会起一个定时任务，在锁没有被释放且快要过期的时候会续期
 
   ![](../image2/12.看门狗续期.jpg)
+
+  ![image-20251015212432386](../image2/image-20251015212432386.png)
 
 - 上述源码分析1
 
@@ -306,15 +304,15 @@ jmeter压测
 
   ![](../image2/16.unlock方法.png)
 
+## 9.5 多机案例
 
+### 9.5.1 理论参考来源
 
-### 理论参考来源
+* Redis之父提出了Redlock算法解决这个问题
 
-Redis之父提出了Redlock算法解决这个问题
+* 这个锁的算法实现了多redis实例的情况，相对于单redis节点来说，<font color='red'>优点在于防止了单节点故障造成整个服务停止运行</font>的情况且在多节点中锁的设计，及多节点同时崩溃等各种意处情况有自己独特的设计方法。
 
-这个锁的算法实现了多redis实例的情况，相对于单redis节点来说，<font color='red'>优点在于防止了单节点故障造成整个服务停止运行</font>的情况且在多节点中锁的设计，及多节点同时崩溃等各种意处情况有自己独特的设计方法。
-
-Redisson 分布式锁支持 MultiLock 机制可以将多个锁合并为一个大锁，对一个大锁进行统一的申请加锁以及释放锁。
+* Redisson 分布式锁支持 MultiLock 机制可以将多个锁合并为一个大锁，对一个大锁进行统一的申请加锁以及释放锁。
 
 <font color='gren'>最低保证分布式锁的有效性及安全性的要求如下:</font>
 
@@ -328,15 +326,21 @@ Redisson 分布式锁支持 MultiLock 机制可以将多个锁合并为一个大
 
 因为redis在进行主从复制时是异步完成的，比如在clientA获取锁后，主redis复制数据到从redis过程中崩溃了，导致没有复制到从redis中，然后从redis选举出一个升级为主redis，造成新的主redis没有clientA 设置的锁，这时clientB尝试获取锁，并且能够成功获取锁，导致互斥失效；
 
-### 代码参考来源
+### 9.5.2 代码参考来源
 
 https://github.com/redisson/redisson/wiki/8.-distributed-locks-and-synchronizers
 
 最新推荐使用MultiLock多重锁，详见官网案例
 
+* RedLock 已经被弃用了，使用RLock
+  * This object is deprecated. Refer to this [article](https://martin.kleppmann.com/2016/02/08/how-to-do-distributed-locking.html) for more details. Superseded by [RLock](https://redisson.pro/docs/data-and-services/locks-and-synchronizers/#lock) and [RFencedLock](https://redisson.pro/docs/data-and-services/locks-and-synchronizers/#fair-lock) objects.
+  * 
+
 使用Redisson分布式锁，需要单独的Redis master多节点，不能是哨兵模式的master或者集群模式的master；
 
-加入现在有三台Redis 服务器，并且是master：
+![image-20251015221955283](../image2/image-20251015221955283.png)
+
+加入现在有三台Redis 服务器，并且是master：需要3个都锁住才能往下执行，与RedLock不同。
 
 ```java
 RLock lock1 = redisson1.getLock("lock1");
@@ -355,3 +359,24 @@ multiLock.lock();
 
 
 
+### 9.5.3 RedLock 被废弃的主要原因包括一致性风险、性能问题和维护成本过高：
+
+一致性风险
+
+RedLock 依赖系统时钟同步，若节点间时钟漂移（如某节点时间快）会导致锁提前失效，破坏互斥性。在网络延迟或垃圾回收（GC）停顿场景中，可能引发锁提前释放或并发冲突。 ‌12
+
+性能问题
+
+RedLock 需要等待多数节点（N/2+1）响应才能加锁成功，高延迟环境（如跨地域部署）会显著降低性能。 ‌
+
+维护成本高
+
+需部署多个独立Redis 主节点（通常≥5个），且需保证节点无主从复制关系，增加运维复杂度。 ‌
+
+替代方案
+
+Redisson 推荐使用简化模型：
+
+- ‌**RedissonLock**‌：基于单个 Redis 实例，适用于大多数场景
+- ‌**RedissonMultilock**‌：组合锁，适用于多资源同步锁定
+- ‌**RedissonRedlock**‌：改进版分布式锁，性能和一致性更优 ‌12
