@@ -763,22 +763,28 @@ Person(name=张四\n, age=18, birthDay=Sun Oct 10 12:12:12 CST 2010, like=true, 
 
 ![img](../image/3a240977eb4fcfd81fad213d687b4258.png)
 
-日志门面是日志接口，相当于数据库中JDBC接口的概念
+* 日志门面是日志接口，相当于数据库中JDBC接口的概念
 
-日志实现是日志接口的具体实现类，相当于数据库中导入mysql、oracle等驱动，真正实现CRUD操作数据库
+- 日志实现是日志接口的具体实现类，相当于数据库中导入mysql、oracle等驱动，真正实现CRUD操作数据库
 
-SpringBoot默认采用 SLF4j + Logback（可以选择切换成其他组合）
+- SpringBoot默认采用 SLF4j + Logback（可以选择切换成其他组合）
 
-感兴趣日志框架关系与起源可参考：[尚硅谷SpringBoot顶尖教程(springboot之idea版spring boot)_哔哩哔哩_bilibili](https://www.bilibili.com/video/BV1gW411W76m) 视频 21~27集
+- 感兴趣日志框架关系与起源可参考：[尚硅谷SpringBoot顶尖教程(springboot之idea版spring boot)_哔哩哔哩_bilibili](https://www.bilibili.com/video/BV1gW411W76m) 视频 21~27集
+
 
 #### 1.4.3.1 简介
 
 1. Spring使用commons-logging作为内部日志，但底层日志实现是开放的。可对接其他日志框架。
-   * spring5及以后 commons-logging被spring直接自己写了。
+   
+* spring5及以后 commons-logging被spring直接自己写了，里面的LogAdapter适配器可以初始化加载不同的日志框架。
+  
+     ![image-20251218111520474](../image/image-20251218111520474.png)
+   
+     ![image-20251218112005241](../image/image-20251218112005241.png)
 
-2. 支持 jul，log4j2,logback。SpringBoot 提供了默认的控制台输出配置，也可以配置输出为文件。
+2. spring的日志框架支持 jul，log4j2,logback。SpringBoot 的日志默认是控制台输出配置，可以配置输出为文件。
 
-3. logback是默认使用的。
+3. spring的日志框架默认实现是logback。
 
 4. 虽然日志框架很多，但是我们不用担心，使用 SpringBoot 的默认配置就能工作的很好。
 
@@ -790,13 +796,15 @@ SpringBoot怎么把日志默认配置好的
 
 2、核心场景引入了日志的所用功能spring-boot-starter-logging
 
-3、默认使用了logback + slf4j 组合作为默认底层日志
+3、默认使用了logback + slf4j (lombox注解)组合作为默认底层日志
 
-4、日志是系统一启动就要用，xxxAutoConfiguration是系统启动好了以后放好的组件，后来用的，时机不同。日志的时机更早，系统一启动，系统的一些核心行为都要被日志记录
+4、日志是系统一启动就要用，xxxAutoConfiguration是系统启动好了以后放好的组件，是后来用的，时机不同。日志的时机更早，系统一启动，系统的一些核心行为都要被日志记录。所以日志加载不是通过xxxAutoConfiguration进行加载的。
 
 5、日志是利用监听器机制配置好的。ApplicationListener。
 
 6、日志所有的配置都可以通过修改配置文件实现。以logging开始的所有配置。
+
+![image-20251218113551800](../image/image-20251218113551800.png)
 
 #### 1.4.3.2 日志格式
 
@@ -822,11 +830,19 @@ alina.core.StandardEngine : Starting Servlet engine: [Apache Tomcat/10.
 
 默认值：参照：spring-boot包additional-spring-configuration-metadata.json文件
 
+​	![image-20251218114223263](../image/image-20251218114223263.png)
+
 默认输出格式值：
 
 %clr(%d{${LOG_DATEFORMAT_PATTERN:-yyyy-MM-dd'T'HH:mm:ss.SSSXXX}}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}
 
 可修改为：'%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread] %logger{15} ===> %msg%n'
+
+可以通过application配置文件修改默认值，比如把输出格的日期格式改为
+
+```properties
+logging.pattern.dateformat=yyyy-MM-dd HH:mm:ss.SSS
+```
 
 #### 1.4.3.3 记录日志
 
@@ -848,25 +864,39 @@ Logger logger = LoggerFactory.getLogger(getClass());
   - FATAL：致命错误日志，比如jvm系统崩溃
   - OFF：关闭所有日志记录
 
-- 不指定级别的所有类，都使用root指定的级别作为默认级别
-- SpringBoot日志默认级别是 INFO
+- 不指定级别的所有类，都使用root指定的级别作为默认级别，也就是说日志级别以logging.level.root配置的为准
+
+  ```properties
+  logging.level.root=INFO
+  ```
+
+- SpringBoot日志默认级别是 INFO(是因为配置的logging.level.root默认是INFO)
+
+**自定义日志：**
 
 1. 在application.properties/yaml中配置logging.level.<logger-name>=<level>指定日志级别
-2. level可取值范围：TRACE, DEBUG, INFO, WARN, ERROR, FATAL, or OFF，定义在 LogLevel类中
-3. root 的logger-name叫root，可以配置logging.level.root=warn，代表所有未指定日志级别都使用 root 的 warn 级别
 
-#### 1.4.3.5 日志分组
+   ```properties
+   #logging.level后面跟包路径，表示制定包路径下的日志级别。
+   logging.level.com.chanpller=error
+   ```
+
+2. level可取值范围：TRACE, DEBUG, INFO, WARN, ERROR, FATAL, or OFF，定义在 LogLevel类中
+
+3. root 的logger-name叫root，可以配置logging.level.root=warn，代表所有未指定日志级别都使用 root 的 warn 级别。logger-name可以自己自定义也是用用包路径，自定义就设置分组，包路径就是制定包路径。
+
+#### 1.4.3.5 日志分组(解决一组包路径共用日志等级的)
 
 比较有用的技巧是：
 
-将相关的logger分组在一起，统一配置。SpringBoot 也支持。比如：Tomcat 相关的日志统一设置
+将相关的logger分组在一起，统一配置。SpringBoot 也支持。先使用logging.group.分组名=包路径数组，然后再使用ogging.level.分组名=日志等级。比如：Tomcat 相关的日志统一设置
 
 ```properties
 logging.group.tomcat=org.apache.catalina,org.apache.coyote,org.apache.tomat
 logging.level.tomcat=trace
 ```
 
-SpringBoot 预定义两个组
+SpringBoot 自己预定义两个组，分别是
 
 | Name | Loggers                                                      |
 | ---- | ------------------------------------------------------------ |
@@ -875,7 +905,9 @@ SpringBoot 预定义两个组
 
 #### 1.4.3.6 文件输出
 
-SpringBoot 默认只把日志写在控制台，如果想额外记录到文件，可以在application.properties中添加logging.file.name or logging.file.path配置项。
+SpringBoot 默认只把日志写在控制台，如果想额外记录到文件，可以在application.properties中添加logging.file.name 或 logging.file.path配置项。
+
+两个配置项组合使用，会出现如下结果：
 
 | logging.file.name | logging.file.path | 示例     | 效果                             |
 | ----------------- | ----------------- | -------- | -------------------------------- |
@@ -891,11 +923,11 @@ SpringBoot 默认只把日志写在控制台，如果想额外记录到文件，
 > 切割：每个文件10MB，超过大小切割成另外一个文件。
 >
 
-1 每天的日志应该独立分割出来存档。如果使用logback（SpringBoot 默认整合），可以通过application.properties/yaml文件指定日志滚动规则。
+1. 每天的日志应该独立分割出来存档。如果使用logback（SpringBoot 默认整合），可以通过application.properties/yaml文件指定日志滚动规则。
 
-2 如果是其他日志系统，需要自行配置（添加log4j2.xml或log4j2-spring.xml）
+2. 如果是其他日志系统，需要自行配置（添加log4j2.xml或log4j2-spring.xml）
 
-3 支持的滚动规则设置如下
+3. 支持的滚动规则设置如下
 
 | 配置项                                               | 描述                                                         |
 | ---------------------------------------------------- | ------------------------------------------------------------ |
@@ -905,11 +937,11 @@ SpringBoot 默认只把日志写在控制台，如果想额外记录到文件，
 | logging.logback.rollingpolicy.total-size-cap         | 日志文件被删除之前，可以容纳的最大大小（默认值：0B）。设置1GB则磁盘存储超过 1GB 日志后就会删除旧日志文件 |
 | logging.logback.rollingpolicy.max-history            | 日志文件保存的最大天数(默认值：7).                           |
 
-#### 1.4.3.8 自定义配置
+#### 1.4.3.8 自定义日志配置
 
-通常我们配置 application.properties 就够了。当然也可以自定义。比如：
+通常我们使用application.properties配置spring默认的Logback配置就够了。当然也可以自定义配置文件。比如：
 
-| 日志系统                | 自定义                                                       |
+| 日志系统                | 自定义（添加对应的日志配置文件）                             |
 | ----------------------- | ------------------------------------------------------------ |
 | Logback                 | logback-spring.xml, logback-spring.groovy,logback.xml, or logback.groovy |
 | Log4j2                  | log4j2-spring.xml or log4j2.xml                              |
@@ -920,6 +952,8 @@ SpringBoot 默认只把日志写在控制台，如果想额外记录到文件，
 最佳实战：自己要写配置，配置文件名加上 xx-spring.xml
 
 #### 1.4.3.9 切换日志组合
+
+* 排除spring-boot-starte中默认的spring-boot-starter-logging，引入其他的日志starter
 
 ```xml
 <dependency>
@@ -951,7 +985,7 @@ log4j2支持yaml和json格式的配置文件
 
 #### 1.4.3.10 最佳实战
 
-1. 导入任何第三方框架，先排除它的日志包，因为Boot底层控制好了日志
+1. 导入任何第三方框架，先排除它的日志包，因为Boot底层已经默认配置好了日志，不需要第三方框架配置了。
 
 2. 修改 application.properties 配置文件，就可以调整日志的所有行为。如果不够，可以编写日志框架自己的配置文件放在类路径下就行，比如logback-spring.xml，log4j2-spring.xml
 
