@@ -43,7 +43,7 @@ UserMapper.xml
 ```properties
 #指定mapper映射文件位置
 mybatis.mapper-locations=classpath:/mapper/*.xml
-#参数项调整
+#参数项调整，开启大小写驼峰映射
 mybatis.configuration.map-underscore-to-camel-case=true
 ```
 

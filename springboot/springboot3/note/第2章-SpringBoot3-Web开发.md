@@ -1434,7 +1434,7 @@ public View defaultErrorView() {
 
 ![img](../image/e4ca8f75c680045628328204f66dd70e.png)
 
-## 2.8 嵌入式容器
+## 2.8 嵌入式容器(springboot中添加tomcat等容器)
 
 > Servlet容器：管理、运行Servlet组件（Servlet、Filter、Listener）的环境，一般指服务器（Tomcat）
 >
@@ -1445,7 +1445,7 @@ public View defaultErrorView() {
 >
 > - 自动配置类是 `ServletWebServerFactoryAutoConfiguration`，`EmbeddedWebServerFactoryCustomizerAutoConfiguration`
 >
-> - 自动配置类开始分析功能。`xxxxAutoConfiguration`
+> - 开始分析自动配置类功能。一般是`xxxxAutoConfiguration`
 >
 
 ```java
@@ -1453,6 +1453,7 @@ public View defaultErrorView() {
 @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE)
 @ConditionalOnClass(ServletRequest.class)
 @ConditionalOnWebApplication(type = Type.SERVLET)
+//配置都在ServerProperties中，Server开头的
 @EnableConfigurationProperties(ServerProperties.class)
 @Import({ ServletWebServerFactoryAutoConfiguration.BeanPostProcessorsRegistra
         r.class,
@@ -1460,18 +1461,54 @@ public View defaultErrorView() {
         ServletWebServerFactoryConfiguration.EmbeddedJetty.class,
         ServletWebServerFactoryConfiguration.EmbeddedUndertow.class })
 public class ServletWebServerFactoryAutoConfiguration {
+    
+    //默认导入了tomcat服务器，导入了
+    @Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass(name = "org.apache.catalina.startup.Tomcat")
+	static class TomcatConfiguration {
+
+		@Bean
+		TomcatServletWebServerFactoryCustomizer tomcatServletWebServerFactoryCustomizer(
+				ServerProperties serverProperties) {
+			return new TomcatServletWebServerFactoryCustomizer(serverProperties);
+		}
+
+	}
 }
 ```
 
 1. ServletWebServerFactoryAutoConfiguration 自动配置了嵌入式容器场景
 
-2.  绑定了ServerProperties配置类，所有和服务器有关的配置 server
+2.  绑定了ServerProperties配置类，所有和服务器有关的配置都是server开头
 
 3. ServletWebServerFactoryAutoConfiguration 导入了 嵌入式的三大服务器 Tomcat、Jetty、Undertow
+
+4. ServletWebServerFactoryAutoConfiguration 有导入了ServletWebServerFactoryConfiguration
+
+5. ServletWebServerFactoryConfiguration中有安条件实例化TomcatServletWebServerFactory
 
    ​	a）导入 Tomcat、Jetty、Undertow 都有条件注解。系统中有这个类才行（也就是导了包）
 
    ​	 b）默认 Tomcat配置生效。给容器中放 TomcatServletWebServerFactory
+
+   ```java
+   public class TomcatServletWebServerFactory extends AbstractServletWebServerFactory implements ConfigurableTomcatWebServerFactory, ResourceLoaderAware {
+    public WebServer getWebServer(ServletContextInitializer... initializers) {
+           if (this.disableMBeanRegistry) {
+               Registry.disableRegistry();
+           }
+   //创建了Tomcat
+           Tomcat tomcat = new Tomcat();
+           File baseDir = this.baseDirectory != null ? this.baseDirectory : this.createTempDir("tomcat");
+           tomcat.setBaseDir(baseDir.getAbsolutePath());
+   
+           for(LifecycleListener listener : this.getDefaultServerLifecycleListeners()) {
+               tomcat.getServer().addLifecycleListener(listener);
+           }
+   
+           Connector connector = new Connector(this.protocol);
+   }
+   ```
 
    ​	c）都给容器中 放了一个ServletWebServerFactory（接口） web服务器工厂（造web服务器的）——xxxServletWebServerFactory（具体实现类）
 
@@ -1479,22 +1516,121 @@ public class ServletWebServerFactoryAutoConfiguration {
 
    ​	e）TomcatServletWebServerFactory 创建了 tomcat。
 
-4. ServletWebServerFactory 什么时候会创建 webServer出来。
+6. ServletWebServerFactory 什么时候会创建 webServer出来。
 
-5. ServletWebServerApplicationContext ioc容器，启动的时候会调用创建web服务器
+7. ServletWebServerApplicationContext ioc容器，启动的时候会调用创建web服务器
 
-6. Spring容器刷新（启动）的时候，会预留一个时机，刷新子容器。onRefresh()
+   ```java
+   public class ServletWebServerApplicationContext extends GenericWebApplicationContext
+   		implements ConfigurableWebServerApplicationContext {
+   		private void createWebServer() {
+   		WebServer webServer = this.webServer;
+   		ServletContext servletContext = getServletContext();
+   		if (webServer == null && servletContext == null) {
+   			StartupStep createWebServer = getApplicationStartup().start("spring.boot.webserver.create");
+               //启动的时候会调用创建web服务器
+   			ServletWebServerFactory factory = getWebServerFactory();
+   			createWebServer.tag("factory", factory.getClass().toString());
+   			this.webServer = factory.getWebServer(getSelfInitializer());
+   	}
+   }
+   ```
 
-7. refresh()容器刷新 十二大步的刷新子容器会调用 onRefresh()；
+8. Spring容器刷新（启动）的时候，会预留一个时机，刷新子容器。onRefresh()，在AbstractApplicationContext中
+
+   ```java
+   public abstract class AbstractApplicationContext extends DefaultResourceLoader
+   		implements ConfigurableApplicationContext {
+   @Override
+   	public void refresh() throws BeansException, IllegalStateException {
+   		this.startupShutdownLock.lock();
+   		try {
+   			this.startupShutdownThread = Thread.currentThread();
+   
+   			StartupStep contextRefresh = this.applicationStartup.start("spring.context.refresh");
+   
+   			// Prepare this context for refreshing.
+   			prepareRefresh();
+   
+   			// Tell the subclass to refresh the internal bean factory.
+   			ConfigurableListableBeanFactory beanFactory = obtainFreshBeanFactory();
+   
+   			// Prepare the bean factory for use in this context.
+   			prepareBeanFactory(beanFactory);
+   
+   			try {
+   				// Allows post-processing of the bean factory in context subclasses.
+   				postProcessBeanFactory(beanFactory);
+   
+   				StartupStep beanPostProcess = this.applicationStartup.start("spring.context.beans.post-process");
+   				// Invoke factory processors registered as beans in the context.
+   				invokeBeanFactoryPostProcessors(beanFactory);
+   				// Register bean processors that intercept bean creation.
+   				registerBeanPostProcessors(beanFactory);
+   				beanPostProcess.end();
+   
+   				// Initialize message source for this context.
+   				initMessageSource();
+   
+   				// Initialize event multicaster for this context.
+   				initApplicationEventMulticaster();
+   
+   				// Initialize other special beans in specific context subclasses.
+   				onRefresh();
+   
+   				// Check for listener beans and register them.
+   				registerListeners();
+   
+   				// Instantiate all remaining (non-lazy-init) singletons.
+   				finishBeanFactoryInitialization(beanFactory);
+   
+   				// Last step: publish corresponding event.
+   				finishRefresh();
+   			}
+   
+   			catch (RuntimeException | Error ex) {
+   				if (logger.isWarnEnabled()) {
+   					logger.warn("Exception encountered during context initialization - " +
+   							"cancelling refresh attempt: " + ex);
+   				}
+   
+   				// Destroy already created singletons to avoid dangling resources.
+   				destroyBeans();
+   
+   				// Reset 'active' flag.
+   				cancelRefresh(ex);
+   
+   				// Propagate exception to caller.
+   				throw ex;
+   			}
+   
+   			finally {
+   				contextRefresh.end();
+   			}
+   		}
+   		finally {
+   			this.startupShutdownThread = null;
+   			this.startupShutdownLock.unlock();
+   		}
+   	}
+   }
+   ```
+
+   
+
+9. refresh()容器刷新 十二大步的刷新子容器会调用 onRefresh()；
 
 ```java
-@Override
-protected void onRefresh() {
-    super.onRefresh();
-    try {
-    	createWebServer();
-    }catch (Throwable ex) {
-    	throw new ApplicationContextException("Unable to start web server",ex);
+public class ServletWebServerApplicationContext extends GenericWebApplicationContext
+		implements ConfigurableWebServerApplicationContext {
+    @Override
+    protected void onRefresh() {
+        super.onRefresh();
+        try {
+            createWebServer();
+        }catch (Throwable ex) {
+            throw new ApplicationContextException("Unable to start web server",ex);
+        }
     }
 }
 ```
@@ -1545,6 +1681,7 @@ protected void onRefresh() {
 
 - 修改server下的相关配置就可以修改服务器参数
 - 通过给容器中放一个ServletWebServerFactory（接口，放入的是xxxServletWebServerFactory实现类），来禁用掉SpringBoot默认放的服务器工厂，实现自定义嵌入任意服务器。
+- ServletWebServerFactoryConfiguration类中
 
 ![img](../image/f4dd032dfb5343208f98486e85674897.png)
 
@@ -1556,7 +1693,7 @@ protected void onRefresh() {
 > - 如果我们需要全面接管SpringMVC的所有配置并禁用默认配置，仅需要编写一个WebMvcConfigurer配置类，并标注 @EnableWebMvc 即可
 > - 全手动模式
 >   - @EnableWebMvc : 禁用默认配置
->   - WebMvcConfigurer组件：定义MVC的底层行为
+>   - 在添加WebMvcConfigurer组件：定义MVC的底层行为
 >
 
 ### 2.9.1 WebMvcAutoConfiguration 到底自动配置了哪些规则
@@ -1613,7 +1750,7 @@ protected void onRefresh() {
 
    ​    1.5 定义了MVC默认的底层行为: WebMvcConfigurer
 
-### 2.9.2 @EnableWebMvc 禁用默认行为
+### 2.9.2 @EnableWebMvc 禁用默认行为原理
 
 1. @EnableWebMvc给容器中导入 DelegatingWebMvcConfiguration组件，他是 WebMvcConfigurationSupport
 2. WebMvcAutoConfiguration有一个核心的条件注解, @ConditionalOnMissingBean(WebMvcConfigurationSupport.class)，容器中没有WebMvcConfigurationSupport，WebMvcAutoConfiguration才生效.
@@ -1752,12 +1889,17 @@ Content-Type: application/problem+json+ 额外扩展返回
 
 #### 2.11.2.2 核心类
 
-- RouterFunction
-- RequestPredicate
-- ServerRequest
-- ServerResponse
+- RouterFunction：路由处理函数
+- RequestPredicate：request请求谓语
+- ServerRequest：请求
+- ServerResponse：响应
 
 #### 2.11.2.3 示例
+
+* 创建一个RouterFunction<ServerResponse>返回类，使用RouterFunctions.router()定义一个路由，然后处理方法。
+* RequestPredicates来处理可以接受的请求类型
+* handler中返回ServerResponse
+* RouterFunctions.route().GET(String pattern, HandlerFunction<ServerResponse> handlerFunction)，handlerFunction建议不要实现这个接口，而是单独写一个类。因为这样一个Handler中可以写多个方法，处理同一批内容，实现接口的话就只有一个方法了。
 
 ```java
 import org.springframework.context.annotation.Bean;
@@ -1782,6 +1924,13 @@ public class MyRoutingConfiguration {
                 .DELETE("/{user}", ACCEPT_JSON, userHandler::deleteUser)
                 .build();
     }
+    //可以有多个路由
+     @Bean
+    public RouterFunction<ServerResponse> otherRoutes(PersonHandler personHandler) {
+        return RouterFunctions.route()
+                .GET("/other/person", personHandler::getPerson)
+                .build();
+    }
 }
 ```
 
@@ -1792,7 +1941,7 @@ import org.springframework.web.servlet.function.ServerResponse;
 
 @Component
 public class MyUserHandler {
-
+	//方法为什么写成单独的，因为这样一个Handler中可以写多个方法，处理同一批内容，实现接口的话就只有一个方法了。
     public ServerResponse getUser(ServerRequest request) {
         // TODO: 实现获取用户逻辑
         return ServerResponse.ok().build();
