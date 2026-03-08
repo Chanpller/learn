@@ -6,6 +6,10 @@
 
 场景：监听应用的生命周期
 
+原理：在spring-boot包中，在spring.factories中配置监听器，达到启动时加载各种监听器原理。所以要自定义监听器，编写自己的实现类，并在自己项目META-INF/spring.factories中配置。key为具体的监听器，value为自己的是眼泪
+
+![image-20260308090621905](../image/image-20260308090621905.png)
+
 #### 5.1.1.1 监听器-SpringApplicationRunListener
 
 1. 自定义SpringApplicationRunListener来监听事件：
@@ -23,22 +27,16 @@
  * Listener先要从 META-INF/spring.factories 读到
  *
  * 1、引导： 利用 BootstrapContext 引导整个项目启动
- * starting： 应用开始，SpringApplication的run方法一调用，只
- 要有了 BootstrapContext 就执行
- * environmentPrepared： 环境准备好（把启动参数等绑定到环境变量中），但是io
- c还没有创建；【调一次】
+ * 		starting： 应用开始，SpringApplication的run方法一调用，只要有了 BootstrapContext 就执行
+ * 		environmentPrepared： 环境准备好（把启动参数等绑定到环境变量中），但是ioc还没有创建；【调一次】
  * 2、启动：
- * contextPrepared： ioc容器创建并准备好，但是sources（主配置类）没加
- 载。并关闭引导上下文；组件都没创建 【调一次】
- * contextLoaded： ioc容器加载。主配置类加载进去了。但是ioc容器还没
- 刷新（我们的bean没创建）。
+ * 		contextPrepared： ioc容器创建并准备好，但是sources（主配置类）没加载。并关闭引导上下文；组件都没创建 【调一次】
+ * 		contextLoaded： ioc容器加载。主配置类加载进去了。但是ioc容器还没刷新（我们的bean没创建）。
  * =======截止以前，ioc容器里面还没造bean呢=======
- * started： ioc容器刷新了（所有bean造好了），但是 runner 没
- 调用。
- * ready: ioc容器刷新了（所有bean造好了），所有 runner 调
- 用完了。
+ * 		started： ioc容器刷新了（所有bean造好了），但是 runner 没调用。
+ * 		ready: ioc容器刷新了（所有bean造好了），所有 runner 调用完了。
  * 3、运行
- * 以前步骤都正确执行，代表容器running。
+ * 		以前步骤都正确执行，代表容器running。
  */
 ```
 
@@ -46,39 +44,236 @@
 
 **![img](../image/7bb0fd1f8180848f996ff63299b5f307.png)**
 
+1. 查看生命周期机制，以SpringApplicationRunListener为例
+
+   ```java
+   package com.chanpller.chapter5core.listener;
+   
+   import com.chanpller.chapter5core.entity.User;
+   import org.jspecify.annotations.Nullable;
+   import org.springframework.boot.SpringApplicationRunListener;
+   import org.springframework.boot.bootstrap.ConfigurableBootstrapContext;
+   import org.springframework.context.ConfigurableApplicationContext;
+   import org.springframework.core.env.ConfigurableEnvironment;
+   
+   import java.time.Duration;
+   
+   public class MyApplicationListener implements SpringApplicationRunListener {
+       @Override
+       public void starting(ConfigurableBootstrapContext bootstrapContext) {
+           System.out.println("===========boot初始化之前就执行，正在启动===========");
+       }
+   
+       @Override
+       public void environmentPrepared(ConfigurableBootstrapContext bootstrapContext, ConfigurableEnvironment environment) {
+           System.out.println("===========环境准备好的之后，环境准备好了==========="+environment.getSystemEnvironment());
+       }
+   
+       @Override
+       public void contextPrepared(ConfigurableApplicationContext context) {
+           System.out.println("===========容器准备好了，但是还没加载容器===========");
+       }
+   
+       @Override
+       public void contextLoaded(ConfigurableApplicationContext context) {
+           System.out.println("===========容器加载了，但是还没刷新容器，还没有将实例注入进来===========");
+       }
+   
+       @Override
+       public void started(ConfigurableApplicationContext context, @Nullable Duration timeTaken) {
+           System.out.println("===========类已经加载，项目启动完成==========="+context.getBean(User.class)+timeTaken);
+       }
+   
+       @Override
+       public void ready(ConfigurableApplicationContext context, @Nullable Duration timeTaken) {
+           System.out.println("===========项目已经完全加载，已经准备完成==========="+context.getBean(User.class)+timeTaken);
+       }
+   
+       @Override
+       public void failed(@Nullable ConfigurableApplicationContext context, Throwable exception) {
+           System.out.println("===========异常时加载，启动失败==========="+context.getBean(User.class)+exception);
+       }
+   }
+   
+   ```
+
+   配置启动文件resources/META-INF/spring.factories
+
+   ```properties
+   org.springframework.boot.SpringApplicationRunListener=com.chanpller.chapter5core.listener.MyApplicationListener
+   ```
+
+   结果打印
+
+   ```shell
+   ===========boot初始化之前就执行，正在启动===========
+   ===========环境准备好的之后，环境准备好了===========
+     .   ____          _            __ _ _
+    /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+   ( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+    \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+     '  |____| .__|_| |_|_| |_\__, | / / / /
+    =========|_|==============|___/=/_/_/_/
+   
+    :: Spring Boot ::                (v4.0.3)
+   
+   ===========容器准备好了，但是还没加载容器===========
+   2026-03-08T09:34:58.386+08:00  INFO 16992 --- [chapter-5-core] [           main] c.c.c.Chapter5CoreApplication            : Starting Chapter5CoreApplication using Java 17.0.13 with PID 16992 (D:\workspace\IdeaProjects\learn_code_springboot3\chapter-5-core\target\classes started by Administrator in D:\workspace\IdeaProjects\learn_code_springboot3)
+   2026-03-08T09:34:58.388+08:00  INFO 16992 --- [chapter-5-core] [           main] c.c.c.Chapter5CoreApplication            : No active profile set, falling back to 1 default profile: "default"
+   ===========容器加载了，但是还没刷新容器，还没有将实例注入进来===========
+   2026-03-08T09:34:58.797+08:00  INFO 16992 --- [chapter-5-core] [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
+   2026-03-08T09:34:58.804+08:00  INFO 16992 --- [chapter-5-core] [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+   2026-03-08T09:34:58.804+08:00  INFO 16992 --- [chapter-5-core] [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.18]
+   2026-03-08T09:34:58.830+08:00  INFO 16992 --- [chapter-5-core] [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 414 ms
+   2026-03-08T09:34:58.996+08:00  INFO 16992 --- [chapter-5-core] [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 8080 (http) with context path '/'
+   2026-03-08T09:34:58.999+08:00  INFO 16992 --- [chapter-5-core] [           main] c.c.c.Chapter5CoreApplication            : Started Chapter5CoreApplication in 0.841 seconds (process running for 1.141)
+   ===========类已经加载，项目启动完成===========User(name=null, email=null)PT0.841S
+   ===========项目已经完全加载，已经准备完成===========User(name=null, email=null)PT0.843S
+   ```
+
+2. 查看加载原理
+
+   * 从SpringApplication.run(Chapter5CoreApplication.class, args);入口
+
+   * 构造SpringApplication时会加载bootstrapRegistryInitializers，从META-INF/spring.factories加载类
+
+     ```java
+     public static SpringFactoriesLoader forDefaultResourceLocation(@Nullable ClassLoader classLoader) {
+             return forResourceLocation("META-INF/spring.factories", classLoader);
+         }
+     ```
+
+   * 调用run方法后，到SpringApplication的public ConfigurableApplicationContext run(String... args)
+
+     ```java
+     public ConfigurableApplicationContext run(String... args) {
+     		Startup startup = Startup.create();
+     		if (this.properties.isRegisterShutdownHook()) {
+     			SpringApplication.shutdownHook.enableShutdownHookAddition();
+     		}
+     		DefaultBootstrapContext bootstrapContext = createBootstrapContext();
+     		ConfigurableApplicationContext context = null;
+     		configureHeadlessProperty();
+     		SpringApplicationRunListeners listeners = getRunListeners(args);
+     		listeners.starting(bootstrapContext, this.mainApplicationClass);
+     		try {
+     			ApplicationArguments applicationArguments = new DefaultApplicationArguments(args);
+     			ConfigurableEnvironment environment = prepareEnvironment(listeners, bootstrapContext, applicationArguments);
+     			Banner printedBanner = printBanner(environment);
+     			context = createApplicationContext();
+     			context.setApplicationStartup(this.applicationStartup);
+     			prepareContext(bootstrapContext, context, environment, listeners, applicationArguments, printedBanner);
+     			refreshContext(context);
+     			afterRefresh(context, applicationArguments);
+     			Duration timeTakenToStarted = startup.started();
+     			if (this.properties.isLogStartupInfo()) {
+     				new StartupInfoLogger(this.mainApplicationClass, environment).logStarted(getApplicationLog(), startup);
+     			}
+     			listeners.started(context, timeTakenToStarted);
+     			callRunners(context, applicationArguments);
+     		}
+     		catch (Throwable ex) {
+     			throw handleRunFailure(context, ex, listeners);
+     		}
+     		try {
+     			if (context.isRunning()) {
+     				listeners.ready(context, startup.ready());
+     			}
+     		}
+     		catch (Throwable ex) {
+     			throw handleRunFailure(context, ex, null);
+     		}
+     		return context;
+     	}
+     ```
+
+   * 先加载SpringApplicationRunListeners，再调用starting方法
+
+     ```java
+     SpringApplicationRunListeners listeners = getRunListeners(args);
+     		listeners.starting(bootstrapContext, this.mainApplicationClass);
+     ```
+
+   * 然后加载ConfigurableEnvironment environment = prepareEnvironment(listeners, bootstrapContext, applicationArguments);然后在prepareEnvironment中加载environmentPrepared方法
+
+     ```java
+     listeners.environmentPrepared(bootstrapContext, environment);
+     ```
+
+   * 然后加载ApplicationContext容器
+
+     ```
+     context = createApplicationContext();
+     ```
+
+   * 再调用prepareContext(bootstrapContext, context, environment, listeners, applicationArguments, printedBanner);prepareContext方法中调用contextPrepared方法，全部加载完成后执行contextLoaded方法
+
+     ```java
+     listeners.contextPrepared(context);
+     ..
+     listeners.contextLoaded(context);
+     ```
+
+   * 再执行refreshContext(context);进入到AbstractApplicationContext容器的十二大步骤
+
+   * 再执行listeners.started(context, timeTakenToStarted);
+
+   * 服务器执行完成后，调用listeners.ready(context, startup.ready());
+
 ### 5.1.2 事件触发时机
 
 #### 5.1.2.1 各种回调监听器
 
-- BootstrapRegistryInitializer：感知特定阶段：感知引导初始化
-
-  - META-INF/spring.factories
-- 创建引导上下文bootstrapContext的时候触发。
-  - application.addBootstrapRegistryInitializer();
-- 场景：进行密钥校对授权。
-  
-- ApplicationContextInitializer：感知特定阶段：感知ioc容器初始化
-
-  - META-INF/spring.factories
-- application.addInitializers();
-  
-- ApplicationListener：感知全阶段：基于事件机制，感知事件。 一旦到了哪个阶段可以做别的事
-
-  - @Bean或@EventListener： 事件驱动
-- SpringApplication.addListeners(…)或 SpringApplicationBuilder.listeners(…)
-  - META-INF/spring.factories
-  
-- SpringApplicationRunListener：感知全阶段生命周期 + 各种阶段都能自定义操作； 功能更完善。
-
-  - META-INF/spring.factories
-
+- BootstrapRegistryInitializer：感知特定阶段：感知引导初始化，最开始就执行，在ApplicationListener及boot初始化之前就执行
+- 配置方式
+  - META-INF/spring.factories里面加入：org.springframework.boot.bootstrap.BootstrapRegistryInitializer=com.chanpller.chapter5core.listener.MyBootstrapRegistryInitializer
+    - 创建引导上下文bootstrapContext的时候触发。
+    - application.addBootstrapRegistryInitializer();
+  - 使用场景：在服务器启动前，需要进行密钥校对授权。
+- ApplicationContextInitializer：感知特定阶段：感知ioc容器初始化，在环境准备好，容器初始化之前执行
+- 配置方式
+  - META-INF/spring.factories里面加入：org.springframework.context.ApplicationContextInitializer=com.chanpller.chapter5core.listener.MyApplicationContextInitializer
+    - application.addInitializers();
+- ApplicationListener：感知全阶段：基于事件机制，感知事件，在每个阶段执行前都会调用一下。 与SpringApplicationRunListener不同的是，一旦到了哪个阶段可以做别的事
+  - 配置方式：
+    - @Bean或@EventListener： 事件驱动
+    - SpringApplication.addListeners(…)或 SpringApplicationBuilder.listeners(…)
+    - META-INF/spring.factories里面加入：org.springframework.context.ApplicationListener=com.chanpller.chapter5core.listener.MyApplicationListener
+- SpringApplicationRunListener：感知全阶段生命周期 + 各种阶段都能自定义操作； 比ApplicationListener功能更完善。
+  - 配置方式：
+  - META-INF/spring.factories里面配置：org.springframework.boot.SpringApplicationRunListener=com.chanpller.chapter5core.listener.MySpringApplicationRunListener
 - ApplicationRunner: 感知特定阶段：感知应用就绪Ready。卡死应用，就不会就绪
-
-  - @Bean
-
+  - 配置方式
+    - 注入一个ApplicationRunner，可是使用@Bean或Component
 - CommandLineRunner：感知特定阶段：感知应用就绪Ready。卡死应用，就不会就绪
+- 配置方式
+  - 注入一个ApplicationRunner，可是使用@Bean或Component
 
-  - @Bean
+```java
+===========MyBootstrapRegistryInitializer=============
+===========MyApplicationListener=============
+===========boot初始化之前就执行，正在启动===========
+===========MyApplicationListener=============
+===========环境准备好的之后，环境准备好了==========
+ :: Spring Boot ::                (v4.0.3)
+===========MyApplicationContextInitializer=============
+===========MyApplicationListener=============
+===========容器准备好了，但是还没加载容器===========
+===========MyApplicationListener=============
+===========容器加载了，但是还没刷新容器，还没有将实例注入进来===========
+===========MyApplicationListener=============
+===========MyApplicationListener=============
+===========MyApplicationListener=============
+===========MyApplicationListener=============
+===========类已经加载，项目启动完成===========User(name=null, email=null)PT0.81S
+===========MyApplicationRunner=============
+===========MyCommandLineRunner=============
+===========MyApplicationListener=============
+===========MyApplicationListener=============
+===========项目已经完全加载，已经准备完成===========User(name=null, email=null)PT0.813S
+===========MyApplicationListener=============
+===========MyApplicationListener=============
+```
 
 最佳实战：
 
@@ -87,7 +282,7 @@
 - 如果要干涉生命周期做事：SpringApplicationRunListener
 - 如果想要用事件机制：ApplicationListener
 
-#### **5.1.2.2 完整触发流程**
+#### 5.1.2.2 完整触发流程
 
 9大事件触发顺序&时机
 
