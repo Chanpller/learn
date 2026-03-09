@@ -311,10 +311,10 @@
 
 #### 5.1.2.3 SpringBoot 事件驱动开发
 
-> 应用启动过程生命周期事件感知（9大事件）、应用运行中事件感知（无数种）。
+> 应用启动过程生命周期事件感知是上面9大事件、应用运行中事件感知可以有无数种。
 
-- 事件发布：ApplicationEventPublisherAware或注入：ApplicationEventMulticaster
-- 事件监听：组件 + @EventListener
+- 事件的发布：通过ApplicationEventPublisherAware或注入：ApplicationEventMulticaster
+- 事件的监听：通过组件 + @EventListener方法注释，注入Event。或者实现ApplicationListener接口重写onApplicationEvent方法
 
 **![img](../image/3fd4bd0ba4470249d2e3a7ced609676c.png)**
 
@@ -324,7 +324,38 @@
 
 LoginController
 
-> 事件发布者
+```java
+@RestController
+public class UserController {
+
+    @Autowired
+    private ApplicationEventPublisher applicationEventPublisher;
+    //自己创建EventPublisher
+//    @Autowired
+//    private EventPublisher EventPublisher;
+    @GetMapping("/login")
+    public String login(String name, String password) {
+
+        applicationEventPublisher.publishEvent(new LoginOnSuccessEvent(new User(name, password)));
+        //使用EventPublisher发送事件
+//        EventPublisher.sendEvent(new LoginOnSuccessEvent(new User(name, password)));
+        return "login success";
+    }
+}
+```
+
+> 创建事件，继承ApplicationEvent事件，重写构造方法，传入需要的值
+
+```java
+public class LoginOnSuccessEvent extends ApplicationEvent {
+    public LoginOnSuccessEvent(User source) {
+        super(source);
+    }
+
+}
+```
+
+> 先创建事件发布者EventPublisher，或者直接在LoginController注入private ApplicationEventPublisher applicationEventPublisher;也可以
 
 ```java
 @Service
@@ -358,7 +389,7 @@ public class EventPublisher implements ApplicationEventPublisherAware {
 }
 ```
 
-> 事件订阅者 
+> 事件订阅者 ，可以自己定义组件，然后使用@EventListener注解注入事件LoginSuccessEvent loginSuccessEvent。还可以自己实现ApplicationListener<T>接口实现onApplicationEvent方法，T是需要什么事件类型，就写什么事件类型。Order用于控制执行的先后，数字越小，优先级越高。
 
 ```java
 @Service
@@ -373,6 +404,23 @@ public class CouponService {
     }
     public void sendCoupon(String username){
         System.out.println(username + " 随机得到了一张优惠券");
+    }
+}
+```
+
+```java
+@Service
+@Order(2)
+public class AccountListener implements ApplicationListener<LoginOnSuccessEvent> {
+
+    @Override
+    public void onApplicationEvent(LoginOnSuccessEvent event) {
+        System.out.println("=======AccountListener====感知到事件");
+        User user = (User)event.getSource();
+        addAccount(user);
+    }
+    public void addAccount(User user) {
+        System.out.println("给用户" + user.getName() + "添加1积分");
     }
 }
 ```
@@ -421,6 +469,8 @@ public class CouponService {
 
    ​    c）可以注入SpringBoot配置好的组件随时使用
 
+![1000029211](../image/1000029211.jpg)
+
 #### 5.2.1.2 SPI机制
 
 > - Java中的SPI（Service Provider Interface）是一种软件设计模式，用于在应用程序中动态地发现和加载组件。SPI的思想是，定义一个接口或抽象类，然后通过在classpath中定义实现该接口的类来实现对组件的动态发现和加载。
@@ -434,13 +484,75 @@ public class CouponService {
 
 > 写一段java的spi机制代码
 
+示例
+
+```java
+public class SpiDemo {
+    public static void main(String[] args) {
+        // 加载所有实现 ServiceInterface 的服务
+        ServiceLoader<ServiceInterface> loader = ServiceLoader.load(ServiceInterface.class);
+
+        // 遍历并执行每个服务实现
+        for (ServiceInterface service : loader) {
+            service.execute();
+        }
+    }
+}
+```
+
+```java
+package com.chanpller.impl;
+import com.chanpller.ServiceInterface;
+/**
+ * SPI 服务实现 A
+ */
+public class ServiceImplA implements ServiceInterface {
+    @Override
+    public void execute() {
+        System.out.println("ServiceImplA is executing...");
+    }
+}
+```
+
+```java
+package com.chanpller.impl;
+import com.chanpller.ServiceInterface;
+/**
+ * SPI 服务实现 B
+ */
+public class ServiceImplB implements ServiceInterface {
+    @Override
+    public void execute() {
+        System.out.println("ServiceImplB is executing...");
+    }
+}
+```
+
+```java
+package com.chanpller;
+
+/**
+ * SPI 服务接口定义
+ */
+public interface ServiceInterface {
+    void execute();
+}
+```
+
+创建目录：META-INF/services/com.chanpller.ServiceInterface，里面内容
+
+```
+com.chanpller.impl.ServiceImplA
+com.chanpller.impl.ServiceImplB
+```
+
 SPI的例子，在《2025版DDD领域驱动设计实战天花板教程，7天学完DDD电商服务开放平台设计落地！》视频中，[使用DDD重新设计服务开放平台]章节中有涉及，可以对比查看
 
 ![img](../image/71969f1a0441492aba15890046c53c8a.png)
 
 #### 5.2.1.3 功能开关
 
-- 自动配置：全部都配置好，什么都不用管。自动批量导入
+- boot启动后自动配置：全部都配置好，什么都不用管。自动批量导入
 - 项目一启动，spi文件中指定的所有都加载。
   
 - @EnableXxxx：手动控制哪些功能的开启；手动导入
@@ -450,50 +562,80 @@ SPI的例子，在《2025版DDD领域驱动设计实战天花板教程，7天学
 
 ### 5.2.2 进阶理解
 
-#### 5.2.2.1 @SpringBootApplication
+#### 5.2.2.1 @SpringBootApplication注解
 
-@SpringBootConfiguration
+* 主要3个注解SpringBootConfiguration、EnableAutoConfiguration、ComponentScan
 
-就是： @Configuration ，容器中的组件，配置类。spring ioc启动就会加载创建这个类对象
+1. @SpringBootConfiguration
+   - SpringBootConfiguration注解里面写了 @Configuration注解 ，C@onfiguration注解就是容器中的组件的配置类。spring ioc启动就会加载创建标注了@SpringBootApplication注解这个类对象，就是我们的启动类也会加载到容器里面。
 
-@EnableAutoConfiguration：开启自动配置
+2. @EnableAutoConfiguration：作用：开启自动配置。这个注解中有：
 
-开启自动配置
+   - @AutoConfigurationPackage：作用：扫描主程序包：加载自己的组件
 
-@AutoConfigurationPackage：扫描主程序包：加载自己的组件
+     -  `@Import(AutoConfigurationPackages.Registrar.class)` 给容器中导入组件的包路径。
 
-- 利用 `@Import(AutoConfigurationPackages.Registrar.class)` 想要给容器中导入组件。
-- 把主程序所在的包的所有组件导入进来。
-- 为什么SpringBoot默认只扫描主程序所在的包及其子包
+       ```java
+       //AnnotationMetadata metadata是主程序的元信息，包括包路径
+       static class Registrar implements ImportBeanDefinitionRegistrar, DeterminableImports {
+       
+       		@Override
+       		public void registerBeanDefinitions(AnnotationMetadata metadata, BeanDefinitionRegistry registry) {
+       			register(registry, new PackageImports(metadata).getPackageNames().toArray(new String[0]));
+       		}
+       ```
 
-@Import(AutoConfigurationImportSelector.class)：加载所有自动配置类：加载starter导入的组件
+     - 所以这个Import只是把主程序所在的包的所有组件导入进来。
 
-```java
-List<String> configurations = ImportCandidates.load(AutoConfiguration.class, getBeanClassLoader()).getCandidates();
-```
+     - 这就是为什么SpringBoot默认只扫描主程序所在的包及其子包
 
-> 扫描SPI文件：
->
-> META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports 
+   - @Import(AutoConfigurationImportSelector.class)：加载所有自动配置类：加载starter导入的组件
 
-@ComponentScan
+     - 扫描SPI文件：META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports 
 
-> 组件扫描：排除一些组件（哪些不要）
->
-> 排除前面已经扫描进来的配置类、和自动配置类。
+     ```java
+     List<String> configurations = ImportCandidates.load(AutoConfiguration.class, getBeanClassLoader()).getCandidates();
+     
+     public static ImportCandidates load(Class<?> annotation, ClassLoader classLoader) {
+             Assert.notNull(annotation, "'annotation' must not be null");
+             ClassLoader classLoaderToUse = decideClassloader(classLoader);
+             String location = String.format("META-INF/spring/%s.imports", annotation.getName());
+             Enumeration<URL> urls = findUrlsInClasspath(classLoaderToUse, location);
+             List<String> importCandidates = new ArrayList();
+     
+             while(urls.hasMoreElements()) {
+                 URL url = (URL)urls.nextElement();
+                 importCandidates.addAll(readCandidateConfigurations(url));
+             }
+     
+             return new ImportCandidates(importCandidates);
+         }
+     ```
 
-```java
-@ComponentScan(excludeFilters = { @Filter(type = FilterType.CUSTOM, classes = TypeExcludeFilter.class),
-@Filter(type = FilterType.CUSTOM, classes = AutoConfigurationExcludeFilter.class) })
-```
+3. @ComponentScan
 
-补充说明：三个注解间的关系（修正前面）
+   > 组件扫描：排除一些组件（哪些不要）
+   >
+   > 排除前面已经扫描进来的配置类、和自动配置类。
+   >
+   > ```java
+   > @ComponentScan(excludeFilters = { @Filter(type = FilterType.CUSTOM, classes = TypeExcludeFilter.class),
+   > @Filter(type = FilterType.CUSTOM, classes = AutoConfigurationExcludeFilter.class) })
+   > ```
 
-##### ![img](../image/7bea0fc1ceb04caaa13f5b8db789245f.png)
+4. 补充说明：三个注解间的关系（修正前面）
+
+   ![img](../image/7bea0fc1ceb04caaa13f5b8db789245f.png)
 
 #### 5.2.2.2 完整启动加载流程
 
 生命周期启动加载流程
+
+* 通过debug模式，可以从SpringApplication.run看到
+* 前面引导这些都不会加载，在容器准备完毕，刷新容器时才开始调用。refreshContext
+* 刷新容器时的invokeBeanFactoryPostProcessors调用时，加载AutoConfigurationImportSelector的ImportCandidates.load方法，加载自动配置类
+* 然后再调用AutoConfigurationPackages的register，扫描主程序所在包。
+* finishBeanFactoryInitialization时，所有组件才被创建
 
 **![img](../image/d72b22031fc24de9b34843c6d6f56345.png)**
 
