@@ -1,3 +1,5 @@
+
+
 # 第5章-SpringBoot3-核心原理
 
 ## 5.1 事件和监听器
@@ -23,7 +25,7 @@
 ![img](../image/7b9063c1fc7fa45652123fdf074d9cac.png)
 
 ```java
-/**
+/
  * Listener先要从 META-INF/spring.factories 读到
  *
  * 1、引导： 利用 BootstrapContext 引导整个项目启动
@@ -42,7 +44,7 @@
 
 #### 5.1.1.2 生命周期全流程
 
-**![img](../image/7bb0fd1f8180848f996ff63299b5f307.png)**
+![img](../image/7bb0fd1f8180848f996ff63299b5f307.png)
 
 1. 查看生命周期机制，以SpringApplicationRunListener为例
 
@@ -299,11 +301,11 @@
 3. AvailabilityChangeEvent：ReadinessState.ACCEPTING_TRAFFIC就绪探针，可以接请求
 4. ApplicationFailedEvent ：启动出错
 
-**![img](../image/9bed1300ab64af8d6bc5305a43ab1a33.png)**
+![img](../image/9bed1300ab64af8d6bc5305a43ab1a33.png)
 
 应用事件发送顺序如下：
 
-**![img](../image/799a53a73ac0668f780435baf11debdd.png)**
+![img](../image/799a53a73ac0668f780435baf11debdd.png)
 
 感知应用是否存活了：可能植物状态，虽然活着但是不能处理请求。
 
@@ -316,9 +318,9 @@
 - 事件的发布：通过ApplicationEventPublisherAware或注入：ApplicationEventMulticaster
 - 事件的监听：通过组件 + @EventListener方法注释，注入Event。或者实现ApplicationListener接口重写onApplicationEvent方法
 
-**![img](../image/3fd4bd0ba4470249d2e3a7ced609676c.png)**
+![img](../image/3fd4bd0ba4470249d2e3a7ced609676c.png)
 
-**![img](../image/b5840f48ddbc645cff9d116c0378017f.png)**
+![img](../image/b5840f48ddbc645cff9d116c0378017f.png)
 
 举个例子
 
@@ -361,13 +363,13 @@ public class LoginOnSuccessEvent extends ApplicationEvent {
 @Service
 public class EventPublisher implements ApplicationEventPublisherAware {
 
-    /**
+    /
      * 底层发送事件用的组件，SpringBoot会通过ApplicationEventPublisherAware接口
      * 自动注入给我们。事件是广播出去的，所有监听这个事件的监听器都可以收到。
      */
     private ApplicationEventPublisher applicationEventPublisher;
 
-    /**
+    /
      * 发送事件，支持所有类型的 ApplicationEvent。
      *
      * @param event 要发布的事件对象
@@ -377,7 +379,7 @@ public class EventPublisher implements ApplicationEventPublisherAware {
         applicationEventPublisher.publishEvent(event);
     }
 
-    /**
+    /
      * 会被 Spring 自动调用，将真正的事件发布器注入进来。
      *
      * @param applicationEventPublisher 用于发布事件的组件
@@ -427,9 +429,9 @@ public class AccountListener implements ApplicationListener<LoginOnSuccessEvent>
 
 
 
-## **5.2 自动配置原理★★★★★**
+## 5.2 自动配置原理★★★★★
 
-### **5.2.1 入门理解**
+### 5.2.1 入门理解
 
 > 应用关注的三大核心：场景、配置、组件
 
@@ -503,7 +505,7 @@ public class SpiDemo {
 ```java
 package com.chanpller.impl;
 import com.chanpller.ServiceInterface;
-/**
+/
  * SPI 服务实现 A
  */
 public class ServiceImplA implements ServiceInterface {
@@ -517,7 +519,7 @@ public class ServiceImplA implements ServiceInterface {
 ```java
 package com.chanpller.impl;
 import com.chanpller.ServiceInterface;
-/**
+/
  * SPI 服务实现 B
  */
 public class ServiceImplB implements ServiceInterface {
@@ -531,7 +533,7 @@ public class ServiceImplB implements ServiceInterface {
 ```java
 package com.chanpller;
 
-/**
+/
  * SPI 服务接口定义
  */
 public interface ServiceInterface {
@@ -567,8 +569,9 @@ SPI的例子，在《2025版DDD领域驱动设计实战天花板教程，7天学
 * 主要3个注解SpringBootConfiguration、EnableAutoConfiguration、ComponentScan
 
 1. @SpringBootConfiguration
-   - SpringBootConfiguration注解里面写了 @Configuration注解 ，C@onfiguration注解就是容器中的组件的配置类。spring ioc启动就会加载创建标注了@SpringBootApplication注解这个类对象，就是我们的启动类也会加载到容器里面。
-
+   
+- SpringBootConfiguration注解里面写了 @Configuration注解 ，C@onfiguration注解就是容器中的组件的配置类。spring ioc启动就会加载创建标注了@SpringBootApplication注解这个类对象，就是我们的启动类也会加载到容器里面。
+  
 2. @EnableAutoConfiguration：作用：开启自动配置。这个注解中有：
 
    - @AutoConfigurationPackage：作用：扫描主程序包：加载自己的组件
@@ -637,7 +640,7 @@ SPI的例子，在《2025版DDD领域驱动设计实战天花板教程，7天学
 * 然后再调用AutoConfigurationPackages的register，扫描主程序所在包。
 * finishBeanFactoryInitialization时，所有组件才被创建
 
-**![img](../image/d72b22031fc24de9b34843c6d6f56345.png)**
+![img](../image/d72b22031fc24de9b34843c6d6f56345.png)
 
 ## 5.3 自定义starter★★★★★
 
@@ -657,7 +660,7 @@ SPI的例子，在《2025版DDD领域驱动设计实战天花板教程，7天学
 
 ### 5.3.1 业务代码
 
-> **自定义配置有提示。导入以下依赖重启项目，再写配置文件就有提示**
+> 自定义配置有提示。导入以下依赖重启项目，再写配置文件就有提示
 
 ```java
 @ConfigurationProperties(prefix = "robot") //此属性类和配置文件指定前缀绑定
@@ -684,14 +687,55 @@ public class RobotProperties {
 ### 5.3.2 基本抽取
 
 - 创建starter项目，把公共代码需要的所有依赖导入
-- 把公共代码复制进来
-- 自己写一个 RobotAutoConfiguration，给容器中导入这个场景需要的所有组件
-  - 为什么这些组件默认不会扫描进去？
-  - starter所在的包和 引入它的项目的主程序所在的包不是父子层级★★★★★
 
-- 别人引用这个starter，直接导入这个 RobotAutoConfiguration,就能把这个场景的组件导入进来
-- 功能生效。
-- 测试编写配置文件
+- 把公共代码复制进来
+
+- 自己写一个 RobotAutoConfiguration，给容器中导入这个场景需要的所有组件
+  
+  - 为什么这些组件默认不会扫描进去？
+  
+- 因为starter所在的包和 引入它的项目的主程序所在的包不是父子层级，starter默认扫描自己所在路径的子包★★★★★
+  
+  - 因为没有main主程序，打包方式要修改为maven打包，不再用springboot的插件打包
+  
+    ```xml
+    <!-- 打包为 jar，且包含依赖（可选） -->
+        <build>
+            <plugins>
+                <!--<plugin>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-maven-plugin</artifactId>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>repackage</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>-->
+    
+                <!-- 生成源码JAR -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-source-plugin</artifactId>
+                    <executions>
+                        <execution>
+                            <id>attach-sources</id>
+                            <goals>
+                                <goal>jar</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+            </plugins>
+        </build>
+    ```
+  
+- 需求：
+
+  - 别人引用这个starter，直接导入这个 RobotAutoConfiguration,就能把这个场景的组件导入进来
+  - 功能生效。
+  - 测试编写配置文件
 
 ------
 
@@ -699,16 +743,24 @@ public class RobotProperties {
 
 ![img](../image/193f987837a641e89f645fd6263dc723.png)
 
-RobotAutoConfiguration
-
-#### 5.3.3 使用@EnableXxx机制
+#### 5.3.3 可以使用@EnableXxx机制
 
 ```java
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})
 @Documented
-@Import(RobotAutoConfiguration.class)
-public @interface EnableRobot {
+@Import(RobotAutoConfiguration.class)//导入RobotAutoConfiguration类
+	public @interface EnableRobot {
+}
+```
+
+```java
+//自测类
+@AutoConfiguration
+@EnableConfigurationProperties(MyTestProperties.class)
+//@Import(TestController.class)//可以使用Import导入类
+@ComponentScan(basePackages = "com.chanpller.mytest")//也可以使用ComponentScan进行扫描，形式多种多样，只要可以导入即可
+public class MyTestAutoConfiguration {
 }
 ```
 
@@ -721,6 +773,20 @@ public @interface EnableRobot {
 * 依赖SpringBoot的SPI机制
 
 * META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports 文件中编写好我们自动配置类的全类名即可（这样@EnableXxx都可以不用标了，导入依赖就可以使用）
+
+* META-INF/spring.factories与META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports都可以导入依赖，但是两则的区别
+
+  | 特性                                | `META-INF/spring.factories`                                  | `META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports` |
+  | ----------------------------------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
+  | ✅ **推荐版本**                      | Spring Boot < 3.1（已废弃）                                  | ✅ Spring Boot 3.1+（推荐使用），从2.7.0开始后就是使用的这种方式 |
+  | 📁 **路径格式**                      | `META-INF/spring.factories`                                  | `META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports` |
+  | 📝 **文件内容格式**                  | `org.springframework.boot.autoconfigure.AutoConfiguration=...` | 一行一个类名，支持多行                                       |
+  | ⚠️ **是否支持注解扫描**              | 支持，但性能差                                               | ✅ 支持，且更高效                                             |
+  | 🔍 **加载方式**                      | 基于 `PropertiesLoaderUtils` 加载                            | 基于 `SpringFactoriesLoader` 的改进机制                      |
+  | 🧩 **支持模块化**                    | 不支持模块化（JAR 内部资源）                                 | ✅ 支持模块化，适合多模块项目                                 |
+  | 📦 **是否可被 Spring Boot 自动发现** | ❌ 已被弃用                                                   | ✅ 官方推荐，自动发现                                         |
+
+  
 
 * 项目启动，自动加载我们的自动配置类
 
