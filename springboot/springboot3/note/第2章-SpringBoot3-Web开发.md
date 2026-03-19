@@ -134,7 +134,7 @@ a）WebMvcAutoConfiguration给spring容器放了两个Filter：
 
 2. FormContentFilter： 表单内容Filter，GET（数据放URL后面）、POST（数据放请求体）请求可以携带数据，PUT、DELETE 的请求体数据会被忽略
 
-   ![image-20251218230527276](D:\workspace\IdeaProjects\learn\springboot\springboot3\image\image-20251218230527276.png)
+   ![image-20251218230527276](../image/image-20251218230527276.png)
 
 b）WebMvcAutoConfiguration给spring容器中放了WebMvcConfigurer组件；给SpringMVC添加各种定制功能
 
@@ -144,7 +144,7 @@ b）WebMvcAutoConfiguration给spring容器中放了WebMvcConfigurer组件；给S
 
 3. WebProperties： spring.web配置文件
 
-   ![image-20251218230704858](D:\workspace\IdeaProjects\learn\springboot\springboot3\image\image-20251218230704858.png)
+   ![image-20251218230704858](../image/image-20251218230704858.png)
 
 #### 2.2.0.3 WebMvcConfigurer接口
 
@@ -431,11 +431,11 @@ public class MyConfig /*implements WebMvcConfigurer*/ {
 
 springboot默认配置是PathPatternParser
 
-![image-20251221113933347](D:\workspace\IdeaProjects\learn\springboot\springboot3\image\image-20251221113933347.png)
+![image-20251221113933347](../image/image-20251221113933347.png)
 
 修改默认配置后，WebMvcAutoConfiguration会进行解析
 
-![image-20251221114025322](D:\workspace\IdeaProjects\learn\springboot\springboot3\image\image-20251221114025322.png)
+![image-20251221114025322](../image/image-20251221114025322.png)
 
 ### 2.3.1 Ant风格路径用法
 
