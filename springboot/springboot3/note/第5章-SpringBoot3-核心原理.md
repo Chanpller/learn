@@ -794,13 +794,13 @@ public class MyTestAutoConfiguration {
 
 ## 附录：SpringBoot3改变&新特性快速总结
 
-1、自动配置包位置变化【参照视频：07、11】
+1、自动配置包位置变化【参照视频：07、11(只说了新的springBoot注入原理，只是让参考新的注入原来)】
 
 META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports
 
-2、jakata api迁移
+2、jakata包api迁移
 
-- druid有问题
+- druid有问题，是因为servlet包从javax，换成了jakata，而druid没有更换
 
 3、新特性 - 函数式Web、ProblemDetails【参照视频：50、51】
 

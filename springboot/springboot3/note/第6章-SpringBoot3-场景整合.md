@@ -1383,10 +1383,10 @@ n>!
 
 > 可观测性 Observability
 
-对线上应用进行观测、监控、预警...
+可以对线上应用进行观测、监控、预警...
 
-- 健康状况【组件状态、存活状态】Health
-- 运行指标【cpu、内存、垃圾回收、吞吐量、响应成功率...】Metrics
+- 健康状况【组件状态、存活状态】Health（健康状况）
+- 运行指标【cpu、内存、垃圾回收、吞吐量、响应成功率...】Metrics（指标）
 - 链路追踪
 - ...
 
@@ -1408,10 +1408,10 @@ n>!
 ```yaml
 management:
 	endpoints:
-		enabled-by-default: true #暴露所有端点信息
+		enabled-by-default: true #暴露所有端点信息，后面版本不推荐了，暴露所有
 		web:
 		exposure:
-			include: '*' #以web方式暴露	
+			include: '*' #以web方式暴露	，暴露所有
 ```
 
 ##### 6.7.1.1.3 访问数据
@@ -1454,23 +1454,627 @@ management:
 | logfile          | 返回日志文件的内容（如果已设置﻿logging.file.name或﻿logging.file.path﻿属性）。支持使用HTTP﻿Range﻿标头来检索部分日志文件的内容。 |
 | prometheus       | 以Prometheus服务器可以抓取的格式公开指标。需要依赖﻿micrometer-registry-prometheus﻿。 |
 
-threaddump﻿、﻿heapdump﻿、﻿metrics﻿
+常用的主要这三个threaddump﻿、﻿heapdump﻿、﻿metrics﻿
 
-##### 6.7.1.2.2 定制端点
+![image-20260323210644185](../image/image-20260323210644185.png)
+
+![image-20260323210714403](../image/image-20260323210714403.png)
+
+##### 6.7.1.2.2 定制端点（可以自己指自定义）
 
 * 健康监控：返回存活、死亡
 * 指标监控：次数、率
 
-1. HealthEndpoint
+1. HealthEndpoint(健康监控)
+
+   * 实现HealthIndicator接口
+
+   ```java
+   package com.chanpller.chapter6actuator.health;
+   
+   import com.chanpller.chapter6actuator.component.MyComponent;
+   import org.springframework.beans.factory.annotation.Autowired;
+   import org.springframework.boot.actuate.health.Health;
+   import org.springframework.boot.actuate.health.HealthIndicator;
+   import org.springframework.stereotype.Component;
+   
+   @Component
+   public class MyHealthIndicator implements HealthIndicator {
+       @Autowired
+       private MyComponent myComponent;
+       @Override
+       public Health health() {
+           int errorCode = myComponent.check(); // perform some specific health check
+           if (errorCode != 0) {
+               return Health.down().withDetail("Error Code", errorCode).build
+                       ();
+           }
+           return Health.up().build();
+       }
+   }
+   
+   //可以自己构建Health，包括详细信息
+   //Health build = Health.down()
+   //        .withDetail("msg", "error service")
+   //        .withDetail("code", "500")
+   //        .withException(new RuntimeException())
+   //        .build();
+   ```
+
+   ```properties
+   management.endpoints.enabled-by-default=true
+   management.endpoints.web.exposure.include=*
+   management.health.eabaled=true
+   management.health.show-details=always
+   ```
+
+2. MetricsEndpoint(指标监控)
+
+   * 注入MeterRegistry
+
+   ```java
+   package com.chanpller.chapter6actuator.service;
+   
+   import io.micrometer.core.instrument.Counter;
+   import io.micrometer.core.instrument.MeterRegistry;
+   import org.springframework.stereotype.Service;
+   
+   @Service
+   public class MyService{
+       Counter counter;
+       public MyService(MeterRegistry meterRegistry){
+           //自动一获取一个Counter计数器
+           counter = meterRegistry.counter("myservice.method.running.counter");
+       }
+       public void hello() {
+           counter.increment();
+       }
+   }
+   ```
+
+   * 通过访问:http://localhost:8080/actuator/metrics/http.server.requests可以看下具体参数
+   * http://localhost:8080/actuator/metrics/myservice.method.running.counter可以看到自定义的参数请求次数
 
 ### 6.7.2  监控案例落地
 
+> 基于 Prometheus + Grafana
+
+![image-20260323212202931](../image/image-20260323212202931.png)
+
 #### 6.7.2.1 安装Prometheus+Grafana
+
+```shell
+#安装prometheus:时序数据库
+docker run -p 9090:9090 -d \
+-v pc:/etc/prometheus \
+prom/prometheus
+#安装grafana；默认账号密码 admin:admin
+docker run -d --name=grafana -p 3000:3000 grafana/grafana
+```
 
 #### 6.7.2.2 导入依赖
 
+```xml
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-actuator</artifactId>
+</dependency>
+<dependency>
+    <groupId>io.micrometer</groupId>
+    <artifactId>micrometer-registry-prometheus</artifactId>
+    <version>1.10.6</version>
+</dependency>
+<!-- springboot 3.5.11需要使用1.13.0的版本
+<dependency>
+    <groupId>io.micrometer</groupId>
+    <artifactId>micrometer-registry-prometheus</artifactId>
+    <version>1.13.0</version>
+</dependency>
+-->
+```
+
+```properties
+#application.properties配置文件
+1management.endpoints.enabled-by-default=true
+management.endpoints.web.exposure.include=*
+management.health.enabled=true
+management.health.show-details=always
+management.endpoint.prometheus.enabled=true
+```
+
+访问http://localhost:8080/actuator/prometheus进行验证，返回prometheus格式的所有指标。
+
+> 将java应用部署到服务器
+>
+> 先安装JDK
+>
+> ```shell
+> #安装openjdk
+> # 下载openjdk
+> wget https://download.oracle.com/java/17/latest/jdk-17_linux-x64_bin.tar.g
+> z
+> mkdir -p /opt/java
+> tar -xzf jdk-17_linux-x64_bin.tar.gz -C /opt/java/
+> sudo vi /etc/profile
+> #在最后面加入以下内容
+> export JAVA_HOME=/opt/java/jdk-17.0.7
+> export PATH=$PATH:$JAVA_HOME/bin
+> #环境变量生效
+> source /etc/profile
+> # 后台启动java应用
+> nohup java -jar boot3-14-actuator-0.0.1-SNAPSHOT.jar > output.log 2>&1 &
+> # 如果防火墙开启，需要添加端口规则
+> sudo firewall-cmd --permanent --add-port=1-65533/tcp
+> sudo firewall-cmd --reload
+> #自己安装的java
+> nohup /usr/lib/jvm/java-17-openjdk-17.0.1.0.12-2.el8_5.x86_64/bin/java -jar chapter-6-actuator-3.5.11.jar > output.log 2>&1 &
+> ```
+>
+> 确认可以访问到： http://8.130.32.70:9999/actuator/prometheus
+
 #### 6.7.2.3 配置Prometheus拉取数据
+
+```yaml
+## 修改 prometheus.yml 配置文件
+  - job_name: 'spring-boot-actuator-exporter'
+    metrics_path: '/actuator/prometheus'#指定抓取的路径
+    static_configs:
+      - targets: ['192.168.154.128:9000']
+      labels:
+        nodename: 'app-demo'
+```
+
+![image-20260323230355164](../image/image-20260323230355164.png)
 
 #### 6.7.2.4 配置Grafana监控面板
 
+* 添加数据源（Prometheus）
+
+* 添加面板。可去 dashboard 市场找一个自己喜欢的面板，也可以自己开发面板;Dashboards | Grafana Labs
+
+  ![image-20260324142807663](../image/image-20260324142807663.png)
+
+  ![image-20260324142843800](../image/image-20260324142843800.png)
+
+  搜索模板
+
+  ![image-20260324142923951](../image/image-20260324142923951.png)
+
+  这里我找的是JVM SpringBoot3 dashboard (for Prometheus Operator)，复制模板id
+
+  ![image-20260324143025351](../image/image-20260324143025351.png)
+
+  ![image-20260324143215706](../image/image-20260324143215706.png)
+  ![image-20260324143248493](../image/image-20260324143248493.png)
+
+  ![image-20260324143325491](../image/image-20260324143325491.png)
+
+  ![image-20260324143349746](../image/image-20260324143349746.png)
+
+  ![image-20260324143456330](../image/image-20260324143456330.png)
+
 #### 6.7.2.5 效果
+
+![image-20260324150216535](../image/image-20260324150216535.png)
+
+![image-20260324150307725](../image/image-20260324150307725.png)
+
+## 6.8 AOT
+
+### 6.8.1 AOT与JIT
+
+AOT：Ahead-of-Time（提前编译）：程序执行前，全部被编译成机器码
+
+JIT：Just in Time（即时编译）: 程序边编译，边运行；
+
+编译：
+
+* 源代码（.c、.cpp、.go、.java。。。）===>编译===>机器码
+
+语言分类：
+
+* 编译型语言，需要编译器
+* 解释型语言，需要解释器
+
+#### 6.8.1.1 Complier 与 Interpreter
+
+* Java是半编译半解释性语言
+
+* 在线编译网站：https://anycodes.cn/editor
+
+  ![image-20260324152833999](../image/image-20260324152833999.png)
+
+  ![image-20260324153200018](../image/image-20260324153200018.png)
+
+  ![image-20260324153123947](../image/image-20260324153123947.png)
+
+#### 6.8.1.2 AOT 与 JIT 对比
+
+![image-20260324153241068](../image/image-20260324153241068.png)
+
+在 OpenJDK 的官方 Wiki 上，介绍了HotSpot 虚拟机一个相对比较全面的、即时编译器（JIT）中采用的优化技术列表。
+
+![image-20260324153322587](../image/image-20260324153322587.png)
+
+![image-20260324153332495](../image/image-20260324153332495.png)
+
+可使用：-XX:+PrintCompilation 打印JIT编译信息
+
+#### 6.8.1.3 JVM架构
+
+.java ==转成= >.class ==再转成=> 机器码进行执行
+
+![image-20260324153448665](../image/image-20260324153448665.png)
+
+JVM: 既有解释器，又有编辑器（JIT：即时编译）；
+
+#### 6.8.1.4 Java的执行过程
+
+> 建议阅读：
+> ● 美团技术：https://tech.meituan.com/2020/10/22/java-jit-practice-in-meituan.html
+> ● openjdk官网：https://wiki.openjdk.org/display/HotSpot/Compiler
+
+1. 流程概要
+
+![image-20260324153733597](../image/image-20260324153733597.png)
+
+解释执行：
+
+编译执行：
+
+2. 详细流程
+
+   热点代码：调用次数非常多的代码
+
+![image-20260324154032042](../image/image-20260324154032042.png)
+
+
+
+#### 6.8.1.5 JVM编译器
+
+JVM中集成了两种编译器，Client Compiler 和 Server Compiler；
+
+* Client Compiler注重启动速度和局部的优化
+* Server Compiler更加关注全局优化，性能更好，但由于会进行更多的全局分析，所以启动速度会慢。
+
+Client Compiler：
+
+* HotSpot VM带有一个Client Compiler C1编译器
+* 这种编译器启动速度快，但是性能比较Server Compiler来说会差一些。
+* 编译后的机器码执行效率没有C2的高
+
+Server Compiler：
+
+* Hotspot虚拟机中使用的Server Compiler有两种：C2 和 Graal。
+* 在Hotspot VM中，默认的Server Compiler是C2编译器。
+
+#### 6.8.1.6 分层编译
+
+Java 7开始引入了分层编译(Tiered Compiler)的概念，它结合了C1和C2的优势，追求启动速度和峰值性能的一个平衡。分层编译将JVM的执行状态分为了五个层次。五个层级分别是：
+
+* 解释执行。
+* 执行不带profiling的C1代码。
+* 执行仅带方法调用次数以及循环回边执行次数profiling的C1代码。
+* 执行带所有profiling的C1代码。
+* 执行C2代码。
+
+![image-20260324154514490](../image/image-20260324154514490.png)
+
+profiling就是收集能够反映程序执行状态的数据。其中最基本的统计数据就是方法的调用次数，以及循环回边的执行次数。
+
+* 图中第①条路径，代表编译的一般情况，热点方法从解释执行到被3层的C1编译，最后被4层的C2编译。
+* 如果方法比较小（比如Java服务中常见的getter/setter方法），3层的profiling没有收集到有价值的数据，JVM就会断定该方法对于C1代码和C2代码的执行效率相同，就会执行图中第②条路径。在这种情况下，JVM会在3层编译之后，放弃进入C2编译，直接选择用1层的C1编译运行。
+* 在C1忙碌的情况下，执行图中第③条路径，在解释执行过程中对程序进行profiling ，根据信息直接由第4层的C2编译。
+* 前文提到C1中的执行效率是1层>2层>3层，第3层一般要比第2层慢35%以上，所以在C2忙碌的情况下，执行图中第④条路径。这时方法会被2层的C1编译，然后再被3层的C1编译，以减少方法在3层的执行时间。
+* 如果编译器做了一些比较激进的优化，比如分支预测，在实际运行时发现预测出错，这时就会进行反优化，重新进入解释执行，图中第⑤条执行路径代表的就是反优化。
+
+总的来说，C1的编译速度更快，C2的编译质量更高，分层编译的不同编译路径，也就是JVM根据当前服务的运行情况来寻找当前服务的最佳平衡点的一个过程。从JDK 8开始，JVM默认开启分层编译。
+
+为什么会发展GraalVM，因为云原生：Cloud Native，启动时 Java小改版；
+
+最好的效果：
+存在的问题：
+
+* java应用如果用jar，解释执行，热点代码才编译成机器码；初始启动速度慢，初始处理请求数量少。
+* 大型云平台，要求每一种应用都必须秒级启动。每个应用都要求效率高。
+
+希望的效果：
+
+* java应用也能提前被编译成机器码，随时急速启动，一启动就急速运行，最高性能
+* 编译成机器码的好处：
+  * 另外的服务器还需要安装Java环境
+  * 编译成机器码的，可以在这个平台 Windows X64 直接运行。
+
+原生镜像：native-image（机器码、本地镜像）
+
+* 把应用打包成能适配本机平台 的可执行文件（机器码、本地镜像）
+
+### 6.8.2 GraalVM
+
+https://www.graalvm.org/
+
+> GraalVM是一个高性能的JDK，旨在加速用Java和其他JVM语言编写的应用程序的执行，同时还提供JavaScript、Python和许多其他流行语言的运行时。
+> GraalVM提供了两种运行Java应用程序的方式：
+>
+> 1. 在HotSpot JVM上使用Graal即时（JIT）编译器
+> 2. 作为预先编译（AOT）的本机可执行文件运行（本地镜像）。
+>
+> GraalVM的多语言能力使得在单个应用程序中混合多种编程语言成为可能，同时消除了外部语言调用的成本。
+
+#### 6.8.2.1 架构
+
+![image-20260324155047175](../image/image-20260324155047175.png)
+
+#### 6.8.2.2 安装
+
+> 跨平台提供原生镜像原理：
+
+![image-20260324155119229](../image/image-20260324155119229.png)
+
+1. VisualStudio
+
+https://visualstudio.microsoft.com/zh-hans/free-developer-offers/
+
+![image-20260324155152619](../image/image-20260324155152619.png)
+
+![image-20260324155204799](../image/image-20260324155204799.png)
+
+别选中文
+
+![image-20260324155218513](../image/image-20260324155218513.png)
+
+![image-20260324155232988](../image/image-20260324155232988.png)
+
+记住你安装的地址；
+
+2. GraalVM
+
+   1. 安装
+
+      下载 GraalVM + native-image
+
+![image-20260324155343193](../image/image-20260324155343193.png)
+
+![image-20260324162241264](../image/image-20260324162241264.png)
+
+![image-20260324155355735](../image/image-20260324155355735.png)
+
+![image-20260324155412025](../image/image-20260324155412025.png)
+
+![image-20260324155427522](../image/image-20260324155427522.png)
+
+
+
+2. 配置
+
+   修改 JAVA_HOME 与 Path，指向新bin路径
+
+   ![image-20260324155450617](../image/image-20260324155450617.png)
+
+   ![image-20260324155509394](../image/image-20260324155509394.png)
+
+   验证JDK环境为GraalVM提供的即可：
+
+   ![image-20260324155519716](../image/image-20260324155519716.png)
+
+3. 依赖
+
+   安装 native-image 依赖：
+
+   1. 网络环境好：参考：https://www.graalvm.org/latest/reference-manual/native-image/#install-native-image
+
+      ```shell
+      gu install native-image
+      ```
+
+   2. 网络不好，使用我们下载的离线jar;native-image-xxx.jar文件
+
+      ```shell
+      gu install --file native-image-installable-svm-java17-windows-amd64-22.3.2.jar
+      ```
+
+4. 验证
+
+   ```
+   native-image
+   #提示下面内容表示成功
+   #Please specify options for native-image building or use --help for more info.
+   ```
+
+#### 6.8.2.3 测试
+
+1. 创建项目
+   1. 创建普通java项目。编写HelloWorld类；
+      - 使用mvn clean package进行打包
+      - 确认jar包是否可以执行java -jar xxx.jar
+      - 可能需要给 MANIFEST.MF添加 Main-Class: 你的主类
+
+2. 编译镜像
+   * 编译为原生镜像（native-image）：使用native-tools终端(x64 Native Tools Command Prompt for VS)，不能使用cmd命令终端
+
+![image-20260324160120999](../image/image-20260324160120999.png)
+
+```
+#从入口开始，编译整个jar
+native-image -cp boot3-15-aot-common-1.0-SNAPSHOT.jar com.atguigu.MainApplication -o Haha
+
+#编译某个类【必须有main入口方法，否则无法编译】
+native-image -cp .\classes org.example.App
+```
+
+3. Linux平台测试
+   1. 安装gcc等环境
+
+   ```
+   yum install lrzsz
+   sudo yum install gcc glibc-devel zlib-devel
+   ```
+
+4. 下载安装配置Linux下的GraalVM、native-image
+
+   - 下载：https://www.graalvm.org/downloads/
+   - 安装：GraalVM、native-image
+   - 配置：JAVA环境变量为GraalVM
+
+   ```
+   tar -zxvf graalvm-ce-java17-linux-amd64-22.3.2.tar.gz -C /opt/java/
+   
+   sudo vim /etc/profile
+   #修改以下内容
+   export JAVA_HOME=/opt/java/graalvm-ce-java17-22.3.2
+   export PATH=$PATH:$JAVA_HOME/bin
+   
+   source /etc/profile
+   
+   #或者
+   sudo vim /etc/profile.d/graalvm.sh
+   添加以下内容 (注意：不要 export,直接赋值)
+   export JAVA_HOME=/opt/java/graalvm-ce-java17-22.3.3
+   export PATH=$JAVA_HOME/bin:$PATH
+   source /etc/profile.d/graalvm.sh
+   java -version
+   ```
+
+5. 安装native-image
+
+   ```
+   gu install --file native-image-installable-svm-java17-linux-amd64-22.3.2.jar
+   ```
+
+6. 使用native-image编译jar为原生程序
+
+   1. 内存和CPU需要大一点，否则会卡住
+
+   ```
+   native-image -cp xxx.jar org.example.App -o xx
+   # native-image -cp test_graalvm-0.0.1-SNAPSHOT.jar MainApplication -o hehe
+   #编译通过后，./hehe执行
+   ./hehe
+   ```
+
+### 6.8.3 SpringBoot整合
+
+#### 6.8.3.1 依赖导入
+
+```xml
+<build>
+        <plugins>
+            <plugin>
+                <groupId>org.graalvm.buildtools</groupId>
+                <artifactId>native-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+```
+
+报错：
+
+```
+native-image is not installed in your JAVA_HOME.This probably means that the JDK at 'C:\Program Files\Java\jdk-17' is not a GraalVM distribution. The GraalVM Native Maven Plugin requires GRAALVM_HOME or JAVA_HOME to be a GraalVM distribution.
+```
+
+* 添加GRAALVM_HOME和JAVA_HOME
+
+#### 6.8.3.2 生成native-image
+
+1. 运行process-aot提前处理命令：mvn package
+2. 运行aot提前处理命令：mvn springboot:process-aot
+3. 运行native打包：mvn -Pnative native:build
+
+```
+# 推荐加上 -Pnative 否则启动乱码
+mvn -Pnative native:build -f pom.xml
+
+# -X debug模式打包
+mvn -Pnative -X native:build 
+```
+
+![image-20260327092909733](../image/image-20260327092909733.png)
+
+![image-20260324161000208](../image/image-20260324161000208.png)
+
+#### 6.8.3.3 常见问题
+
+可能提示如下各种错误，无法构建原生镜像，需要配置环境变量；
+
+* 出现cl.exe找不到错误
+* 出现乱码
+* 提示no include path set
+* 提示fatal error LNK1104: cannot open file ‘LIBCMT.lib’
+* 提示 LINK : fatal error LNK1104: cannot open file ‘kernel32.lib’
+* 提示各种其他找不到
+
+需要修改三个环境变量：Path、INCLUDE、lib
+
+1. Path：添加如下值
+
+   - D:\Program Files\Microsoft Visual Studio\18\Community\VC\Tools\MSVC\14.50.35717\bin\Hostx64\x64
+
+2. 新建INCLUDE环境变量：值为
+
+   ```
+   D:\Program Files\Microsoft Visual Studio\18\Community\VC\Tools\MSVC\14.50.35717\include;C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\shared;C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\ucrt;C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\um;C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\winrt;
+   ```
+
+   ![image-20260324161300350](../image/image-20260324161300350.png)
+
+3. 新建lib环境变量：值为
+
+   ```
+   C:\Program Files (x86)\Windows Kits\10\Lib\10.0.26100.0\ucrt\x64;C:\Program Files (x86)\Windows Kits\10\Lib\10.0.26100.0\um\x64;D:\Program Files\Microsoft Visual Studio\18\Community\VC\Tools\MSVC\14.50.35717\lib\x64;
+   ```
+
+   ![image-20260324161328220](../image/image-20260324161328220.png)
+
+* 运行项目报错
+
+  ```
+  Logging system failed to initialize using configuration from 'null'
+  java.nio.charset.UnsupportedCharsetException: x-mswin-936
+  ```
+
+  springboot3 需要配置logback-spring.xml，在项目resource目录下添加logback-spring.xml
+
+  ```xml
+  <?xml version="1.0" encoding="UTF-8"?>
+  
+  <configuration>
+  
+      <!-- 配置根日志级别，控制全局的日志级别 -->
+      <root level="INFO">
+          <!-- 附加输出目标（appender）的引用，可以有多个 -->
+          <appender-ref ref="CONSOLE" />
+          <appender-ref ref="FILE" />
+      </root>
+  
+      <!-- 定义控制台输出 -->
+      <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+          <encoder>
+              <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+          </encoder>
+      </appender>
+  
+      <!-- 定义文件输出 -->
+      <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+          <!--<file>myapp.log</file>-->
+          <file>/log/chjb.log</file>
+          <encoder>
+              <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+          </encoder>
+      </appender>
+  
+  </configuration>
+  
+  ```
+  
+  application.properties添加
+  
+  ```properties
+  logging.config=classpath:logback-spring.xml
+  ```
+  
+  
