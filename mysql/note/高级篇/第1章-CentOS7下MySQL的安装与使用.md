@@ -198,8 +198,8 @@ ip addr
 
 ```
 rpm -ivh mysql-community-common-8.0.25-1.el7.x86_64.rpm
-rpm -ivh mysql-community-libs-8.0.25-1.el7.x86_64.rpm
 rpm -ivh mysql-community-client-plugins-8.0.25-1.el7.x86_64.rpm
+rpm -ivh mysql-community-libs-8.0.25-1.el7.x86_64.rpm
 rpm -ivh mysql-community-client-8.0.25-1.el7.x86_64.rpm
 rpm -ivh mysql-community-server-8.0.25-1.el7.x86_64.rpm
 
